@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {DatabaseSync} from 'node:sqlite';import {readFileSync} from 'node:fs';import Stripe from 'stripe';
-import {APP,quantity,parameters,verified,record,body,config,webhook,create,status} from '../server/checkout.js';
+import {APP,quantity,parameters,verified,record,body,config,context,webhook,create,status} from '../server/checkout.js';
 const env={SITE_URL:'http://127.0.0.1:8788',STRIPE_PRICE_ID:'price_example'};
 for(const n of [1,2,99])test(`quantity ${n}, shipping once`,()=>{assert.equal(quantity({items:[{id:'seedplate',quantity:n}]}),n);const p=parameters(env,n,'hash');assert.equal(p.line_items[0].quantity,n);assert.equal(p.shipping_options.length,1);assert.equal(p.shipping_options[0].shipping_rate_data.fixed_amount.amount,619);assert.deepEqual(p.shipping_address_collection.allowed_countries,['DE']);assert.equal(p.allow_promotion_codes,true);assert.equal(p.payment_method_types,undefined);assert.equal(p.invoice_creation.enabled,true);assert.equal(p.automatic_tax.enabled,false);});
 for(const data of [null,{}, {items:[]},{items:[{id:'nomad',quantity:1}]},...[0,-1,1.5,100,'2',null].map(quantity=>({items:[{id:'seedplate',quantity}]})),{items:[{id:'seedplate',quantity:1,price:1}]},{items:[{id:'seedplate',quantity:1}],price:1}])test(`reject tampering ${JSON.stringify(data)}`,()=>assert.throws(()=>quantity(data)));
@@ -47,4 +47,27 @@ test('live signed webhook requires matching event and retrieved session modes be
  const signature=Stripe.webhooks.generateTestHeaderString({payload,secret:configured.STRIPE_WEBHOOK_SECRET});
  await mockStripe(()=>({...paid,livemode:sessionMode}),async()=>{const r=await webhook({env:{...liveConfigured,ORDERS:db},request:new Request(env.SITE_URL,{method:'POST',headers:{'stripe-signature':signature},body:payload})});assert.equal(r.status,expected);assert.equal(recorded,expected===200);});
  }
+});
+
+for(const [field,value,code] of [
+ ['STRIPE_SECRET_KEY',undefined,'MISSING_STRIPE_SECRET_KEY'],
+ ['STRIPE_SECRET_KEY','private-invalid-fixture','INVALID_STRIPE_SECRET_KEY_FORMAT'],
+ ['STRIPE_WEBHOOK_SECRET','', 'MISSING_WEBHOOK_SECRET'],
+ ['STRIPE_PRICE_ID',undefined,'MISSING_PRICE_ID'],
+ ['STRIPE_PRICE_ID','private-price-fixture','INVALID_PRICE_ID_FORMAT'],
+ ['SITE_URL',undefined,'MISSING_SITE_URL'],
+ ...['invalid','https://example.com/path','https://example.com/?secret=fixture','https://example.com/#fixture','https://user:password@example.com','http://example.com'].map(value=>['SITE_URL',value,'INVALID_SITE_URL']),
+ ['ORDERS',undefined,'MISSING_ORDERS_BINDING']
+])test(`context returns only fixed diagnostic: ${code} ${field}`,async()=>{
+ const response=await context({env:{...liveConfigured,[field]:value},request:new Request(env.SITE_URL)});
+ assert.equal(response.status,503);assert.deepEqual(await response.json(),{error:code});assert.equal(response.headers.get('cache-control'),'no-store');
+});
+test('context accepts live and test configuration without exposing values',async()=>{
+ for(const settings of [configured,liveConfigured]){const response=await context({env:settings,request:new Request(env.SITE_URL)});assert.equal(response.status,200);assert.deepEqual(await response.json(),{ready:true});}
+ const response=await context({env:liveConfigured,request:new Request('https://other.example')});assert.equal(response.status,403);
+});
+test('context runtime exception cannot expose raw exception or credential values',async()=>{
+ const original=Stripe.createFetchHttpClient;
+ Stripe.createFetchHttpClient=()=>{throw Error('private-runtime-fixture');};
+ try{const response=await context({env:liveConfigured,request:new Request(env.SITE_URL)});assert.equal(response.status,503);assert.deepEqual(await response.json(),{error:'RUNTIME_ERROR'});}finally{Stripe.createFetchHttpClient=original;}
 });
