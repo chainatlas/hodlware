@@ -1,10 +1,10 @@
 import Stripe from 'stripe';
 export const APP='hodlware-sandbox-v1', PRICE=7900, SHIPPING=619;
 export function json(data,status=200,headers={}) { return new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...headers}}); }
-// Temporary diagnostics: fixed codes only, never values or exception messages.
+// Internal validation only; configuration details are never returned publicly.
 function configurationIssue(env) {
  if(!env.STRIPE_SECRET_KEY)return 'MISSING_STRIPE_SECRET_KEY';
- if(typeof env.STRIPE_SECRET_KEY!=='string' || !/^sk_(test|live)_/.test(env.STRIPE_SECRET_KEY))return 'INVALID_STRIPE_SECRET_KEY_FORMAT';
+ if(typeof env.STRIPE_SECRET_KEY!=='string' || !/^(sk|rk)_(test|live)_/.test(env.STRIPE_SECRET_KEY))return 'INVALID_STRIPE_SECRET_KEY_FORMAT';
  if(!env.STRIPE_WEBHOOK_SECRET)return 'MISSING_WEBHOOK_SECRET';
  if(!env.STRIPE_PRICE_ID)return 'MISSING_PRICE_ID';
  if(typeof env.STRIPE_PRICE_ID!=='string' || !env.STRIPE_PRICE_ID.startsWith('price_'))return 'INVALID_PRICE_ID_FORMAT';
@@ -19,7 +19,7 @@ function configurationIssue(env) {
 export function config(env) {
  if(configurationIssue(env))throw Error('configuration');
  const url=new URL(env.SITE_URL);
- return {stripe:new Stripe(env.STRIPE_SECRET_KEY,{httpClient:Stripe.createFetchHttpClient(),maxNetworkRetries:2}),origin:url.origin,livemode:env.STRIPE_SECRET_KEY.startsWith('sk_live_')};
+ return {stripe:new Stripe(env.STRIPE_SECRET_KEY,{httpClient:Stripe.createFetchHttpClient(),maxNetworkRetries:2}),origin:url.origin,livemode:/^(sk|rk)_live_/.test(env.STRIPE_SECRET_KEY)};
 }
 export function owner(req) { return /(?:^|;\s*)hwcheckout=([a-f0-9-]{36})(?:;|$)/.exec(req.headers.get('cookie')||'')?.[1]; }
 export async function digest(s) { return [...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))].map(x=>x.toString(16).padStart(2,'0')).join(''); }
@@ -49,10 +49,10 @@ export function verified(s,livemode=false) {
  return s.status==='complete' && s.payment_status==='paid' ? 'paid' : s.status==='expired'?'expired':'pending';
 }
 export async function context({request,env}) {
- try {const issue=configurationIssue(env);if(issue)return json({error:issue},503);
+ try {
  const {origin}=config(env); if(new URL(request.url).origin!==origin) return json({error:'Nicht verfügbar.'},403);
  const id=owner(request)||crypto.randomUUID(); return json({ready:true},200,{'Set-Cookie':`hwcheckout=${id}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000${origin.startsWith('https:')?'; Secure':''}`});
- }catch{return json({error:'RUNTIME_ERROR'},503);}
+ }catch{return json({error:'Der Checkout ist derzeit nicht verfügbar.'},503);}
 }
 export async function create({request,env}) {
  let c; try{c=config(env);}catch{return json({error:'Der Checkout ist derzeit nicht verfügbar.'},503);}

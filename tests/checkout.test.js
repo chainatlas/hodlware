@@ -58,9 +58,9 @@ for(const [field,value,code] of [
  ['SITE_URL',undefined,'MISSING_SITE_URL'],
  ...['invalid','https://example.com/path','https://example.com/?secret=fixture','https://example.com/#fixture','https://user:password@example.com','http://example.com'].map(value=>['SITE_URL',value,'INVALID_SITE_URL']),
  ['ORDERS',undefined,'MISSING_ORDERS_BINDING']
-])test(`context returns only fixed diagnostic: ${code} ${field}`,async()=>{
+])test(`context returns generic error for: ${code} ${field}`,async()=>{
  const response=await context({env:{...liveConfigured,[field]:value},request:new Request(env.SITE_URL)});
- assert.equal(response.status,503);assert.deepEqual(await response.json(),{error:code});assert.equal(response.headers.get('cache-control'),'no-store');
+ assert.equal(response.status,503);assert.deepEqual(await response.json(),{error:'Der Checkout ist derzeit nicht verfügbar.'});assert.equal(response.headers.get('cache-control'),'no-store');
 });
 test('context accepts live and test configuration without exposing values',async()=>{
  for(const settings of [configured,liveConfigured]){const response=await context({env:settings,request:new Request(env.SITE_URL)});assert.equal(response.status,200);assert.deepEqual(await response.json(),{ready:true});}
@@ -69,5 +69,15 @@ test('context accepts live and test configuration without exposing values',async
 test('context runtime exception cannot expose raw exception or credential values',async()=>{
  const original=Stripe.createFetchHttpClient;
  Stripe.createFetchHttpClient=()=>{throw Error('private-runtime-fixture');};
- try{const response=await context({env:liveConfigured,request:new Request(env.SITE_URL)});assert.equal(response.status,503);assert.deepEqual(await response.json(),{error:'RUNTIME_ERROR'});}finally{Stripe.createFetchHttpClient=original;}
+ try{const response=await context({env:liveConfigured,request:new Request(env.SITE_URL)});assert.equal(response.status,503);assert.deepEqual(await response.json(),{error:'Der Checkout ist derzeit nicht verfügbar.'});}finally{Stripe.createFetchHttpClient=original;}
+});
+
+for(const mode of ['live','test'])test(`restricted ${mode} key preserves mode validation (simulated Stripe)`,async()=>{
+ const settings={...configured,STRIPE_SECRET_KEY:`rk_${mode}_unit_test_only`};const live=mode==='live';
+ assert.equal(config(settings).livemode,live);
+ const response=await context({env:settings,request:new Request(env.SITE_URL)});assert.equal(response.status,200);assert.deepEqual(await response.json(),{ready:true});
+ assert.equal(verified({...paid,livemode:live},config(settings).livemode),'paid');assert.throws(()=>verified({...paid,livemode:!live},config(settings).livemode));
+ for(const [priceMode,sessionMode,expected] of [[live,live,200],[!live,live,503],[live,!live,503]])await mockStripe(url=>url.includes('/prices/')?{livemode:priceMode,active:true,currency:'eur',unit_amount:7900,type:'one_time',recurring:null}:{id:`cs_${mode}_example123`,livemode:sessionMode,url:`https://checkout.stripe.com/c/pay/cs_${mode}_example123`},async()=>{
+ assert.equal((await create({env:settings,request:request('/api/create-checkout-session',{items:[{id:'seedplate',quantity:1}]})})).status,expected);
+ });
 });
