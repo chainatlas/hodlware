@@ -1,7 +1,7 @@
 (() => {
 const title=document.querySelector('[data-result-title]');if(!title)return;
 const message=document.querySelector('[data-result-message]'),summary=document.querySelector('[data-order-summary]'),invoice=document.querySelector('[data-invoice]'),retry=document.querySelector('[data-recheck]');
-const badge=document.querySelector('[data-test-badge]'),successIcon=document.querySelector('[data-success-icon]'),confirmedCopy=document.querySelector('[data-confirmed-copy]');
+const successIcon=document.querySelector('[data-success-icon]'),confirmedCopy=document.querySelector('[data-confirmed-copy]');
 const productList=document.querySelector('[data-order-products]');
 function renderProducts(data){
  // The existing single-product API allowlists seedplate. Future verified item
@@ -23,11 +23,8 @@ async function check(){retry.disabled=true;try{
  const response=await fetch('/api/checkout-status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId})});const data=await response.json();if(!response.ok)throw Error(data.error||'Status nicht verfügbar.');
  if(data.state!=='paid'){title.textContent='Zahlung noch nicht bestätigt.';message.textContent='Bei verzögerten Zahlungsarten kann die Bestätigung später eintreffen. Bitte prüfe den Status erneut.';return;}
  title.textContent='Vielen Dank für deine Bestellung.';
- // This API currently verifies sandbox sessions only; a future live response
- // must explicitly supply livemode=true. Never infer mode from browser storage.
- const live=data.livemode===true;
- message.textContent=live?'Deine Zahlung wurde erfolgreich bestätigt.':'Deine Testzahlung wurde erfolgreich von Stripe bestätigt.';
- badge.hidden=live;successIcon.hidden=false;confirmedCopy.hidden=false;retry.hidden=true;
+ message.textContent='Deine Zahlung wurde erfolgreich bestätigt.';
+ successIcon.hidden=false;confirmedCopy.hidden=false;retry.hidden=true;
  renderProducts(data);summary.replaceChildren();summary.hidden=false;
  for(const [label,value] of [['Zwischensumme',euro(data.subtotal/100)],['Rabatt',euro(data.discount/100)],['DHL Versand',euro(data.shipping/100)],['Gesamt',euro(data.total/100)]]){const row=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');if(label==='Gesamt')row.className='confirmation-total';dt.textContent=label;dd.textContent=value;row.append(dt,dd);summary.append(row);}
  if(data.invoiceUrl){invoice.href=data.invoiceUrl;invoice.hidden=false;}

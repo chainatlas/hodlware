@@ -2,7 +2,7 @@
 const panel=document.getElementById('drawer');
 panel.querySelector('h3').remove();panel.querySelector('.disabled').remove();
 const controls=document.createElement('div');controls.className='checkout-controls';
-controls.innerHTML=`<dl><div><dt>Zwischensumme</dt><dd data-subtotal></dd></div><div><dt>DHL Versand · Deutschland</dt><dd data-shipping></dd></div><div><dt>Gesamt</dt><dd id="total"></dd></div></dl><p>Preise gemäß § 19 UStG ohne Ausweis der Umsatzsteuer.</p><p><a href="agb.html">AGB</a> · <a href="widerruf.html">Widerruf</a> · <a href="datenschutz.html">Datenschutz</a> · <a href="versand-zahlung.html">Versand &amp; Zahlung</a></p><p>Stripe-Testmodus – keine echte Zahlung. Gutscheine können bei Stripe eingegeben werden.</p><button type="button" class="checkout-start">Zur Kasse →</button><p class="checkout-message" role="status"></p>`;
+controls.innerHTML=`<dl><div><dt>Zwischensumme</dt><dd data-subtotal></dd></div><div><dt>DHL Versand · Deutschland</dt><dd data-shipping></dd></div><div><dt>Gesamt</dt><dd id="total"></dd></div></dl><p>Preise gemäß § 19 UStG ohne Ausweis der Umsatzsteuer.</p><p><a href="agb.html">AGB</a> · <a href="widerruf.html">Widerruf</a> · <a href="datenschutz.html">Datenschutz</a> · <a href="versand-zahlung.html">Versand &amp; Zahlung</a></p><p>Gutscheine können bei Stripe eingegeben werden.</p><button type="button" class="checkout-start">Zur Kasse →</button><p class="checkout-message" role="status"></p>`;
 panel.append(controls);
 const button=controls.querySelector('button'),message=controls.querySelector('.checkout-message');let busy=false;
 function render(){
@@ -15,9 +15,9 @@ function render(){
 }
 window.addEventListener('hwcartchange',render);render();
 button.onclick=async()=>{
- if(busy||!cart.length)return;busy=true;render();message.textContent='Test-Checkout wird geöffnet …';
+ if(busy||!cart.length)return;busy=true;render();message.textContent='Checkout wird geöffnet …';
  try{
-  const context=await fetch('/api/checkout-context',{cache:'no-store'});if(!context.ok)throw Error('Der Test-Checkout ist noch nicht eingerichtet.');
+  const context=await fetch('/api/checkout-context',{cache:'no-store'});if(!context.ok)throw Error('Der Checkout ist derzeit nicht verfügbar.');
   const n=cart.length;let previous;try{previous=JSON.parse(sessionStorage.getItem('hwcheckout-attempt'));}catch{}
   const attempt=previous?.quantity===n && Date.now()-previous.createdAt<1800000?previous:{quantity:n,key:crypto.randomUUID(),createdAt:Date.now()};
   sessionStorage.setItem('hwcheckout-attempt',JSON.stringify(attempt));

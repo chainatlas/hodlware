@@ -8,7 +8,7 @@ test('only confirmed payment succeeds',()=>{assert.equal(verified(paid),'paid');
 test('verified Stripe discount excludes shipping',()=>assert.equal(verified({...paid,amount_total:14839,total_details:{...paid.total_details,amount_discount:1580}}),'paid'));
 test('reject foreign shipping and incorrect totals',()=>{assert.throws(()=>verified({...paid,collected_information:{shipping_details:{address:{country:'AT'}}}}));assert.throws(()=>verified({...paid,amount_total:1}));});
 test('Origin and JSON required',async()=>{await assert.rejects(body(new Request(env.SITE_URL,{method:'POST',headers:{origin:'https://evil.example','content-type':'application/json'},body:'{}'}),env.SITE_URL));});
-test('missing configuration and live keys fail closed',async()=>{assert.throws(()=>config({}));assert.throws(()=>config({STRIPE_SECRET_KEY:'sk_live_example'}));assert.equal((await create({env:{},request:new Request(env.SITE_URL)})).status,503);assert.equal((await status({env:{},request:new Request(env.SITE_URL)})).status,503);});
+test('missing and incomplete configuration fail closed',async()=>{assert.throws(()=>config({}));assert.throws(()=>config({STRIPE_SECRET_KEY:'sk_live_example'}));assert.equal((await create({env:{},request:new Request(env.SITE_URL)})).status,503);assert.equal((await status({env:{},request:new Request(env.SITE_URL)})).status,503);});
 test('official SDK signature validates; modified payload rejected',async()=>{const secret='whsec_unit_test_only';const payload=JSON.stringify({id:'evt_test',livemode:false});const signature=Stripe.webhooks.generateTestHeaderString({payload,secret});assert.equal((await Stripe.webhooks.constructEventAsync(payload,signature,secret,300,Stripe.createSubtleCryptoProvider())).id,'evt_test');await assert.rejects(Stripe.webhooks.constructEventAsync(payload+' ',signature,secret,300,Stripe.createSubtleCryptoProvider()));});
 test('webhook rejects forged signature before processing',async()=>{const response=await webhook({env:{...env,STRIPE_SECRET_KEY:'sk_test_unit_test_only',STRIPE_WEBHOOK_SECRET:'whsec_unit_test_only',ORDERS:{}},request:new Request(env.SITE_URL,{method:'POST',body:'{}',headers:{'stripe-signature':'forged'}})});assert.equal(response.status,400);});
 test('atomic ledger handles duplicate events, retry and out-of-order payment',async()=>{const sqlite=new DatabaseSync(':memory:');sqlite.exec(readFileSync(new URL('../migrations/0001_checkout.sql',import.meta.url),'utf8'));const db={prepare(sql){return {bind(...args){return ()=>sqlite.prepare(sql).run(...args);}}},async batch(statements){sqlite.exec('BEGIN');try{for(const statement of statements)statement();sqlite.exec('COMMIT');}catch(error){sqlite.exec('ROLLBACK');throw error;}}};await record(db,{id:'evt_1'},paid,'pending');await record(db,{id:'evt_2'},paid,'paid');await record(db,{id:'evt_2'},paid,'paid');await record(db,{id:'evt_1'},paid,'pending');assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM checkout_orders').get().n,1);assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM checkout_events').get().n,2);assert.equal(sqlite.prepare('SELECT state FROM checkout_orders').get().state,'paid');sqlite.close();});
@@ -21,3 +21,30 @@ test('checkout handler sends only server catalog and fixed shipping to SDK (simu
 test('price injection rejected before Stripe call',async()=>{await mockStripe(()=>{throw Error('Must not call Stripe');},async()=>{assert.equal((await create({env:configured,request:request('/api/create-checkout-session',{items:[{id:'seedplate',quantity:1,price:1}]})})).status,400);});});
 test('paid status returns minimal verified data and rejects another owner (simulated Stripe)',async()=>{const {digest}=await import('../server/checkout.js');const hash=await digest(cookie);await mockStripe(()=>({...paid,metadata:{...paid.metadata,owner:hash},customer_details:{email:'not-returned@example.invalid'},invoice:{hosted_invoice_url:'https://invoice.stripe.com/i/test'}}),async()=>{const response=await status({env:configured,request:request('/api/checkout-status',{sessionId:'cs_test_example123'})});assert.equal(response.status,200);const data=await response.json();assert.equal(data.state,'paid');assert.equal(data.total,16419);assert.equal(data.customer_details,undefined);assert.equal(data.invoiceUrl,'https://invoice.stripe.com/i/test');});await mockStripe(()=>({...paid,metadata:{...paid.metadata,owner:'different'}}),async()=>{assert.equal((await status({env:configured,request:request('/api/checkout-status',{sessionId:'cs_test_example123'})})).status,404);});});
 test('signed webhook failure returns retryable response (simulated Stripe)',async()=>{const event={id:'evt_retry',livemode:false,type:'checkout.session.async_payment_succeeded',data:{object:paid}};const payload=JSON.stringify(event);const signature=Stripe.webhooks.generateTestHeaderString({payload,secret:configured.STRIPE_WEBHOOK_SECRET});await mockStripe(()=>paid,async()=>{const response=await webhook({env:configured,request:new Request(env.SITE_URL,{method:'POST',headers:{'stripe-signature':signature},body:payload})});assert.equal(response.status,503);});});
+
+const liveConfigured={...configured,STRIPE_SECRET_KEY:'sk_live_unit_test_only'};
+test('configured mode is derived from server key; sessions must match',()=>{
+ assert.equal(config(liveConfigured).livemode,true);assert.equal(config(configured).livemode,false);
+ assert.throws(()=>config({...configured,STRIPE_SECRET_KEY:'invalid'}));
+ assert.equal(verified({...paid,livemode:true},true),'paid');assert.throws(()=>verified(paid,true));
+});
+for(const [priceMode,sessionMode,expected] of [[true,true,200],[false,true,503],[true,false,503]])test(`live checkout mode matching ${priceMode}/${sessionMode}`,async()=>{
+ await mockStripe(url=>url.includes('/prices/')?{livemode:priceMode,active:true,currency:'eur',unit_amount:7900,type:'one_time',recurring:null}:{id:'cs_live_example123',livemode:sessionMode,url:'https://checkout.stripe.com/c/pay/cs_live_example123'},async()=>{
+ assert.equal((await create({env:liveConfigured,request:request('/api/create-checkout-session',{items:[{id:'seedplate',quantity:1}]})})).status,expected);
+ });
+});
+test('live status verifies session and rejects test IDs and mode mismatch',async()=>{
+ const {digest}=await import('../server/checkout.js');const hash=await digest(cookie);
+ for(const mode of [true,false])await mockStripe(()=>({...paid,livemode:mode,metadata:{...paid.metadata,owner:hash}}),async()=>{
+ const r=await status({env:liveConfigured,request:request('/api/checkout-status',{sessionId:'cs_live_example123'})});assert.equal(r.status,mode?200:503);if(mode)assert.equal((await r.json()).state,'paid');
+ });
+ await mockStripe(()=>{throw Error('Must not call Stripe');},async()=>{assert.equal((await status({env:liveConfigured,request:request('/api/checkout-status',{sessionId:'cs_test_example123'})})).status,400);});
+});
+test('live signed webhook requires matching event and retrieved session modes before recording',async()=>{
+ for(const [eventMode,sessionMode,expected] of [[true,true,200],[false,true,400],[true,false,503]]){
+ let recorded=false;const db={prepare(){return {bind(){return {};}}},async batch(){recorded=true;}};
+ const payload=JSON.stringify({id:'evt_live_fixture',livemode:eventMode,type:'checkout.session.completed',data:{object:paid}});
+ const signature=Stripe.webhooks.generateTestHeaderString({payload,secret:configured.STRIPE_WEBHOOK_SECRET});
+ await mockStripe(()=>({...paid,livemode:sessionMode}),async()=>{const r=await webhook({env:{...liveConfigured,ORDERS:db},request:new Request(env.SITE_URL,{method:'POST',headers:{'stripe-signature':signature},body:payload})});assert.equal(r.status,expected);assert.equal(recorded,expected===200);});
+ }
+});
