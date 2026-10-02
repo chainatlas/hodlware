@@ -46,3 +46,5 @@ temp/
 *.bak
 playwright-report/
 test-results/
+!.dev.vars.example
+wrangler.jsonc

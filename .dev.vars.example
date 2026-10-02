@@ -1,0 +1,5 @@
+# Copy to ignored .dev.vars locally; NEVER use live keys or paste real secrets in chat.
+STRIPE_SECRET_KEY=""
+STRIPE_WEBHOOK_SECRET=""
+STRIPE_PRICE_ID=""
+SITE_URL="http://127.0.0.1:8788"

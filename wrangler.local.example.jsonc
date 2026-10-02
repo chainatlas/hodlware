@@ -1,0 +1,12 @@
+{
+  "name": "hodlware-local",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-09-30",
+  "d1_databases": [
+    {
+      "binding": "ORDERS",
+      "database_name": "hodlware-checkout-test",
+      "database_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ]
+}
