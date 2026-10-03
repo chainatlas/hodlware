@@ -26,3 +26,21 @@ if (detailPrice) {
     document.querySelector('.detail-feedback').textContent = 'Zum Warenkorb hinzugefügt.';
   });
 }
+
+// Enlarged view of the currently selected product photo.
+const galleryImages=document.querySelectorAll('.product-gallery .gallery-main');
+if(galleryImages.length){
+ const lightbox=document.createElement('dialog');lightbox.className='product-lightbox';lightbox.setAttribute('aria-label','Vergrößerte Produktansicht');
+ const close=document.createElement('button');close.type='button';close.className='lightbox-close';close.textContent='×';close.setAttribute('aria-label','Bildansicht schließen');
+ const enlarged=document.createElement('img');lightbox.append(close,enlarged);document.body.append(lightbox);
+ let previousOverflow='';
+ close.addEventListener('click',()=>lightbox.close());
+ lightbox.addEventListener('click',event=>{if(event.target===lightbox)lightbox.close();});
+ lightbox.addEventListener('close',()=>{document.body.style.overflow=previousOverflow;});
+ for(const image of galleryImages){
+  image.tabIndex=0;image.setAttribute('role','button');image.setAttribute('aria-label','Produktbild vergrößern');image.setAttribute('aria-haspopup','dialog');
+  const open=()=>{enlarged.src=image.currentSrc||image.src;enlarged.alt=image.alt;previousOverflow=document.body.style.overflow;lightbox.showModal();document.body.style.overflow='hidden';close.focus();};
+  image.addEventListener('click',open);
+  image.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open();}});
+ }
+}

@@ -173,4 +173,11 @@ footer.compact-footer{padding:22px max(24px,calc((100vw - 1152px)/2));line-heigh
 .gallery-thumb{flex:0 0 72px;background:#000}
 #shop .visual,#shop .visual img,.product-detail .gallery-main{background:#000}
 .product-detail .gallery-main{height:auto;aspect-ratio:4/3;object-fit:contain}
-.hero-product img{mask-image:none;-webkit-mask-image:none}
+
+.product-gallery .gallery-main{cursor:zoom-in}
+.product-gallery .gallery-main:focus-visible{outline:2px solid #ff8a00;outline-offset:4px}
+.product-lightbox{box-sizing:border-box;width:min(1200px,96vw);max-width:96vw;max-height:94dvh;padding:52px 16px 16px;border:1px solid #555;border-radius:14px;background:#080a0a;color:#fff;overflow:auto}
+.product-lightbox::backdrop{background:rgba(0,0,0,.88)}
+.product-lightbox img{display:block;width:100%;height:calc(90dvh - 80px);object-fit:contain}
+.lightbox-close{position:absolute;top:8px;right:10px;width:40px;height:40px;padding:0;border:1px solid #ff8a00;border-radius:50%;background:#171a1a;color:#ff8a00;font-size:28px;cursor:pointer}
+.lightbox-close:focus-visible{outline:2px solid white;outline-offset:2px}
