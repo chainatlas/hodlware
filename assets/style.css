@@ -181,3 +181,6 @@ footer.compact-footer{padding:22px max(24px,calc((100vw - 1152px)/2));line-heigh
 .product-lightbox img{display:block;width:100%;height:calc(90dvh - 80px);object-fit:contain}
 .lightbox-close{position:absolute;top:8px;right:10px;width:40px;height:40px;padding:0;border:1px solid #ff8a00;border-radius:50%;background:#171a1a;color:#ff8a00;font-size:28px;cursor:pointer}
 .lightbox-close:focus-visible{outline:2px solid white;outline-offset:2px}
+
+/* Hero social link. */
+.hero-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px}.hero-actions .cta{margin-top:0}.hero-instagram{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;flex:0 0 48px;color:#ff8a00;border:1px solid #ff8a00;border-radius:5px;transition:background .15s,color .15s}.hero-instagram:hover{background:#ff8a00;color:#111}.hero-instagram:focus-visible{outline:2px solid #fff;outline-offset:4px}
