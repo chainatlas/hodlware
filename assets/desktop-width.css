@@ -1,0 +1,13 @@
+/* Approved homepage desktop composition; tablet/mobile styles remain intact. */
+@media(min-width:1201px){
+ header,.mission,.head,.products,.info,.split{width:min(92vw,1400px);max-width:1400px;padding-left:0;padding-right:0}
+ .hero{width:min(94vw,1500px);max-width:1500px;min-height:620px;padding:80px max(0px,calc((min(94vw,1500px) - min(92vw,1400px))/2));padding-right:0;grid-template-columns:minmax(0,40fr) minmax(0,60fr);gap:32px}
+ .hero h1{font-size:clamp(60px,4.4vw,72px)}
+ .hero p{max-width:550px}
+ .mission p{max-width:680px}
+ #shop .product{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}
+ #shop .copy{padding:clamp(32px,3vw,48px)}
+ #shop .copy p,.split p{max-width:680px}
+ .faq{width:min(92vw,1400px);max-width:1400px}.faq p{max-width:680px}
+ footer.compact-footer{padding-inline:max(4vw,calc((100vw - 1400px)/2))}
+}
