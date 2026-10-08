@@ -199,3 +199,9 @@ footer.compact-footer{padding:22px max(24px,calc((100vw - 1152px)/2));line-heigh
 
 /* Softly blend the ember hero backdrop into the page. */
 .hero-product img[src*="steel-recovery-ember-hero"]{mask-image:linear-gradient(to right,transparent,#000 3%,#000 97%,transparent),linear-gradient(to bottom,transparent,#000 3%,#000 97%,transparent);mask-composite:intersect;-webkit-mask-image:linear-gradient(to right,transparent,#000 3%,#000 97%,transparent),linear-gradient(to bottom,transparent,#000 3%,#000 97%,transparent);-webkit-mask-composite:source-in}
+
+/* Approved studio hero with seamless dark background. */
+.hero-product{mix-blend-mode:screen;position:relative;margin:0}
+.hero-product img{object-fit:contain;-webkit-box-reflect:none;mask-image:linear-gradient(to right,transparent,#000 7%,#000 94%,transparent),linear-gradient(to bottom,transparent,#000 4%,#000 94%,transparent);mask-composite:intersect;-webkit-mask-image:linear-gradient(to right,transparent,#000 7%,#000 94%,transparent),linear-gradient(to bottom,transparent,#000 4%,#000 94%,transparent);-webkit-mask-composite:source-in}
+#home{scroll-margin-top:76px}
+@media(max-width:800px){.hero{gap:28px}}
