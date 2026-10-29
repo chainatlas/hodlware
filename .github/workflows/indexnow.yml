@@ -1,0 +1,23 @@
+name: IndexNow production notification
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write # Only scripts/indexnow-submit.mjs writes the separate state branch.
+concurrency:
+  group: indexnow-production
+  cancel-in-progress: false
+jobs:
+  notify:
+    if: github.repository == 'chainatlas/hodlware' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Verify production deployment and notify changed public URLs
+        run: node scripts/indexnow-submit.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
