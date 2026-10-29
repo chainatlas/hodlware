@@ -87,3 +87,6 @@
 #shop #products .gallery-prev,#shop #products .gallery-next{border:1px solid #ffffff40;background:#171d20cb;box-shadow:0 2px 7px #0002}
 #shop .variant-badge{background:#151a1df0;border-color:#ff6500bb}
 @media(max-width:460px){#shop #products .product{padding:7px}#shop #products .copy{padding:13px 8px 9px}}
+
+/* Keep compact product features readable on narrow phones. */
+@media(max-width:460px){#shop #products .product-features li{white-space:normal}#shop #products .product-features span{min-width:0}}
