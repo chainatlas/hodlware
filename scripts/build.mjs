@@ -19,9 +19,11 @@ await writeFile('dist/_headers','/sitemap.xml\n  Content-Type: application/xml; 
 const scripts=['app.js','checkout.js','checkout-result.js','products.js','forms.js'];
 const version=createHash('sha256');
 for(const file of scripts)version.update(await readFile(`assets/${file}`));
+version.update(await readFile('assets/shop-products.css'));
 const revision=version.digest('hex').slice(0,16);
 for(const file of [...guides,'kontakt.html','index.html','impressum.html','datenschutz.html','widerruf.html','agb.html','versand.html','versand-zahlung.html','steel-seed-phrase-recovery.html','steel-seed-phrase-recovery-plate.html','checkout-success.html','checkout-cancel.html','assets/app.js']){
  const path=`dist/${file}`;let source=await readFile(path,'utf8');
+ source=source.replaceAll('assets/shop-products.css','assets/shop-products.css?v='+revision);
  for(const script of scripts)source=source.replaceAll(`assets/${script}`,`assets/${script}?v=${revision}`);
  await writeFile(path,source);
 }
