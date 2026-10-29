@@ -1,1 +1,37 @@
-{}
+{
+  "version": 1,
+  "commit": "ffbf5f435ac25776ba71ecbf1a604aa82b0b2895",
+  "pages": {
+    "https://hodlware.de/": "f7bb60f7e50333ddc64367a9eaf5cae3f9a1e4ac24d45898d5de35bd5d284a3e",
+    "https://hodlware.de/agb": "2ca2d3a4d416148cc8789cbdfe7e6ba5519f3f7897c3a313a1873b55dd5f7cf0",
+    "https://hodlware.de/datenschutz": "b7705e6744de103f3ebcb9c7b4498139c7bccf69477b6991b1cf1454784ff04e",
+    "https://hodlware.de/impressum": "286e1fbcdb0b190c4883b59be2a9ddf6c46d276bbd7692b8b29d69f7dfacb034",
+    "https://hodlware.de/kontakt": "fd16611f79c37e35af67b3c23e4d7ccac463a8a3061ba20a9f4b4e499b212512",
+    "https://hodlware.de/ratgeber/seed-phrase-auf-metall-sichern": "e13dfade0895111f35ac13404d56aeb901f56763f81e40a994c3ab2159bd0889",
+    "https://hodlware.de/ratgeber/seed-phrase-papier-oder-metall": "bc35f851082f53922a780e73dce8da916e07a355c7d1e21b5be69a364f38936d",
+    "https://hodlware.de/ratgeber/seed-phrase-sicher-aufbewahren": "6793e203246a6c441d8a368b0de0779ef26ce674b29900b87974e5f1f3ec5843",
+    "https://hodlware.de/steel-seed-phrase-recovery": "726e12b0ae037afef0372792ae113ee0c6aac9c45327bf129a0bd72a54695c9c",
+    "https://hodlware.de/steel-seed-phrase-recovery-plate": "0d714a50340c10d9478ff6ddc439097ea6fcf856a6959188619f9a8ffa534ebc",
+    "https://hodlware.de/versand-zahlung": "6c2f3866f50c768e10bb75497bd79c6eff725c528329c64deaf6308469d8af39",
+    "https://hodlware.de/widerruf": "61de24524013a6263712092251e7995d282f05e616ad14a75a8244c7911318f6"
+  },
+  "lastSubmission": {
+    "commit": "ffbf5f435ac25776ba71ecbf1a604aa82b0b2895",
+    "httpStatus": 202,
+    "urls": [
+      "https://hodlware.de/",
+      "https://hodlware.de/agb",
+      "https://hodlware.de/datenschutz",
+      "https://hodlware.de/impressum",
+      "https://hodlware.de/kontakt",
+      "https://hodlware.de/ratgeber/seed-phrase-auf-metall-sichern",
+      "https://hodlware.de/ratgeber/seed-phrase-papier-oder-metall",
+      "https://hodlware.de/ratgeber/seed-phrase-sicher-aufbewahren",
+      "https://hodlware.de/steel-seed-phrase-recovery",
+      "https://hodlware.de/steel-seed-phrase-recovery-plate",
+      "https://hodlware.de/versand-zahlung",
+      "https://hodlware.de/widerruf"
+    ],
+    "checkedAt": "2026-10-29T22:16:24.434Z"
+  }
+}
