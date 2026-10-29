@@ -1,0 +1,28 @@
+# Canonical Pages configuration; values copied from the verified production runtime.
+name = "hodlware"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-10-01"
+
+# Preview deployments cannot send mail or offer the new product.
+[vars]
+COMMUNICATIONS_ENABLED = "false"
+MAIL_WORKER_READY = "false"
+FORMS_ENABLED = "false"
+ORDER_EMAILS_ENABLED = "false"
+PLATE4_ENABLED = "false"
+
+[env.production.vars]
+COMMUNICATIONS_ENABLED = "true"
+FORMS_ENABLED = "true"
+MAIL_FROM = "bestellungen@hodlware.de"
+MAIL_WORKER_READY = "true"
+ORDER_EMAILS_ENABLED = "true"
+SITE_URL = "https://hodlware.de"
+STRIPE_PRICE_ID = "price_1UMDhLIPPGFjbWPM1Ft7mqyQ"
+STRIPE_PRICE_ID_PLATE4 = "price_1UVdhGIPPGFjbWPMAO5IFnFA"
+PLATE4_ENABLED = "false"
+
+[[env.production.d1_databases]]
+database_id = "54fc8940-9c37-4f90-96d8-9921cfd100f8"
+binding = "ORDERS"
+database_name = "hodlware-orders"

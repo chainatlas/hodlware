@@ -4,8 +4,7 @@ const message=document.querySelector('[data-result-message]'),summary=document.q
 const successIcon=document.querySelector('[data-success-icon]'),confirmedCopy=document.querySelector('[data-confirmed-copy]');
 const productList=document.querySelector('[data-order-products]');
 function renderProducts(data){
- // The existing single-product API allowlists seedplate. Future verified item
- // IDs can reuse this renderer; catalog data supplies names/images, never totals.
+ // Verified server item IDs select catalog photos; totals come only from Stripe.
  const items=Array.isArray(data.items)?data.items:[{id:'seedplate',quantity:data.quantity}];
  productList.replaceChildren();
  for(const item of items){
@@ -24,11 +23,12 @@ async function check(){retry.disabled=true;try{
  if(data.state!=='paid'){title.textContent='Zahlung noch nicht bestätigt.';message.textContent='Bei verzögerten Zahlungsarten kann die Bestätigung später eintreffen. Bitte prüfe den Status erneut.';return;}
  title.textContent='Vielen Dank für deine Bestellung.';
  message.textContent='Deine Zahlung wurde erfolgreich bestätigt.';
+ const emailStatus=document.querySelector('[data-email-status]');if(emailStatus)emailStatus.textContent=data.confirmationQueued?'Deine Bestellbestätigung wird per E-Mail versendet.':'Bei Fragen zu deiner Bestellung kontaktiere uns bitte per E-Mail.';
  successIcon.hidden=false;confirmedCopy.hidden=false;retry.hidden=true;
  renderProducts(data);summary.replaceChildren();summary.hidden=false;
  for(const [label,value] of [['Zwischensumme',euro(data.subtotal/100)],['Rabatt',euro(data.discount/100)],['DHL Versand',euro(data.shipping/100)],['Gesamt',euro(data.total/100)]]){const row=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');if(label==='Gesamt')row.className='confirmation-total';dt.textContent=label;dd.textContent=value;row.append(dt,dd);summary.append(row);}
  if(data.invoiceUrl){invoice.href=data.invoiceUrl;invoice.hidden=false;}
- try{const attempt=JSON.parse(sessionStorage.getItem('hwcheckout-attempt'));if(attempt?.sessionId===sessionId && attempt.quantity===data.quantity && cart.length===data.quantity){cart=[];save();}if(attempt?.sessionId===sessionId)sessionStorage.removeItem('hwcheckout-attempt');}catch{}
+ try{const attempt=JSON.parse(sessionStorage.getItem('hwcheckout-attempt'));if(attempt?.sessionId===sessionId && ((attempt.fingerprint && attempt.fingerprint===JSON.stringify(cartItems()) && attempt.fingerprint===JSON.stringify(data.items.map(({id,quantity})=>({id,quantity})))) || (!attempt.fingerprint && attempt.quantity===data.quantity && cart.every(id=>id==='seedplate') && cart.length===data.quantity))){cart=[];save();}if(attempt?.sessionId===sessionId)sessionStorage.removeItem('hwcheckout-attempt');}catch{}
  }catch(error){title.textContent='Zahlung nicht bestätigt.';message.textContent=error.message;}finally{retry.disabled=false;}}
 retry.onclick=check;check();
 })();

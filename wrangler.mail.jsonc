@@ -1,0 +1,21 @@
+{
+  "name": "hodlware-mail-worker",
+  "main": "workers/mail-worker.js",
+  "compatibility_date": "2026-09-30",
+  "triggers": {
+    "crons": [
+      "* * * * *"
+    ]
+  },
+  "vars": {
+    "COMMUNICATIONS_ENABLED": "true",
+    "MAIL_FROM": "bestellungen@hodlware.de"
+  },
+  "d1_databases": [
+    {
+      "binding": "ORDERS",
+      "database_name": "hodlware-orders",
+      "database_id": "54fc8940-9c37-4f90-96d8-9921cfd100f8"
+    }
+  ]
+}

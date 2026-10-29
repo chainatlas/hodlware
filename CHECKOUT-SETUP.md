@@ -1,3 +1,5 @@
+> HISTORISCHER SANDBOX-STAND: Die folgenden Angaben vom 02.10.2026 sind teilweise überholt (Live/restricted Keys sind inzwischen unterstützt). Aktuelle Bestandsaufnahme und neue, noch nicht aktivierte Kommunikation: siehe LEGAL-TECHNICAL-REVIEW.md. Keine bestehenden lokalen Konfigurationsdateien überschreiben.
+
 # HODLWARE – Stripe Sandbox Integration
 
 Stand: 02.10.2026. Ausschließlich lokal implementiert; nicht committed, gepusht oder deployed. Noch keine Freigabe für echten Verkauf. Reale Sandbox-End-to-End-Tests sind offen, weil keine Sandbox-Zugangsdaten/Price-ID/Webhook-Konfiguration bereitstehen.

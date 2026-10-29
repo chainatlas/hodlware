@@ -1,0 +1,89 @@
+/* Homepage product cards only. Detail pages and checkout styles are unchanged. */
+#shop{background:radial-gradient(ellipse at 92% 8%,#252a2c80,transparent 42%),#0b0d0e;scroll-margin-top:90px}
+#shop .head{width:min(92%,1400px);max-width:1400px;padding:64px 0 28px;margin:auto}
+#shop .head small{color:#ff6500;font-size:13px;letter-spacing:2px}
+#shop .head h2{font-size:clamp(30px,3.4vw,50px);line-height:1.12;letter-spacing:-1.3px;margin:16px 0}
+#shop .head p{color:#b7babc;font-size:clamp(16px,1.5vw,21px);line-height:1.55;margin:0;max-width:900px}
+#shop #products{width:min(92%,1400px);max-width:1400px;margin:auto;padding:0 0 64px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:stretch}
+#shop #products .product{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr auto;gap:0;min-width:0;padding:14px;border:1px solid #42494c;border-radius:20px;background:linear-gradient(145deg,#1b1f21,#0f1314 78%);overflow:hidden;box-shadow:0 16px 40px #0002}
+#shop #products .visual{position:relative;display:grid;place-items:center;width:100%;height:auto;aspect-ratio:3/2;border:0;border-radius:12px;background:transparent;overflow:hidden}
+#shop #products .visual img{width:100%;height:100%;object-fit:contain;aspect-ratio:auto;margin:0;background:transparent;border-radius:0}
+#shop .variant-badge{position:absolute;z-index:1;top:14px;left:14px;border:1px solid #ff6500;border-radius:7px;background:#0b0d0ef2;color:#ff6500;font-size:14px;font-weight:700;letter-spacing:1.4px;padding:8px 12px;pointer-events:none}
+#shop #products .copy{display:flex;flex-direction:column;min-width:0;padding:20px 12px 16px;border:0;background:none}
+#shop #products h3{font-size:clamp(23px,2.05vw,32px);line-height:1.17;letter-spacing:-.7px;margin:0 0 14px;min-height:2.34em}
+#shop #products .product-description{font-size:16px;line-height:1.6;min-height:4.8em;margin:0 0 20px;color:#bcc1c3}
+#shop #products .product-features{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:0;margin:0 0 20px;border:0;list-style:none;min-height:62px}
+#shop #products .product-features li{display:flex;align-items:center;gap:10px;font-size:14px;line-height:1.45;color:#d3d6d7;min-width:0}
+#shop .product-features .line-icon{color:#ff6500;width:28px;height:30px;flex:0 0 28px}
+#shop #products .product-details-link{align-self:flex-start;color:#ff6500;font-size:14px;margin:0 0 16px}
+#shop #products .delivery-note{font-size:12px!important;line-height:1.6;min-height:0;margin:0;color:#9ca3a6}
+#shop #products .product-availability{font-size:13px;min-height:22px;line-height:22px;margin:10px 0;color:#c6cbcd}
+#shop #products .buy{margin-top:auto;padding-top:18px;border-top:1px solid #3a4144;display:flex;align-items:center;justify-content:space-between;gap:12px}
+#shop #products .buy b{font-size:32px;white-space:nowrap;letter-spacing:-1px}
+#shop #products .add{background:#ff6500;color:#0b0d0e;min-height:52px;padding:14px 20px;border:0;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:15px}
+#shop #products .add:hover:not(:disabled){background:#ff7b24}#shop #products .add:disabled{background:#313638;color:#a2a8ab;cursor:not-allowed}
+#shop #products a:focus-visible,#shop #products button:focus-visible{outline:2px solid #ff6500;outline-offset:3px}
+@media(max-width:1100px){#shop #products .product-features{gap:8px}#shop #products .product-features li{font-size:12px;gap:6px}#shop #products .product-features .line-icon{width:22px;flex-basis:22px}#shop #products .add{padding:12px;font-size:14px;gap:8px}}
+@media(max-width:900px){#shop #products{grid-template-columns:minmax(0,1fr);max-width:680px}#shop .head{max-width:680px}#shop #products h3,#shop #products .product-description{min-height:0}#shop #products .product-features li{font-size:14px}#shop #products .product-features .line-icon{width:28px;flex-basis:28px}}
+@media(max-width:460px){#shop .head{padding-top:40px}#shop #products .product{padding:10px;border-radius:15px}#shop #products .copy{padding:18px 6px 16px}#shop #products .product-features{grid-template-columns:1fr;gap:12px}#shop #products .product-features li{font-size:14px}#shop #products .buy b{font-size:27px}#shop #products .add{font-size:13px;padding:12px 10px;gap:7px}#shop #products .gallery-thumbs{padding-inline:6px}#shop .variant-badge{top:10px;left:10px;font-size:12px;padding:6px 9px}}
+
+#shop #products .buy .add{height:52px;min-height:52px}
+
+/* Compact manual galleries and shared price information. */
+#shop #products .product{grid-template-rows:auto 1fr}
+#shop #products{padding-bottom:18px}
+#shop #products .product-description{min-height:3.2em;margin-bottom:18px}
+#shop #products .visual img{border-radius:12px;touch-action:pan-y;user-select:none;cursor:zoom-in}
+#shop #products .gallery-prev,#shop #products .gallery-next{position:absolute;top:45%;z-index:2;width:38px;height:44px;border:1px solid #ffffff40;border-radius:8px;background:#101416bb;color:white;font-size:30px;cursor:pointer}
+#shop #products .gallery-prev{left:10px}#shop #products .gallery-next{right:10px}
+#shop #products .gallery-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:1px;padding:2px 4px;border-radius:20px;background:#111b;max-width:95%}
+#shop #products .gallery-dots .gallery-thumb{display:grid;place-items:center;width:24px;height:24px;min-width:0;padding:0;margin:0;border:0;border-radius:50%;background:transparent;cursor:pointer}
+#shop #products .gallery-dots .gallery-thumb::after{content:'';width:6px;height:6px;border-radius:50%;background:#d7d7d7}
+#shop #products .gallery-dots .gallery-thumb[aria-pressed=true]::after{background:#ff6500;width:8px;height:8px}
+#shop .shop-price-notice{width:min(92%,1400px);margin:0 auto;padding:0 0 48px;color:#b7babc;font-size:14px;line-height:1.6}
+#shop .shop-price-notice a{text-decoration:underline}
+.detail-hero .product-gallery,.detail-hero .gallery-main,.detail-hero .gallery-thumb,.detail-hero .gallery-thumb img{border-radius:12px}
+.detail-hero .gallery-main{object-fit:contain;background:transparent}
+@media(max-width:900px){#shop #products .product-description{min-height:0}#shop .shop-price-notice{max-width:680px}}
+#shop #products .gallery-dots .gallery-thumb{flex:0 0 24px;aspect-ratio:1} #shop #products .gallery-dots{width:max-content}
+
+/* Compact silver product presentation. */
+#shop .head{padding:32px 0 20px}
+#shop .head h2{margin:10px 0}
+#shop #products{gap:18px}
+#shop #products .product{padding:10px;border-color:#c3c6c8;border-radius:16px;background:linear-gradient(145deg,#f5f5f4,#dedfe0);color:#202427;box-shadow:0 12px 28px #0002}
+#shop #products .visual{background:#ededed;aspect-ratio:3/2}
+#shop #products .visual img{width:100%;height:100%;object-fit:contain;border-radius:12px}
+#shop #products .copy{padding:14px 9px 8px}
+#shop #products h3{min-height:0;font-size:clamp(20px,1.8vw,27px);line-height:1.16;margin:0 0 4px;letter-spacing:-.55px;color:#202427}
+#shop #products h3 a{color:inherit}
+#shop #products .product-variant-subtitle{font-size:15px;font-weight:600;line-height:1.35;color:#535b60;margin:0 0 10px}
+#shop #products .product-description{min-height:2.9em;font-size:14px;line-height:1.45;margin:0 0 12px;color:#454d52}
+#shop #products .product-features{min-height:34px;margin:0 0 12px;gap:8px}
+#shop #products .product-features li{color:#30383d;font-size:13px;gap:7px}
+#shop #products .product-features .line-icon{width:23px;height:25px;flex-basis:23px}
+#shop #products .product-details-link{color:#9c3c00;margin:0 0 10px;font-size:13px}
+#shop #products .buy{padding-top:12px;border-color:#b9bec1}
+#shop #products .buy b{font-size:29px;color:#202427}
+#shop #products .buy .add{height:46px;min-height:46px;padding:10px 17px}
+#shop #products .gallery-dots{display:none}
+@media(max-width:900px){#shop #products .product-description{min-height:0}}
+@media(max-width:460px){#shop #products .product-features{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}#shop #products .product-features li{font-size:11px;gap:4px}#shop #products .product-features .line-icon{width:19px;flex-basis:19px}#shop #products .copy{padding:12px 5px 6px}#shop #products .product-variant-subtitle{font-size:13px}}
+
+/* Silver photo stages in a continuous dark HODLWARE product frame. */
+#shop{background:radial-gradient(ellipse at 50% 26%,#57606625,transparent 68%),#0b0d0e}
+#shop #products{gap:22px}
+#shop #products .product{padding:8px;border:1px solid #5f666b80;border-radius:18px;background:linear-gradient(155deg,#363c40,#171c1f 38%,#101416);color:#f4f5f5;box-shadow:inset 0 1px 0 #ffffff14,0 18px 40px #0003}
+#shop #products .visual{border-radius:11px 11px 5px 5px;border:1px solid #ffffff30;background:#ededed}
+#shop #products .visual img{border-radius:10px 10px 4px 4px}
+#shop #products .copy{position:relative;padding:16px 14px 12px;background:linear-gradient(180deg,#262c30aa,#12171900 65%);border-top:1px solid #ffffff24;margin-top:8px;border-radius:3px 3px 10px 10px}
+#shop #products h3{color:#f3f4f4;font-size:clamp(20px,1.8vw,27px)}
+#shop #products .product-variant-subtitle{color:#c8ced1}
+#shop #products .product-description{color:#b7bec2}
+#shop #products .product-features li{color:#d5dadd}
+#shop #products .product-details-link{color:#ff8a3e}
+#shop #products .buy{border-color:#ffffff23;padding-top:12px}
+#shop #products .buy b{color:#f3f4f4}
+#shop #products .gallery-prev,#shop #products .gallery-next{border:1px solid #ffffff40;background:#171d20cb;box-shadow:0 2px 7px #0002}
+#shop .variant-badge{background:#151a1df0;border-color:#ff6500bb}
+@media(max-width:460px){#shop #products .product{padding:7px}#shop #products .copy{padding:13px 8px 9px}}
