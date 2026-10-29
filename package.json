@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/build.mjs",
+    "build": "node scripts/build.mjs && wrangler pages functions build --outdir dist/_worker.js",
     "test": "node --test",
     "dev": "wrangler pages dev --ip 127.0.0.1 --port 8788",
     "db:local": "wrangler d1 execute hodlware-checkout-test --local --config wrangler.jsonc --file migrations/0001_checkout.sql"
