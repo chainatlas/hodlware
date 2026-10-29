@@ -20,7 +20,7 @@ ORDER_EMAILS_ENABLED = "true"
 SITE_URL = "https://hodlware.de"
 STRIPE_PRICE_ID = "price_1UMDhLIPPGFjbWPM1Ft7mqyQ"
 STRIPE_PRICE_ID_PLATE4 = "price_1UVdhGIPPGFjbWPMAO5IFnFA"
-PLATE4_ENABLED = "false"
+PLATE4_ENABLED = "true"
 
 [[env.production.d1_databases]]
 database_id = "54fc8940-9c37-4f90-96d8-9921cfd100f8"
