@@ -21,6 +21,14 @@ try{
   await page.goto(origin+'/zubehoer');await page.waitForFunction(()=>document.querySelector('.accessory-add')?.disabled===false);
   check(`${label}: one accessory card`,await page.locator('.accessory-card').count()===1);
   check(`${label}: confirmed product dimensions and thin profile`,(await page.locator('.accessory-card').innerText()).includes('5 × 1 cm pro Sticker')&&(await page.locator('.accessory-card').innerText()).includes('Besonders dünn, trägt kaum auf'));
+  check(`${label}: original product photos replace placeholder`,await page.locator('.photo-placeholder').count()===0&&await page.locator('.accessory-thumbnails button').count()===3);
+  const photo=page.locator('.accessory-gallery .accessory-photo');await photo.waitFor();await page.waitForFunction(()=>document.querySelector('.accessory-photo').complete&&document.querySelector('.accessory-photo').naturalWidth>0);
+  check(`${label}: withdrawal access stays available without covering photos`,await page.locator('header .accessory-withdrawal').isVisible()&&await page.locator('.withdrawal-access').count()===0);
+  check(`${label}: responsive photo loads without cropping`,await photo.evaluate(image=>getComputedStyle(image).objectFit==='contain'&&image.currentSrc.endsWith('.webp')));
+  await page.getByRole('button',{name:'VOID-Muster nach dem Ablösen',exact:true}).click();check(`${label}: peeled original selected`,(await photo.getAttribute('alt')).includes('Teilweise abgelöster'));
+  await page.waitForFunction(()=>document.querySelector('.accessory-photo').complete&&document.querySelector('.accessory-photo').naturalWidth>0);await page.locator('.accessory-gallery').screenshot({animations:'disabled',path:out+'/'+label+'-void-pattern.png'});
+  await page.getByRole('button',{name:'Sticker auf heller Oberfläche',exact:true}).click();await page.getByRole('button',{name:'Sticker auf heller Oberfläche',exact:true}).press('ArrowRight');check(`${label}: keyboard selects hand photo`,(await photo.getAttribute('alt')).includes('Fingern'));
+  await page.getByRole('button',{name:'Sticker auf heller Oberfläche',exact:true}).click();
   check(`${label}: four package choices`,await page.getByRole('radio').count()===4);
   check(`${label}: navigation visible`,await page.locator('header nav').isVisible());
   check(`${label}: no horizontal overflow`,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));

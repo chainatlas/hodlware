@@ -1,0 +1,86 @@
+{
+  "method": "Proportional resize only; WebP quality 90. No cropping, retouching, color or product alterations.",
+  "photos": [
+    {
+      "source": "void only white.png",
+      "sourceSha256": "0cf2e4a5bd2c6a07c43d9aaba542fe950bdee57854319c0cfd1360eabf9fc568",
+      "sourceBytes": 2670936,
+      "sourceWidth": 1891,
+      "sourceHeight": 831,
+      "outputs": [
+        {
+          "file": "assets/images/void/void-sticker-original.webp",
+          "width": 1440,
+          "height": 633,
+          "bytes": 203354
+        },
+        {
+          "file": "assets/images/void/void-sticker-original-720.webp",
+          "width": 720,
+          "height": 316,
+          "bytes": 53166
+        },
+        {
+          "file": "assets/images/void/void-sticker-original-160.webp",
+          "width": 160,
+          "height": 70,
+          "bytes": 3004
+        }
+      ]
+    },
+    {
+      "source": "void white with hand.png",
+      "sourceSha256": "fc5d9ff390b81bf76c2026e90e9ced31bc9bd28d45a41227ee48d7f9359c2225",
+      "sourceBytes": 2470316,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "outputs": [
+        {
+          "file": "assets/images/void/void-sticker-hand.webp",
+          "width": 1440,
+          "height": 960,
+          "bytes": 235352
+        },
+        {
+          "file": "assets/images/void/void-sticker-hand-720.webp",
+          "width": 720,
+          "height": 480,
+          "bytes": 70016
+        },
+        {
+          "file": "assets/images/void/void-sticker-hand-160.webp",
+          "width": 160,
+          "height": 107,
+          "bytes": 3650
+        }
+      ]
+    },
+    {
+      "source": "void2.png",
+      "sourceSha256": "3b651ea2c26ce7f689de70767be4c1c820bfb2c32deb733fa9f804988bedee08",
+      "sourceBytes": 2647530,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "outputs": [
+        {
+          "file": "assets/images/void/void-sticker-peeled.webp",
+          "width": 1440,
+          "height": 960,
+          "bytes": 261788
+        },
+        {
+          "file": "assets/images/void/void-sticker-peeled-720.webp",
+          "width": 720,
+          "height": 480,
+          "bytes": 64328
+        },
+        {
+          "file": "assets/images/void/void-sticker-peeled-160.webp",
+          "width": 160,
+          "height": 107,
+          "bytes": 3626
+        }
+      ]
+    }
+  ]
+}

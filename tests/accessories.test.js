@@ -23,6 +23,7 @@ async function mockStripe(fn,run){const old=Stripe.createFetchHttpClient;Stripe.
 function request(env,data,key='22222222-2222-4222-8222-222222222222'){return new Request(env.SITE_URL,{method:'POST',headers:{origin:env.SITE_URL,'content-type':'application/json',cookie:'hwcheckout='+cookie,'x-checkout-request':key},body:JSON.stringify(data)});}
 
 
+import {queueOrder} from '../server/order-mail.js';
 import {reserveAccessories,accessoryAvailability} from '../server/accessory-inventory.js';
 
 for(const [units,price] of [[1,99],[5,349],[10,599],[25,1199]])test(`VOID ${units}: package, shipping and physical quantity`,async()=>{
@@ -50,7 +51,7 @@ test('signed mixed paid webhooks mail exact packs and correct terms once',async(
  });assert.equal(mails.length,2);for(const mail of mails)for(const text of ['25 Stück','Menge: 2','11,99 EUR','6,19 EUR','1,10 €','§ 19 UStG'])assert.ok(mail.text.includes(text),text);assert.equal(sql.prepare('SELECT COUNT(*) n FROM order_confirmations').get().n,1);assert.equal(sql.prepare('SELECT quantity FROM accessory_reservations').get().quantity,50);
  }finally{globalThis.fetch=original;sql.close();}
 });
-test('accessory page has SEO, placeholder, shared cart; homepage filters accessories',()=>{const html=readFileSync(new URL('../zubehoer.html',import.meta.url),'utf8');for(const token of ['HODLWARE Zubehör','https://hodlware.de/zubehoer','accessory-grid','accessories.js','1,10 €','6,19 €'])assert.ok(html.includes(token),token);assert.ok(readFileSync(new URL('../assets/app.js',import.meta.url),'utf8').includes('p.category!=="accessories"'));assert.ok(!readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('accessory-grid'));});
+test('accessory page has SEO, original photos, shared cart; homepage filters accessories',()=>{const html=readFileSync(new URL('../zubehoer.html',import.meta.url),'utf8');for(const token of ['HODLWARE Zubehör','https://hodlware.de/zubehoer','accessory-grid','accessories.js','1,10 €','6,19 €'])assert.ok(html.includes(token),token);assert.ok(readFileSync(new URL('../assets/app.js',import.meta.url),'utf8').includes('p.category!=="accessories"'));assert.ok(!readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('accessory-grid'));});
 
 for(const units of [1,5,10,25])test(`checkout ${units}: validates price, reserves units and binds session (mocked Stripe)`,async()=>{const {env,sql}=setup();let posted;await mockStripe((url,init)=>{if(url.includes('/prices/'))return {livemode:false,active:true,currency:'eur',unit_amount:({1:99,5:349,10:599,25:1199})[units],type:'one_time'};posted=new URLSearchParams(init.body);return {id:'cs_test_accessory123',livemode:false,url:'https://checkout.stripe.com/c/pay/fixture'};},async()=>assert.equal((await create({env,request:request(env,{items:[{id:`void-${units}`,quantity:2}]})})).status,200));assert.equal(posted.get('shipping_options[0][shipping_rate_data][fixed_amount][amount]'),'110');assert.equal(posted.get('line_items[0][quantity]'),'2');const row=sql.prepare('SELECT * FROM accessory_reservations').get();assert.equal(row.quantity,units*2);assert.equal(row.session_id,'cs_test_accessory123');sql.close();});
 test('new contract leaves immutable old terms and legacy plate metadata intact',()=>{const old=parameters({SITE_URL:'https://example.test',STRIPE_PRICE_ID:'price_fixture'},1,'hash');assert.equal(old.metadata.contractVersion,'2026-10-11');assert.equal(old.shipping_options[0].shipping_rate_data.fixed_amount.amount,619);});
@@ -108,4 +109,28 @@ test('initialization refuses any existing nonzero inventory or reservation histo
 test('competing variant packages cannot reserve beyond the confirmed 1800 physical units',async()=>{
  const {env,sql}=setup();sql.exec("UPDATE product_inventory SET stock=0 WHERE product_id='void-stickers'");initializeConfirmedStock(sql);
  const outcomes=await Promise.allSettled([reserveAccessories(env,'a'.repeat(64),physicalItems([{id:'void-25',quantity:40}])),reserveAccessories(env,'b'.repeat(64),physicalItems([{id:'void-10',quantity:99}]))]);assert.equal(outcomes.filter(r=>r.status==='fulfilled').length,1);assert.equal(sql.prepare('SELECT SUM(quantity) n FROM accessory_reservations').get().n,1000);sql.close();
+});
+
+test('three original photos have optimized responsive files, factual alt text and unchanged proportions',()=>{
+ const manifest=JSON.parse(readFileSync(new URL('../artifacts/accessories-review/photo-manifest.json',import.meta.url),'utf8'));
+ assert.deepEqual(manifest.photos.map(p=>p.source),['void only white.png','void white with hand.png','void2.png']);
+ const photos=CATALOG['void-1'].images;assert.equal(photos.length,3);
+ for(const [index,photo] of photos.entries()){
+  assert.ok(photo.alt.length>30);assert.ok(!photo.alt.includes('Platzhalter'));assert.match(manifest.photos[index].sourceSha256,/^[a-f0-9]{64}$/);
+  for(const output of manifest.photos[index].outputs){const bytes=readFileSync(new URL('../'+output.file,import.meta.url));assert.equal(bytes.length,output.bytes);assert.equal(bytes.toString('ascii',0,4),'RIFF');assert.equal(bytes.toString('ascii',8,12),'WEBP');assert.ok(Math.abs(output.width/output.height-manifest.photos[index].sourceWidth/manifest.photos[index].sourceHeight)<0.02);assert.ok(output.bytes<manifest.photos[index].sourceBytes/5);}
+  for(const file of [photo.src,photo.small,photo.thumb])assert.ok(readFileSync(new URL('../'+file,import.meta.url)).length>0);
+ }
+ const source=readFileSync(new URL('../assets/accessories.js',import.meta.url),'utf8');assert.ok(!source.includes('photo-placeholder'));assert.ok(!source.includes('PRODUKTFOTO FOLGT'));
+ const ctx={window:{HODL_PRODUCTS:[]}};vm.runInNewContext(readFileSync(new URL('../assets/accessory-products.js',import.meta.url),'utf8'),ctx);for(const variant of ctx.window.HODL_PRODUCTS){assert.equal(variant.images.length,3);assert.equal(variant.image,photos[0].src);assert.equal(variant.imageAlt,photos[0].alt);}
+});
+test('accessory SEO and sitemap identify the original photos without claiming active offers',()=>{
+ const html=readFileSync(new URL('../zubehoer.html',import.meta.url),'utf8');assert.ok(html.includes('https://hodlware.de/zubehoer'));assert.ok(readFileSync(new URL('../sitemap.xml',import.meta.url),'utf8').includes('<loc>https://hodlware.de/zubehoer</loc>'));
+ const data=JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)[1]);assert.equal(data['@type'],'CollectionPage');const product=data.mainEntity.itemListElement[0].item;assert.equal(product.image.length,3);assert.equal(product.offers,undefined);assert.ok(!html.includes('InStock'));
+});
+test('sticker-only order mail has package price, confirmed shipping and legal notice once per recipient',async()=>{
+ const {env,sql}=setup(),s=session([{id:'void-25',quantity:2}]);await queueOrder(env,s,'card');await queueOrder(env,s,'card');
+ const rows=sql.prepare('SELECT payload FROM mail_outbox').all();assert.equal(rows.length,2);for(const row of rows){const mail=JSON.parse(row.payload);for(const text of ['25 Stück','Menge: 2','11,99 EUR','23,98 EUR','1,10 EUR','25,08 EUR','Basis-Sendungsverfolgung','§ 19 UStG'])assert.ok(mail.text.includes(text),text);assert.ok(!mail.text.includes('6,19 EUR'));assert.ok(!mail.text.includes('lückenloses Tracking'));}sql.close();
+});
+test('confirmed brief service label does not change the fixed shipping amounts',()=>{
+ const {env,sql}=setup();const sticker=parameters(env,[{id:'void-1',quantity:1}],'fixture'),mixed=parameters(env,[{id:'void-1',quantity:1},{id:'seedplate',quantity:1}],'fixture');assert.equal(sticker.shipping_options[0].shipping_rate_data.fixed_amount.amount,110);assert.ok(sticker.shipping_options[0].shipping_rate_data.display_name.includes('Basis-Sendungsverfolgung'));assert.equal(mixed.shipping_options.length,1);assert.equal(mixed.shipping_options[0].shipping_rate_data.fixed_amount.amount,619);assert.equal(mixed.shipping_options[0].shipping_rate_data.display_name,'DHL Standardversand Deutschland');sql.close();
 });

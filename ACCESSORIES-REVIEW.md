@@ -21,9 +21,9 @@ Der abschließende lokale Commit-Hash wird im Abschlussbericht im Chat genannt u
 
 ## Verifikation
 
-- Vollständige Node-Testsuite: 125 bestanden, 0 fehlgeschlagen.
+- Vollständige Node-Testsuite: 129 bestanden, 0 fehlgeschlagen.
 - Produktions-Build: statische Seiten einschließlich IndexNow-Manifest und Cloudflare-Pages-Worker erfolgreich kompiliert.
-- Playwright / Chrome: 178 Prüfungen über 1440×1000, 1024×900, 768×1024, 600×900, 390×844 und 320×740.
+- Playwright / Chrome: 208 Prüfungen über 1440×1000, 1024×900, 768×1024, 600×900, 390×844 und 320×740.
 - Geprüft: vier Paketpreise und Auswahl, Warenkorb mit allen Varianten, Mengenänderung auf zwei 25er-Pakete, Entfernen von Positionen, Sticker- und gemischter Versand, ein/zwei Plates, Gesamtsummen, persistierter Warenkorb, Navigation zwischen Zubehör/Startseite/Plate-Seiten, keine Upsells, gesperrte vergriffene Variante, alternative verfügbare Variante, keine horizontalen Überläufe.
 - Browseranfragen auf andere Ursprünge werden im Test blockiert; es gab keine externen Requests, Laufzeitfehler oder fehlenden Assets.
 - Playwright bedient einen eigenen Headless-Chrome-Prozess direkt. Keine Windows-Computersteuerung oder Browseradressenerkennung.
@@ -74,14 +74,14 @@ Eine Reservierung wird nur nach bestätigtem Stripe-Ablauf oder asynchronem Fehl
 
 ## Produktbilder und offene Freigaben
 
-Im bestehenden Repository wurden keine eigenständigen Originalproduktfotos der VOID-Sticker gefunden. Es werden **keine fremden oder generierten Produktbilder** verwendet. Die Zubehörkarte zeigt einen deutlich bezeichneten Platzhalter. Originalfotos müssen vor Veröffentlichung geliefert/geprüft, in den Zubehörkatalog eingetragen und in den Build übernommen werden.
+Die früher fehlenden Originalfotos wurden mit diesem Auftrag bereitgestellt. Es werden **keine fremden oder generierten Produktbilder** verwendet. Die Zubehörkarte zeigt jetzt eine Galerie der drei Originalfotos; Bildplatzhalter sind vollständig entfernt. Die drei Originalfotos sind inzwischen integriert und im Build enthalten; Details zur finalen Integration stehen unten.
 
 Vor Livegang erforderlich:
 
 1. Erledigt: Paketpreise 0,99 / 3,49 / 5,99 / 11,99 EUR verbindlich bestätigt. Dies erteilt keine Aktivierungs- oder Stripe-LIVE-Freigabe.
 2. Erledigt: 1.800 verkaufbare Einzelsticker und 200 ausgeschlossene Reservesticker verbindlich bestätigt. Produktive Initialisierung bleibt separat freigabepflichtig.
-3. Brieftarif 1,10 EUR und Eignung der Basis-Sendungsverfolgung bestätigen.
-4. Originalproduktfotos sowie Darstellung und Versandtexte freigeben. Die derzeit sichtbaren Vorbereitungshinweise vor Veröffentlichung an den genehmigten Verkaufsstatus anpassen.
+3. Erledigt: Brieftarif 1,10 EUR und Basis-Sendungsverfolgung bestätigt. Offen bleibt die tatsächliche Versandfähigkeit einschließlich Gewicht, Außenmaßen, Verpackung und erlaubter Bestellmenge; vor Aktivierung nachweisen.
+4. Originalproduktfotos sind integriert. Finale Darstellung und Versandprozess abnehmen. Die derzeit sichtbaren Vorbereitungshinweise vor Veröffentlichung an den genehmigten Verkaufsstatus anpassen.
 5. Stripe-Preis-IDs konfigurieren, D1-Migration/Bestandsinitialisierung und produktive Veröffentlichung jeweils gesondert genehmigen.
 6. Die Preisentscheidung ist dokumentiert; `ACCESSORIES_PRICES_APPROVED` bleibt in der vorbereiteten Laufzeitkonfiguration absichtlich `false`. Erst nach gesonderter Aktivierungsfreigabe `ACCESSORIES_ENABLED`, `ACCESSORIES_PRICES_APPROVED` und `ACCESSORIES_STOCK_CONFIRMED` serverseitig auf `true` setzen. Ohne diese Freigabeschalter bleibt der Zubehörcheckout gesperrt. `.dev.vars.example` dokumentiert die abgeschalteten Standardwerte.
 
@@ -94,3 +94,9 @@ Maße je Sticker: 5 × 1 cm. Besonders dünn, trägt kaum auf; keine Materialst�
 ## Bestandsbeschluss: gemeinsamer Vorrat
 
 Startbestand vorbereitet: 1.800 physische Einzelsticker. Reserve: 200 außerhalb des Verkaufsinventars. Die Schema-Migration 0004 bleibt unverändert bei Nullbestand; das getrennte, ausdrücklich freizugebende Initialisierungsskript setzt den bestätigten Startwert. Keine Bestandszeilen für `void-1`, `void-5`, `void-10` oder `void-25`. Die unveränderte Funktion `physicalItems` aggregiert alle Paketmengen auf `void-stickers`; Reservierungen, Verfügbarkeit und bezahlte Buchungen verwenden genau diesen Schlüssel. Tests prüfen vollständige Ausschöpfung über alle vier Varianten, Überverkauf, Konkurrenz, Wiederholung und Schutz bestehender Bestände/Historie. Tests verwenden ausschließlich isolierte In-Memory-SQLite-Datenbanken. Alle Aktivierungsschalter bleiben `false`; keine produktive Datenbank wurde angesprochen.
+
+## Finale Foto-Integration und verbindliche Versandregel
+
+Die Originale `void only white.png`, `void white with hand.png` und `void2.png` sind als 1440-/720-/160-Pixel-WebP-Dateien integriert. Drei große Ansichten zusammen: 700.494 Bytes statt 7.788.782 Bytes PNG-Originale (rund 91 % weniger). Keine inhaltliche Veränderung von Produktform, Muster oder Motiv und keine gezielte Farbkorrektur; nur proportionale Skalierung und Kompression. Die Originaldateien bleiben unverändert. Das Bildmanifest enthält SHA-256, Abmessungen und Ausgabedateien. Alle drei Ansichten haben sachliche Alt-Texte; Galerie per Klick und Tastatur bedienbar, ohne Beschnitt. Die Vorschaubilder sind auch in der Bestellergebnisdarstellung verfügbar.
+
+1,10 EUR Sticker-only / 6,19 EUR mit mindestens einer Plate bleiben serverseitig bestätigt. Checkout und neu erstellte Sticker-only-Bestellmails nennen Basis-Sendungsverfolgung. Bestehende unveränderliche Vertragsversionen und gespeicherte Mail-Snapshots bleiben erhalten. Die tatsächlichen frankierfertigen Versandmaße/Gewichte sind nicht bekannt und noch zu prüfen; keine Aktivierung ohne diesen Nachweis. **Vollständige, verbindliche Live- und Rollback-Checkliste: [ACCESSORIES-LIVE-CHECKLIST.md](ACCESSORIES-LIVE-CHECKLIST.md).** Keine produktiven Aktionen wurden ausgeführt; alle Zubehörschalter bleiben gesperrt.
