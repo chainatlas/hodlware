@@ -1,0 +1,70 @@
+[
+  {
+    "name": "desktop",
+    "page": "home",
+    "background": "rgb(255, 101, 0)",
+    "text": "rgb(20, 24, 25)",
+    "wordmark": "rgb(20, 24, 25)",
+    "iconFilter": "brightness(0)",
+    "overflow": false,
+    "labels": [
+      "Shop",
+      "Zubehör",
+      "Über uns",
+      "Ratgeber",
+      "FAQ",
+      "Vertrag widerrufen"
+    ]
+  },
+  {
+    "name": "desktop",
+    "page": "accessories",
+    "background": "rgb(255, 101, 0)",
+    "text": "rgb(20, 24, 25)",
+    "wordmark": "rgb(20, 24, 25)",
+    "iconFilter": "brightness(0)",
+    "overflow": false,
+    "labels": [
+      "Shop",
+      "Zubehör",
+      "Über uns",
+      "Ratgeber",
+      "FAQ",
+      "Vertrag widerrufen"
+    ]
+  },
+  {
+    "name": "mobile",
+    "page": "home",
+    "background": "rgb(255, 101, 0)",
+    "text": "rgb(20, 24, 25)",
+    "wordmark": "rgb(20, 24, 25)",
+    "iconFilter": "brightness(0)",
+    "overflow": false,
+    "labels": [
+      "Shop",
+      "Zubehör",
+      "Über uns",
+      "Ratgeber",
+      "FAQ",
+      "Vertrag widerrufen"
+    ]
+  },
+  {
+    "name": "mobile",
+    "page": "accessories",
+    "background": "rgb(255, 101, 0)",
+    "text": "rgb(20, 24, 25)",
+    "wordmark": "rgb(20, 24, 25)",
+    "iconFilter": "brightness(0)",
+    "overflow": false,
+    "labels": [
+      "Shop",
+      "Zubehör",
+      "Über uns",
+      "Ratgeber",
+      "FAQ",
+      "Vertrag widerrufen"
+    ]
+  }
+]
