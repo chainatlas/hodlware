@@ -1,0 +1,16 @@
+[
+  {
+    "name": "desktop",
+    "background": "rgba(255, 101, 0, 0.8)",
+    "blur": "blur(14px) saturate(1.4)",
+    "text": "rgb(8, 11, 12)",
+    "overflow": false
+  },
+  {
+    "name": "mobile",
+    "background": "rgba(255, 101, 0, 0.8)",
+    "blur": "blur(14px) saturate(1.4)",
+    "text": "rgb(8, 11, 12)",
+    "overflow": false
+  }
+]

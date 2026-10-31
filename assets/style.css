@@ -243,8 +243,8 @@ footer.compact-footer{padding:22px max(24px,calc((100vw - 1152px)/2));line-heigh
 /* Keep the shared shop navigation reachable on phones and tablets. */
 @media(max-width:800px){header{height:auto;min-height:76px;flex-wrap:wrap;gap:8px;padding-block:12px}header nav{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;width:100%;order:3}header nav a{display:inline-flex;align-items:center;min-height:36px}header .cart{min-height:40px}}
 /* Local design candidate: orange header, dark wordmark and high-contrast controls. */
-header{background:#ff6500;color:#141819;border-bottom:1px solid #cf5100;box-shadow:0 0 0 100vmax #ff6500;clip-path:inset(0 -100vmax)}
-header .brand,header .brand i,header nav,header nav a,header nav a.accessory-withdrawal{color:#141819}
+header{background:rgba(255,101,0,.8);color:#080b0c;border-bottom:1px solid rgba(207,81,0,.6);box-shadow:0 0 0 100vmax rgba(255,101,0,.8);clip-path:inset(0 -100vmax);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%)}
+header .brand,header .brand i,header nav,header nav a,header nav a.accessory-withdrawal{color:#080b0c}
 header .brand-icon{filter:brightness(0)}
 header nav a{font-weight:600}
 header nav a:hover{text-decoration:underline;text-underline-offset:5px}
