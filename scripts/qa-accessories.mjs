@@ -38,7 +38,7 @@ try{
   if(label==='desktop')check('desktop: purchase button available in first viewport',(await page.locator('.accessory-add').boundingBox()).y+(await page.locator('.accessory-add').boundingBox()).height<=height);
   for(const [index,name] of ['Sticker auf heller Oberfläche','Sticker in der Hand','VOID-Muster nach dem Ablösen'].entries()){
    await page.getByRole('button',{name,exact:true}).click();await page.waitForFunction(()=>document.querySelector('.accessory-photo').complete&&document.querySelector('.accessory-photo').naturalWidth>0);
-   check(`${label}: original photo ${index+1} fully contained`,await photo.evaluate(img=>{const css=getComputedStyle(img);return css.objectFit==='contain'&&css.transform==='none'&&img.naturalWidth>0&&img.naturalHeight>0;}));
+   check(`${label}: original photo ${index+1} fully contained`,await photo.evaluate(img=>{const css=getComputedStyle(img);const rect=img.getBoundingClientRect(),stage=img.parentElement.getBoundingClientRect();return css.objectFit==='contain'&&css.transform==='none'&&img.naturalWidth>0&&Math.abs(rect.height-rect.width*img.naturalHeight/img.naturalWidth)<=1&&Math.abs(stage.height-rect.height)<1;}));
    await page.locator('.accessory-gallery').screenshot({animations:'disabled',path:out+'/'+label+'-photo-'+(index+1)+'.png'});
   }
   await page.getByRole('button',{name:'Sticker auf heller Oberfläche',exact:true}).click();

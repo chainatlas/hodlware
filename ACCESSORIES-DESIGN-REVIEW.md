@@ -10,7 +10,7 @@ Diese Designänderung ist ausschließlich lokal vorbereitet. Kein Push und kein 
 - Oben steht ausschließlich die vorgegebene kompakte Beschreibung mit den drei wichtigsten Eigenschaften. Der sachliche Sicherheitshinweis bleibt unterhalb des Kaufbereichs.
 - Vier Paketkacheln, orange markierte Auswahl, jeweils exakter Paketpreis. Ausgewählter Paketpreis und Warenkorb-Button direkt unter der Auswahl; Versand- und §19-Hinweise unmittelbar dabei.
 - Sticker-only: 1,10 EUR Standardbrief mit Basis-Sendungsverfolgung. Mit Recovery Plate: 6,19 EUR, Versand innerhalb Deutschlands. Serverseitige Versandberechnung unverändert.
-- Alle drei Originalfotos unverändert. Hauptbild, Vorschaubilder und Vergrößerung verwenden `object-fit: contain`. Neutraler Rahmen mit Innenabstand schützt auch die Fotoecken; kein Beschnitt, keine Verzerrung oder künstliche Motivvergrößerung.
+- Alle drei Originalfotos unverändert. Hauptbild, Vorschaubilder und Vergrößerung verwenden `object-fit: contain`. Die Fotos verwenden ihr natürliches Seitenverhältnis ohne zusätzlichen weißen Rahmen oder aufgefüllte Balken. Alle Fotoecken bleiben vollständig sichtbar; kein Beschnitt, keine Verzerrung oder künstliche Motivvergrößerung.
 
 ## Gemeinsame Galerie
 
@@ -46,3 +46,7 @@ Lokale Vorschau nach dem Build: `node scripts/preview-accessories.mjs`; standard
 Wiederholung: `npm test`, `npm run build`, danach `node scripts/qa-accessories.mjs` mit lokal verfügbarem Playwright und Chrome. Auf diesem Rechner wird Playwright über die vorhandene Codex-Laufzeit via `NODE_PATH` aufgelöst. Der Browsertest startet/beendet seinen eigenen lokalen Server und blockiert alle externen Anfragen.
 
 **Vor einer Veröffentlichung ist die neue Darstellung visuell abzunehmen.** Die bestehende Produktionsfreigabe wird für diesen Designstand nicht als automatische Deployment-Freigabe ausgelegt.
+
+## Nachkorrektur: durchgehender Bildhintergrund
+
+Der zusätzliche weiße Rahmen und die feste 3:2-Bildfläche wurden entfernt. Hauptbilder und Vorschaubilder erscheinen im natürlichen Seitenverhältnis, sodass ausschließlich der originale silberne Fotohintergrund sichtbar bleibt. Kein Retuschieren oder Generieren von Bildinhalten. Die Playwright-Prüfung vergleicht für jedes der drei Fotos zusätzlich das gerenderte mit dem natürlichen Seitenverhältnis und prüft, dass die Bildfläche keine zusätzlichen vertikalen Balken erzeugt. Weiterhin nur lokal, ohne Veröffentlichung.
