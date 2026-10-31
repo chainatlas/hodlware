@@ -4,3 +4,15 @@
 .accessory-photo-stage{padding:0}.accessory-gallery .gallery-prev,.accessory-gallery .gallery-next{width:44px;min-height:44px}
 
 .accessory-gallery .gallery-thumb{height:auto;align-self:start;padding:0;background:transparent;border-radius:0}.accessory-gallery .gallery-thumb img{height:auto}
+
+/* Shared rounded product frame, matching the Recovery Plate cards. */
+.accessory-detail{padding:20px;gap:32px;border:1px solid #42494c;border-radius:20px;background:linear-gradient(145deg,#1b1f21,#0f1314 78%);box-shadow:0 16px 40px #0002}
+.accessory-gallery .accessory-photo{border-radius:12px}
+.accessory-gallery .gallery-thumb{border-radius:8px}
+.accessory-purchase{padding:4px 4px 0}
+.accessory-buy-row{padding-top:18px;border-top:1px solid #3a4144;flex-wrap:wrap}
+.accessory-add{border-radius:10px;color:#0b0d0e}
+.accessory-add:hover:not(:disabled){background:#ff7b24}
+@media(max-width:1000px) and (min-width:801px){.accessory-detail{padding:18px;gap:24px}}
+@media(max-width:800px){.accessory-detail{padding:16px;gap:26px}.accessory-purchase{padding:0 2px}.accessory-purchase h2{font-size:26px}}
+@media(max-width:460px){.accessory-detail{padding:10px;border-radius:15px;gap:24px}.accessory-purchase{padding:0 4px}.accessory-gallery-toolbar{gap:8px}.accessory-gallery figcaption{font-size:12px}.accessory-thumbnails{gap:8px}.accessory-buy-row{gap:12px}.accessory-add{padding-inline:12px}}
