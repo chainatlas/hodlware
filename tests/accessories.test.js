@@ -81,7 +81,7 @@ test('price approval leaves the prepared sale configuration locked and Stripe ID
  const example=readFileSync(new URL('../.dev.vars.example',import.meta.url),'utf8');for(const flag of ['ACCESSORIES_ENABLED','ACCESSORIES_PRICES_APPROVED','ACCESSORIES_STOCK_CONFIRMED'])assert.ok(example.includes(flag+'="false"'));for(const n of [1,5,10,25])assert.ok(example.includes('STRIPE_PRICE_ID_VOID_'+n+'=""'));
 });
 test('storefront explicitly labels package prices and no longer requests price approval',()=>{
- const source=readFileSync(new URL('../assets/accessories.js',import.meta.url),'utf8');assert.ok(source.includes('pro Paket'));assert.ok(readFileSync(new URL('../assets/checkout.js',import.meta.url),'utf8').includes("product.category==='accessories'?'pro Paket':'pro Stück'"));const page=readFileSync(new URL('../zubehoer.html',import.meta.url),'utf8');assert.ok(page.includes('Paketpreise freigegeben'));assert.ok(page.includes('Verkauf weiterhin gesperrt'));assert.ok(!page.includes('Preise noch nicht freigegeben'));
+ const source=readFileSync(new URL('../assets/accessories.js',import.meta.url),'utf8');assert.ok(source.includes('pro Paket'));assert.ok(readFileSync(new URL('../assets/checkout.js',import.meta.url),'utf8').includes("product.category==='accessories'?'pro Paket':'pro Stück'"));const page=readFileSync(new URL('../zubehoer.html',import.meta.url),'utf8');assert.ok(page.includes('Vier Paketgrößen: 1, 5, 10 oder 25 Sticker'));assert.ok(!page.includes('Verkauf weiterhin gesperrt'));assert.ok(!page.includes('vor Aktivierung abschließend geprüft'));assert.ok(!page.includes('Preise noch nicht freigegeben'));
 });
 
 const initializeConfirmedStock=sql=>sql.exec(readFileSync(new URL('../operations/initialize-void-stock.sql',import.meta.url),'utf8'));
