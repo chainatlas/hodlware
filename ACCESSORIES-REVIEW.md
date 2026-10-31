@@ -21,7 +21,7 @@ Der abschließende lokale Commit-Hash wird im Abschlussbericht im Chat genannt u
 
 ## Verifikation
 
-- Vollständige Node-Testsuite: 120 bestanden, 0 fehlgeschlagen.
+- Vollständige Node-Testsuite: 125 bestanden, 0 fehlgeschlagen.
 - Produktions-Build: statische Seiten einschließlich IndexNow-Manifest und Cloudflare-Pages-Worker erfolgreich kompiliert.
 - Playwright / Chrome: 178 Prüfungen über 1440×1000, 1024×900, 768×1024, 600×900, 390×844 und 320×740.
 - Geprüft: vier Paketpreise und Auswahl, Warenkorb mit allen Varianten, Mengenänderung auf zwei 25er-Pakete, Entfernen von Positionen, Sticker- und gemischter Versand, ein/zwei Plates, Gesamtsummen, persistierter Warenkorb, Navigation zwischen Zubehör/Startseite/Plate-Seiten, keine Upsells, gesperrte vergriffene Variante, alternative verfügbare Variante, keine horizontalen Überläufe.
@@ -68,7 +68,7 @@ Die bestehende Webhook-Anbindung muss weiterhin `checkout.session.completed`, `c
 
 Kein Umbau bestehender Tabellen oder vorhandener Bestellungen. Die Migration ist wiederholbar und überschreibt vorhandene Bestandswerte nicht. Historische Migrationen nicht erneut als Bestandsabgleich verwenden. Insbesondere wird der im Auftrag genannte Plate-Bestand 23 nicht durch einen älteren Initialwert ersetzt.
 
-Vor Aktivierung muss der tatsächlich separat verkaufbare Stickerbestand gezählt und bestätigt werden. Beigaben für Plates, Muster und verbrauchte Teststicker sind vorher abzuziehen; 2.000 eingetroffene Sticker sind kein Verkaufsbestand. Der bestätigte Wert muss nach gesonderter Freigabe im neuen Inventareintrag hinterlegt werden. Neue Reservierungen ziehen gehaltene und bezahlte Einheiten von diesem Bestand ab; dies ist kein frei zu überschreibender Live-Zähler.
+Verbindlich bestätigt: 1.800 physische Einzelsticker Verkaufsbestand und 200 Sticker Reserve. Alle vier Pakete nutzen ausschließlich denselben Inventareintrag `void-stickers`; die 200 Reserve sind nicht Teil des verkaufbaren Bestands. Die Startinitialisierung ist getrennt in `operations/initialize-void-stock.sql` vorbereitet und wurde nicht gegen eine produktive Datenbank ausgeführt. Erst nach gesonderter Ausführungsfreigabe anwenden, nach Migration 0004 und vor Aktivierung. Das Skript setzt ausschließlich einen unberührten Nullbestand ohne Reservierungshistorie auf 1.800. Wiederholungen überschreiben weder Bestände noch Reservierungen; bei vorhandener Historie oder abweichendem Bestand muss der Betreiber den Zustand prüfen. Neue Reservierungen ziehen gehaltene und bezahlte Einheiten von diesem Bestand ab; dies ist kein frei zu überschreibender Live-Zähler.
 
 Eine Reservierung wird nur nach bestätigtem Stripe-Ablauf oder asynchronem Fehlschlag freigegeben. Browserabbruch allein gibt sie nicht frei. Unklare API-Antworten behalten den Bestand sicherheitshalber reserviert. Verwaiste Reservierungen ohne zuordenbare Stripe-Session benötigen einen kontrollierten Abgleich; kein zeitgesteuertes blindes Freigeben implementiert. Bei Zahlung nach bereits erfolgter Freigabe wird die Buchung abgelehnt und muss geprüft werden.
 
@@ -79,7 +79,7 @@ Im bestehenden Repository wurden keine eigenständigen Originalproduktfotos der 
 Vor Livegang erforderlich:
 
 1. Erledigt: Paketpreise 0,99 / 3,49 / 5,99 / 11,99 EUR verbindlich bestätigt. Dies erteilt keine Aktivierungs- oder Stripe-LIVE-Freigabe.
-2. Tatsächlich verkaufbaren Stickerbestand bestätigen; Beigaben und Verbrauch berücksichtigen.
+2. Erledigt: 1.800 verkaufbare Einzelsticker und 200 ausgeschlossene Reservesticker verbindlich bestätigt. Produktive Initialisierung bleibt separat freigabepflichtig.
 3. Brieftarif 1,10 EUR und Eignung der Basis-Sendungsverfolgung bestätigen.
 4. Originalproduktfotos sowie Darstellung und Versandtexte freigeben. Die derzeit sichtbaren Vorbereitungshinweise vor Veröffentlichung an den genehmigten Verkaufsstatus anpassen.
 5. Stripe-Preis-IDs konfigurieren, D1-Migration/Bestandsinitialisierung und produktive Veröffentlichung jeweils gesondert genehmigen.
@@ -90,3 +90,7 @@ Keine produktiven Stripe-Aktionen, D1-Migrationen, Deployments, echten Zahlungen
 ## Bestätigte Produktangaben und Preisabnahme
 
 Maße je Sticker: 5 × 1 cm. Besonders dünn, trägt kaum auf; keine Materialstärke in Millimetern angegeben. Beschreibung, Eigenschaften, SEO-Produktdaten und generierter Frontendkatalog übernehmen diese Angaben. Der Hinweis auf Oberflächen- und Umgebungsabhängigkeit bleibt sichtbar. Variantenwahl und Warenkorb nennen den Preis ausdrücklich pro Paket; die physischen Stückzahlen dienen ausschließlich der Lagerberechnung. Zwei 25er-Pakete kosten 23,98 EUR und reservieren 50 Sticker. Alle drei Aktivierungsschalter bleiben unverändert gesperrt; Stripe-IDs bleiben leer. Die Screenshots und Browserergebnisse wurden mit den bestätigten Produktangaben und expliziten Paketpreisen neu erstellt.
+
+## Bestandsbeschluss: gemeinsamer Vorrat
+
+Startbestand vorbereitet: 1.800 physische Einzelsticker. Reserve: 200 außerhalb des Verkaufsinventars. Die Schema-Migration 0004 bleibt unverändert bei Nullbestand; das getrennte, ausdrücklich freizugebende Initialisierungsskript setzt den bestätigten Startwert. Keine Bestandszeilen für `void-1`, `void-5`, `void-10` oder `void-25`. Die unveränderte Funktion `physicalItems` aggregiert alle Paketmengen auf `void-stickers`; Reservierungen, Verfügbarkeit und bezahlte Buchungen verwenden genau diesen Schlüssel. Tests prüfen vollständige Ausschöpfung über alle vier Varianten, Überverkauf, Konkurrenz, Wiederholung und Schutz bestehender Bestände/Historie. Tests verwenden ausschließlich isolierte In-Memory-SQLite-Datenbanken. Alle Aktivierungsschalter bleiben `false`; keine produktive Datenbank wurde angesprochen.

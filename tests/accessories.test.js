@@ -82,3 +82,30 @@ test('price approval leaves the prepared sale configuration locked and Stripe ID
 test('storefront explicitly labels package prices and no longer requests price approval',()=>{
  const source=readFileSync(new URL('../assets/accessories.js',import.meta.url),'utf8');assert.ok(source.includes('pro Paket'));assert.ok(readFileSync(new URL('../assets/checkout.js',import.meta.url),'utf8').includes("product.category==='accessories'?'pro Paket':'pro Stück'"));const page=readFileSync(new URL('../zubehoer.html',import.meta.url),'utf8');assert.ok(page.includes('Paketpreise freigegeben'));assert.ok(page.includes('Verkauf weiterhin gesperrt'));assert.ok(!page.includes('Preise noch nicht freigegeben'));
 });
+
+const initializeConfirmedStock=sql=>sql.exec(readFileSync(new URL('../operations/initialize-void-stock.sql',import.meta.url),'utf8'));
+test('confirmed initial stock is 1800 in one physical inventory; reserve 200 is excluded',()=>{
+ const {sql}=setup();sql.exec("UPDATE product_inventory SET stock=0 WHERE product_id='void-stickers'");initializeConfirmedStock(sql);
+ const stocks=sql.prepare("SELECT product_id,stock FROM product_inventory WHERE product_id LIKE 'void%'").all();assert.equal(stocks.length,1);assert.equal(stocks[0].product_id,'void-stickers');assert.equal(stocks[0].stock,1800);
+ for(const n of [1,5,10,25]){assert.equal(CATALOG['void-'+n].stockId,'void-stickers');assert.equal(CATALOG['void-'+n].units,n);}sql.close();
+});
+test('all four variants consume the same 1800 units with no access to the 200 reserve',async()=>{
+ const {env,sql}=setup();sql.exec("UPDATE product_inventory SET stock=0 WHERE product_id='void-stickers'");initializeConfirmedStock(sql);
+ const items=[{id:'void-1',quantity:5},{id:'void-5',quantity:1},{id:'void-10',quantity:4},{id:'void-25',quantity:70}];assert.deepEqual(physicalItems(items),[{id:'void-stickers',quantity:1800}]);
+ await reserveAccessories(env,'a'.repeat(64),physicalItems(items));assert.equal(sql.prepare('SELECT COUNT(*) n FROM accessory_reservations').get().n,1);assert.equal(sql.prepare('SELECT quantity FROM accessory_reservations').get().quantity,1800);
+ for(const n of [1,5,10,25]){assert.equal(await accessoryAvailability(env,'void-stickers',n),false);await assert.rejects(reserveAccessories(env,String(n).padStart(64,'b'),physicalItems([{id:'void-'+n,quantity:1}])));}
+ assert.equal(sql.prepare('SELECT SUM(quantity) n FROM accessory_reservations').get().n,1800);sql.close();
+});
+test('confirmed stock initialization is repeatable and preserves plate stock and active holds',async()=>{
+ const {env,sql}=setup();sql.exec("UPDATE product_inventory SET stock=0 WHERE product_id='void-stickers';UPDATE product_inventory SET stock=23 WHERE product_id='recoveryplate4'");initializeConfirmedStock(sql);initializeConfirmedStock(sql);
+ await reserveAccessories(env,'a'.repeat(64),[{id:'void-stickers',quantity:50}]);initializeConfirmedStock(sql);
+ assert.equal(sql.prepare("SELECT stock FROM product_inventory WHERE product_id='void-stickers'").get().stock,1800);assert.equal(sql.prepare('SELECT quantity FROM accessory_reservations').get().quantity,50);assert.equal(sql.prepare("SELECT stock FROM product_inventory WHERE product_id='recoveryplate4'").get().stock,23);assert.equal(await accessoryAvailability(env,'void-stickers',1750),true);assert.equal(await accessoryAvailability(env,'void-stickers',1751),false);sql.close();
+});
+test('initialization refuses any existing nonzero inventory or reservation history',async()=>{
+ const {env,sql}=setup();initializeConfirmedStock(sql);assert.equal(sql.prepare("SELECT stock FROM product_inventory WHERE product_id='void-stickers'").get().stock,100);
+ await reserveAccessories(env,'a'.repeat(64),[{id:'void-stickers',quantity:25}]);sql.exec("UPDATE accessory_reservations SET state='released';UPDATE product_inventory SET stock=0 WHERE product_id='void-stickers'");initializeConfirmedStock(sql);assert.equal(sql.prepare("SELECT stock FROM product_inventory WHERE product_id='void-stickers'").get().stock,0);sql.close();
+});
+test('competing variant packages cannot reserve beyond the confirmed 1800 physical units',async()=>{
+ const {env,sql}=setup();sql.exec("UPDATE product_inventory SET stock=0 WHERE product_id='void-stickers'");initializeConfirmedStock(sql);
+ const outcomes=await Promise.allSettled([reserveAccessories(env,'a'.repeat(64),physicalItems([{id:'void-25',quantity:40}])),reserveAccessories(env,'b'.repeat(64),physicalItems([{id:'void-10',quantity:99}]))]);assert.equal(outcomes.filter(r=>r.status==='fulfilled').length,1);assert.equal(sql.prepare('SELECT SUM(quantity) n FROM accessory_reservations').get().n,1000);sql.close();
+});
