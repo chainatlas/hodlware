@@ -4,7 +4,7 @@ import {createRequire} from 'node:module';
 import {spawn} from 'node:child_process';
 import {mkdir,writeFile} from 'node:fs/promises';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
-const port=Number(process.env.QA_PORT||8790),origin=`http://127.0.0.1:${port}`,out='artifacts/accessories-review';
+const port=Number(process.env.QA_PORT||8790),origin=`http://127.0.0.1:${port}`,out='artifacts/accessories-layout-review';
 await mkdir(out,{recursive:true});
 const server=spawn(process.execPath,['scripts/preview-accessories.mjs'],{stdio:'pipe',env:{...process.env,PREVIEW_PORT:String(port)}});
 const checks=[],errors=[],blockedRequests=[];
@@ -20,7 +20,7 @@ try{
   const page=await context.newPage();page.on('pageerror',e=>errors.push(`${label}: ${e.message}`));page.on('response',r=>{if(r.status()>=400&&!r.url().endsWith('/api/create-checkout-session'))errors.push(`${label}: HTTP ${r.status()} ${r.url()}`);});
   await page.goto(origin+'/zubehoer');await page.waitForFunction(()=>document.querySelector('.accessory-add')?.disabled===false);
   check(`${label}: one accessory card`,await page.locator('.accessory-card').count()===1);
-  check(`${label}: confirmed product dimensions and thin profile`,(await page.locator('.accessory-card').innerText()).includes('5 × 1 cm pro Sticker')&&(await page.locator('.accessory-card').innerText()).includes('Besonders dünn, trägt kaum auf'));
+  check(`${label}: confirmed product dimensions and thin profile`,(await page.locator('.accessory-card').innerText()).includes('5 × 1 cm pro Sticker')&&(await page.locator('.accessory-card').innerText()).includes('Besonders dünn und unauffällig'));
   check(`${label}: original product photos replace placeholder`,await page.locator('.photo-placeholder').count()===0&&await page.locator('.accessory-thumbnails button').count()===3);
   const photo=page.locator('.accessory-gallery .accessory-photo');await photo.waitFor();await page.waitForFunction(()=>document.querySelector('.accessory-photo').complete&&document.querySelector('.accessory-photo').naturalWidth>0);
   check(`${label}: withdrawal access stays available without covering photos`,await page.locator('header .accessory-withdrawal').isVisible()&&await page.locator('.withdrawal-access').count()===0);
@@ -32,9 +32,22 @@ try{
   check(`${label}: four package choices`,await page.getByRole('radio').count()===4);
   check(`${label}: navigation visible`,await page.locator('header nav').isVisible());
   check(`${label}: no horizontal overflow`,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-  check(`${label}: compact product card`,(await page.locator('.accessory-card').boundingBox()).width<=600);
+  const galleryBox=await page.locator('.accessory-gallery').boundingBox(),purchaseBox=await page.locator('.accessory-purchase').boundingBox();
+  check(`${label}: responsive detail layout`,width>800?galleryBox.x+galleryBox.width<=purchaseBox.x+1&&Math.abs(galleryBox.y-purchaseBox.y)<2:galleryBox.y+galleryBox.height<=purchaseBox.y);
+  check(`${label}: exact navigation order`,JSON.stringify(await page.locator('header nav a').allTextContents())===JSON.stringify(['Shop','Zubehör','Über uns','Ratgeber','FAQ','Vertrag widerrufen']));
+  if(label==='desktop')check('desktop: purchase button available in first viewport',(await page.locator('.accessory-add').boundingBox()).y+(await page.locator('.accessory-add').boundingBox()).height<=height);
+  for(const [index,name] of ['Sticker auf heller Oberfläche','Sticker in der Hand','VOID-Muster nach dem Ablösen'].entries()){
+   await page.getByRole('button',{name,exact:true}).click();await page.waitForFunction(()=>document.querySelector('.accessory-photo').complete&&document.querySelector('.accessory-photo').naturalWidth>0);
+   check(`${label}: original photo ${index+1} fully contained`,await photo.evaluate(img=>{const css=getComputedStyle(img);return css.objectFit==='contain'&&css.transform==='none'&&img.naturalWidth>0&&img.naturalHeight>0;}));
+   await page.locator('.accessory-gallery').screenshot({animations:'disabled',path:out+'/'+label+'-photo-'+(index+1)+'.png'});
+  }
+  await page.getByRole('button',{name:'Sticker auf heller Oberfläche',exact:true}).click();
+  await page.locator('.accessory-gallery .gallery-next').click();check(`${label}: gallery next arrow`,(await photo.getAttribute('alt')).includes('Fingern'));await page.locator('.accessory-gallery .gallery-prev').click();
+  await photo.scrollIntoViewIfNeeded();const swipeBox=await photo.boundingBox(),startX=swipeBox.x+swipeBox.width*.8,endX=swipeBox.x+swipeBox.width*.2,swipeY=swipeBox.y+swipeBox.height*.5;
+  if(width<=600){const cdp=await context.newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:startX,y:swipeY}]});for(let step=1;step<=5;step++)await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:startX+(endX-startX)*step/5,y:swipeY}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();}else{await page.mouse.move(startX,swipeY);await page.mouse.down();await page.mouse.move(endX,swipeY,{steps:5});await page.mouse.up();}check(`${label}: horizontal swipe`,(await photo.getAttribute('alt')).includes('Fingern'));
+  await page.getByRole('button',{name:'Sticker auf heller Oberfläche',exact:true}).click();
   for(const [units,price] of [[1,99],[5,349],[10,599],[25,1199]]){
-   const radio=page.locator(`input[value="void-${units}"]`);await radio.check();check(`${label}: ${units} pack price`,(await radio.locator('..').innerText()).includes(money(price)+' pro Paket'));
+   const radio=page.locator(`input[value="void-${units}"]`);await radio.check();check(`${label}: selected ${units} package price`,await page.locator('.accessory-selected-price').innerText()===money(price));check(`${label}: ${units} pack price`,(await radio.locator('..').innerText()).includes(money(price)+' pro Paket'));
    await page.locator('.accessory-add').click();
   }
   await page.evaluate(()=>scrollTo(0,0));await page.screenshot({animations:'disabled',path:`${out}/${label}.png`,fullPage:true});
@@ -49,6 +62,8 @@ try{
   check(`${label}: two 25-packs total`,await page.locator('#total').innerText()===money(2508));
   await page.locator('#drawer').screenshot({animations:'disabled',path:`${out}/${label}-sticker-cart.png`});
   await page.locator('[data-close]').click();await page.getByRole('link',{name:'Shop',exact:true}).click();await page.waitForSelector('#products .product');
+  check(`${label}: homepage navigation order`,JSON.stringify(await page.locator('header nav a').allTextContents())===JSON.stringify(['Shop','Zubehör','Über uns','Ratgeber','FAQ','Vertrag widerrufen']));
+  const homeGallery=page.locator('#products .product-gallery').first(),homeImage=homeGallery.locator('.gallery-main'),initialSource=await homeImage.getAttribute('src');await homeGallery.locator('.gallery-next').click();check(`${label}: homepage next arrow works`,(await homeImage.getAttribute('src'))!==initialSource);await homeGallery.locator('.gallery-prev').click();check(`${label}: homepage previous arrow works`,(await homeImage.getAttribute('src'))===initialSource);
   check(`${label}: homepage exactly two plate cards`,await page.locator('#products .product').count()===2);
   check(`${label}: homepage has no sticker product card`,await page.locator('.accessory-card,.accessory-add,.add[data-id^="void-"]').count()===0);
   check(`${label}: homepage accessory link visible`,await page.locator('header a[href="/zubehoer"]').isVisible());
@@ -63,7 +78,7 @@ try{
   await page.locator('.checkout-start').click();await page.getByText('Lokale Demo: Keine Zahlung wird gestartet.',{exact:false}).waitFor();
   check(`${label}: local checkout safely blocked`,true);await page.locator('[data-close]').click();
   for(const path of ['/steel-seed-phrase-recovery','/steel-seed-phrase-recovery-plate']){
-   await page.goto(origin+path);check(`${label}: ${path} has no accessory upsell`,await page.locator('.accessory-card,.accessory-add,.add[data-id^="void-"]').count()===0);
+   await page.goto(origin+path);check(`${label}: ${path} navigation order`,JSON.stringify(await page.locator('header nav a').allTextContents())===JSON.stringify(['Shop','Zubehör','Über uns','Ratgeber','FAQ','Vertrag widerrufen']));const plateImage=page.locator('.product-gallery .gallery-main').first(),plateThumbs=page.locator('.product-gallery .gallery-thumb');const secondSrc=await plateThumbs.nth(1).getAttribute('data-image');await plateThumbs.nth(1).click();check(`${label}: ${path} shared thumbnail works`,(await plateImage.getAttribute('src'))===secondSrc);await plateImage.press('Enter');await page.waitForSelector('.product-lightbox[open]');await page.getByRole('button',{name:'Bildansicht schließen'}).click();check(`${label}: ${path} enlargement closes`,await page.locator('.product-lightbox[open]').count()===0);check(`${label}: ${path} has no accessory upsell`,await page.locator('.accessory-card,.accessory-add,.add[data-id^="void-"]').count()===0);
    check(`${label}: ${path} navigation works`,await page.locator('header a[href="/zubehoer"]').isVisible());await page.locator('header a[href="/zubehoer"]').click();await page.waitForSelector('.accessory-card');
   }
   await page.reload();await page.locator('[data-cart]').click();await page.waitForFunction(()=>{const r=document.getElementById('drawer').getBoundingClientRect();return Math.abs(r.right-innerWidth)<1&&r.left>=0;});await page.waitForSelector('.cartline');check(`${label}: cart persists across navigation`,await page.locator('.cartline').count()===2);

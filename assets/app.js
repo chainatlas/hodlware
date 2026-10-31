@@ -43,52 +43,7 @@ document.querySelector('[data-cart]').onclick=()=>{drawer.classList.add('open');
 document.querySelector('[data-close]').onclick=shade.onclick=()=>{drawer.classList.remove('open');shade.classList.remove('open')};
 update();
 const checkoutScript=document.createElement('script');checkoutScript.src='assets/checkout.js';document.head.append(checkoutScript);
-// Gallery switches original product photos without altering their contents.
-document.querySelectorAll('.gallery-thumb').forEach(button => {
-  button.addEventListener('click', () => {
-    const gallery = button.closest('.product-gallery');
-    const image = gallery.querySelector('.gallery-main');
-    image.removeAttribute('srcset');
-    image.src = button.dataset.image;
-    if(button.dataset.small)image.srcset=`${button.dataset.small} 640w, ${button.dataset.image} ${button.dataset.width||1536}w`;
-    image.alt = button.dataset.alt;
-    gallery.querySelectorAll('.gallery-thumb').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
-  });
-});
-
-// Manual carousel: arrows, keyboard and horizontal pointer swipe; no autoplay.
-document.querySelectorAll('#products .product-gallery').forEach(gallery=>{
- const image=gallery.querySelector('.gallery-main'),visual=gallery.querySelector('.visual'),dots=[...gallery.querySelectorAll('.gallery-thumb')];
- const move=delta=>{const current=dots.findIndex(b=>b.getAttribute('aria-pressed')==='true');dots[(current+delta+dots.length)%dots.length].click();};
- gallery.querySelector('.gallery-prev').onclick=()=>move(-1);
- gallery.querySelector('.gallery-next').onclick=()=>move(1);
- visual.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();move(e.key==='ArrowRight'?1:-1);}});
- let start=null,suppressUntil=0;
- image.addEventListener('pointerdown',e=>{if(e.button!==0)return;start={x:e.clientX,y:e.clientY};image.setPointerCapture(e.pointerId);});
- image.addEventListener('pointerup',e=>{if(!start)return;const dx=e.clientX-start.x,dy=e.clientY-start.y;start=null;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)){suppressUntil=Date.now()+500;move(dx<0?1:-1);}});
- image.addEventListener('pointercancel',()=>{start=null;});
- image.addEventListener('click',e=>{if(Date.now()<suppressUntil){e.preventDefault();e.stopImmediatePropagation();}},true);
-});
-
-const detailPrice = document.querySelector('[data-detail-price]');
-if (detailPrice) {
-  detailPrice.textContent = euro(P.find(product => product.id === (detailPrice.dataset.detailPrice||'seedplate')).price);
-}
-
-// Enlarged view of the currently selected product photo.
-const galleryImages=document.querySelectorAll('.product-gallery .gallery-main');
-if(galleryImages.length){
- const lightbox=document.createElement('dialog');lightbox.className='product-lightbox';lightbox.setAttribute('aria-label','Vergrößerte Produktansicht');
- const close=document.createElement('button');close.type='button';close.className='lightbox-close';close.textContent='×';close.setAttribute('aria-label','Bildansicht schließen');
- const enlarged=document.createElement('img');lightbox.append(close,enlarged);document.body.append(lightbox);
- let previousOverflow='';
- close.addEventListener('click',()=>lightbox.close());
- lightbox.addEventListener('click',event=>{if(event.target===lightbox)lightbox.close();});
- lightbox.addEventListener('close',()=>{document.body.style.overflow=previousOverflow;});
- for(const image of galleryImages){
-  image.tabIndex=0;image.setAttribute('role','button');image.setAttribute('aria-label','Produktbild vergrößern');image.setAttribute('aria-haspopup','dialog');
-  const open=()=>{enlarged.src=image.src;enlarged.alt=image.alt;previousOverflow=document.body.style.overflow;lightbox.showModal();document.body.style.overflow='hidden';close.focus();};
-  image.addEventListener('click',open);
-  image.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open();}});
- }
-}
+// One gallery implementation for homepage cards, Plates and accessories.
+initProductGalleries();
+const detailPrice=document.querySelector('[data-detail-price]');
+if(detailPrice)detailPrice.textContent=euro(P.find(product=>product.id===(detailPrice.dataset.detailPrice||'seedplate')).price);
