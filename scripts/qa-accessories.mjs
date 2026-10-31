@@ -20,12 +20,13 @@ try{
   const page=await context.newPage();page.on('pageerror',e=>errors.push(`${label}: ${e.message}`));page.on('response',r=>{if(r.status()>=400&&!r.url().endsWith('/api/create-checkout-session'))errors.push(`${label}: HTTP ${r.status()} ${r.url()}`);});
   await page.goto(origin+'/zubehoer');await page.waitForFunction(()=>document.querySelector('.accessory-add')?.disabled===false);
   check(`${label}: one accessory card`,await page.locator('.accessory-card').count()===1);
+  check(`${label}: confirmed product dimensions and thin profile`,(await page.locator('.accessory-card').innerText()).includes('5 × 1 cm pro Sticker')&&(await page.locator('.accessory-card').innerText()).includes('Besonders dünn, trägt kaum auf'));
   check(`${label}: four package choices`,await page.getByRole('radio').count()===4);
   check(`${label}: navigation visible`,await page.locator('header nav').isVisible());
   check(`${label}: no horizontal overflow`,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   check(`${label}: compact product card`,(await page.locator('.accessory-card').boundingBox()).width<=600);
   for(const [units,price] of [[1,99],[5,349],[10,599],[25,1199]]){
-   const radio=page.locator(`input[value="void-${units}"]`);await radio.check();check(`${label}: ${units} pack price`,(await radio.locator('..').innerText()).includes(money(price)));
+   const radio=page.locator(`input[value="void-${units}"]`);await radio.check();check(`${label}: ${units} pack price`,(await radio.locator('..').innerText()).includes(money(price)+' pro Paket'));
    await page.locator('.accessory-add').click();
   }
   await page.evaluate(()=>scrollTo(0,0));await page.screenshot({animations:'disabled',path:`${out}/${label}.png`,fullPage:true});

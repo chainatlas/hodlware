@@ -4,7 +4,7 @@ import {DatabaseSync} from 'node:sqlite';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import Stripe from 'stripe';
-import {cartItems,sessionItems,subtotal,shipping,physicalItems} from '../server/catalog.js';
+import {CATALOG,cartItems,sessionItems,subtotal,shipping,physicalItems} from '../server/catalog.js';
 import {availability,reserve} from '../server/inventory.js';
 import {context,APP,parameters,verified,record,create,webhook,status,digest} from '../server/checkout.js';
 const cookie='11111111-1111-4111-8111-111111111111';
@@ -63,4 +63,22 @@ test('accessory paid race rolls back order and plate transition atomically',asyn
 test('accessory migration is repeatable and preserves existing plate inventory and holds',async()=>{
  const {env,sql}=setup();sql.exec("UPDATE product_inventory SET stock=23 WHERE product_id='recoveryplate4'");await reserve(env,'b'.repeat(64),2);
  sql.exec(readFileSync(new URL('../migrations/0004_accessory_inventory.sql',import.meta.url),'utf8'));assert.equal(sql.prepare("SELECT stock FROM product_inventory WHERE product_id='recoveryplate4'").get().stock,23);assert.equal(sql.prepare('SELECT quantity FROM stock_reservations').get().quantity,2);assert.equal(sql.prepare("SELECT stock FROM product_inventory WHERE product_id='void-stickers'").get().stock,100);sql.close();
+});
+
+test('approved package prices and confirmed properties agree across server and public catalog',()=>{
+ const ctx={window:{HODL_PRODUCTS:[]}};vm.runInNewContext(readFileSync(new URL('../assets/accessory-products.js',import.meta.url),'utf8'),ctx);
+ for(const [units,price] of [[1,99],[5,349],[10,599],[25,1199]]){
+  const id='void-'+units,product=CATALOG[id],publicProduct=ctx.window.HODL_PRODUCTS.find(p=>p.id===id);
+  assert.equal(product.price,price);assert.equal(publicProduct.price,price/100);assert.equal(product.units,units);assert.equal(product.priceEnv,'STRIPE_PRICE_ID_VOID_'+units);
+  assert.equal(product.dimensions.widthCm,5);assert.equal(product.dimensions.heightCm,1);assert.equal(publicProduct.dimensions.widthCm,5);assert.equal(publicProduct.dimensions.heightCm,1);
+  for(const text of ['besonders dünnen','kaum auf','unauffällig','Oberfläche','Umgebungsbedingungen'])assert.ok(product.description.includes(text),text);
+  assert.ok(product.features.includes('Abmessungen: 5 × 1 cm pro Sticker'));assert.equal(publicProduct.description,product.description);assert.equal(publicProduct.profile,product.profile);assert.ok(!/\d+[.,]?\d*\s*mm/.test(product.description));
+  const items=[{id,quantity:2}];assert.equal(subtotal(items),price*2);assert.equal(sessionItems({metadata:{items:JSON.stringify(items)}})[0].unitPrice,price);
+ }
+});
+test('price approval leaves the prepared sale configuration locked and Stripe IDs empty',()=>{
+ const example=readFileSync(new URL('../.dev.vars.example',import.meta.url),'utf8');for(const flag of ['ACCESSORIES_ENABLED','ACCESSORIES_PRICES_APPROVED','ACCESSORIES_STOCK_CONFIRMED'])assert.ok(example.includes(flag+'="false"'));for(const n of [1,5,10,25])assert.ok(example.includes('STRIPE_PRICE_ID_VOID_'+n+'=""'));
+});
+test('storefront explicitly labels package prices and no longer requests price approval',()=>{
+ const source=readFileSync(new URL('../assets/accessories.js',import.meta.url),'utf8');assert.ok(source.includes('pro Paket'));assert.ok(readFileSync(new URL('../assets/checkout.js',import.meta.url),'utf8').includes("product.category==='accessories'?'pro Paket':'pro Stück'"));const page=readFileSync(new URL('../zubehoer.html',import.meta.url),'utf8');assert.ok(page.includes('Paketpreise freigegeben'));assert.ok(page.includes('Verkauf weiterhin gesperrt'));assert.ok(!page.includes('Preise noch nicht freigegeben'));
 });

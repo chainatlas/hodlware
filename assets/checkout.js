@@ -10,7 +10,7 @@ function render(){
  for(const item of lines){
   const product=P.find(p=>p.id===item.id),line=document.createElement('div');line.className='cartline';
   const name=document.createElement('p');name.textContent=product.name;line.append(name);
-  const price=document.createElement('p');price.textContent=`${euro(product.price)} pro Stück`;line.append(price);
+  const price=document.createElement('p');price.textContent=`${euro(product.price)} ${product.category==='accessories'?'pro Paket':'pro Stück'}`;line.append(price);
   const label=document.createElement('label');label.textContent='Menge ';const input=document.createElement('input');input.type='number';input.min='1';input.max=String(99-(n-item.quantity));input.step='1';input.value=String(item.quantity);input.setAttribute('aria-label','Menge: '+product.name);input.disabled=busy;
   input.addEventListener('change',()=>{const count=Number(input.value);if(Number.isInteger(count)&&count>=1&&count<=Number(input.max)){cart=cart.filter(id=>id!==item.id).concat(Array(count).fill(item.id));save();}else input.value=String(item.quantity);});label.append(input);line.append(label);
   const remove=document.createElement('button');remove.type='button';remove.textContent='Entfernen';remove.disabled=busy;remove.onclick=()=>{cart=cart.filter(id=>id!==item.id);save();};line.append(remove);items.append(line);

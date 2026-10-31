@@ -10,7 +10,7 @@ Der abschließende lokale Commit-Hash wird im Abschlussbericht im Chat genannt u
 
 - Eigenständiger Zubehörbereich `/zubehoer`, verlinkt in der Shopnavigation einschließlich Mobil-/Tabletansicht.
 - Erweiterbares Kartenraster; Varianten und öffentliche Katalogdaten werden aus dem serverseitigen Katalog erzeugt.
-- VOID-Pakete mit 1, 5, 10 und 25 physischen Stickern; Preise vorläufig 0,99 / 3,49 / 5,99 / 11,99 EUR.
+- VOID-Pakete mit 1, 5, 10 und 25 physischen Stickern; Verbindlich freigegebene Paketpreise: 0,99 / 3,49 / 5,99 / 11,99 EUR.
 - Gemeinsamer Warenkorb bleibt über Seitenwechsel erhalten. Mengen ändern und Positionen entfernen funktionieren.
 - Serverseitige Preise, Versandklassen und Prüfung tatsächlicher Stripe-Preise. Stickerbestellung: 110 Cent; mindestens eine Plate: einmalig 619 Cent.
 - Paketmengen werden auf einen gemeinsamen physischen Stickerbestand abgebildet. Zwei 25er-Pakete reservieren 50 Sticker.
@@ -21,9 +21,9 @@ Der abschließende lokale Commit-Hash wird im Abschlussbericht im Chat genannt u
 
 ## Verifikation
 
-- Vollständige Node-Testsuite: 117 bestanden, 0 fehlgeschlagen.
+- Vollständige Node-Testsuite: 120 bestanden, 0 fehlgeschlagen.
 - Produktions-Build: statische Seiten einschließlich IndexNow-Manifest und Cloudflare-Pages-Worker erfolgreich kompiliert.
-- Playwright / Chrome: 172 Prüfungen über 1440×1000, 1024×900, 768×1024, 600×900, 390×844 und 320×740.
+- Playwright / Chrome: 178 Prüfungen über 1440×1000, 1024×900, 768×1024, 600×900, 390×844 und 320×740.
 - Geprüft: vier Paketpreise und Auswahl, Warenkorb mit allen Varianten, Mengenänderung auf zwei 25er-Pakete, Entfernen von Positionen, Sticker- und gemischter Versand, ein/zwei Plates, Gesamtsummen, persistierter Warenkorb, Navigation zwischen Zubehör/Startseite/Plate-Seiten, keine Upsells, gesperrte vergriffene Variante, alternative verfügbare Variante, keine horizontalen Überläufe.
 - Browseranfragen auf andere Ursprünge werden im Test blockiert; es gab keine externen Requests, Laufzeitfehler oder fehlenden Assets.
 - Playwright bedient einen eigenen Headless-Chrome-Prozess direkt. Keine Windows-Computersteuerung oder Browseradressenerkennung.
@@ -47,14 +47,14 @@ In dieser Arbeitskopie benötigte Wrangler `NODE_PATH` auf `node_modules/.pnpm/n
 
 Es wurden keine Stripe-Produkte oder Preise angelegt oder geändert. Es existieren in dieser Umsetzung noch keine zugewiesenen echten Preis-IDs.
 
-| Variante | Vorgeschlagener Paketpreis | Erforderliche Umgebungsvariable |
+| Variante | Freigegebener Paketpreis | Erforderliche Umgebungsvariable |
 |---|---:|---|
 | 1 Sticker | 0,99 EUR | `STRIPE_PRICE_ID_VOID_1` |
 | 5 Sticker | 3,49 EUR | `STRIPE_PRICE_ID_VOID_5` |
 | 10 Sticker | 5,99 EUR | `STRIPE_PRICE_ID_VOID_10` |
 | 25 Sticker | 11,99 EUR | `STRIPE_PRICE_ID_VOID_25` |
 
-Erst nach Preisfreigabe sind passende aktive einmalige EUR-Preise zu konfigurieren; keine wiederkehrenden Preise. Die Beträge und der Test-/Live-Modus werden serverseitig gegen den Katalog geprüft. Bestehende Variablen `STRIPE_PRICE_ID` und `STRIPE_PRICE_ID_PLATE4` bleiben unverändert. Die Versandkosten werden bereits serverseitig pro Checkout-Session berechnet; dafür ist kein neuer dauerhafter Stripe-Versandpreis erforderlich.
+Die Paketpreise sind verbindlich freigegeben. Passende aktive einmalige EUR-Preise dürfen erst nach gesonderter Freigabe für produktive Stripe-Änderungen konfiguriert werden; keine wiederkehrenden Preise. Die Beträge und der Test-/Live-Modus werden serverseitig gegen den Katalog geprüft. Bestehende Variablen `STRIPE_PRICE_ID` und `STRIPE_PRICE_ID_PLATE4` bleiben unverändert. Die Versandkosten werden bereits serverseitig pro Checkout-Session berechnet; dafür ist kein neuer dauerhafter Stripe-Versandpreis erforderlich.
 
 Die bestehende Webhook-Anbindung muss weiterhin `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed` und `checkout.session.expired` verarbeiten. Keine zusätzliche Live-Testzahlung wurde durchgeführt. Ein vollständiger Integrationstest in einer separat genehmigten Stripe-Testumgebung mit Cloudflare D1 und Mailversand steht vor Livegang noch aus; die lokale Prüfung simuliert diese Dienste.
 
@@ -78,11 +78,15 @@ Im bestehenden Repository wurden keine eigenständigen Originalproduktfotos der 
 
 Vor Livegang erforderlich:
 
-1. Endgültige Paketpreise 0,99 / 3,49 / 5,99 / 11,99 EUR bestätigen oder korrigieren.
+1. Erledigt: Paketpreise 0,99 / 3,49 / 5,99 / 11,99 EUR verbindlich bestätigt. Dies erteilt keine Aktivierungs- oder Stripe-LIVE-Freigabe.
 2. Tatsächlich verkaufbaren Stickerbestand bestätigen; Beigaben und Verbrauch berücksichtigen.
 3. Brieftarif 1,10 EUR und Eignung der Basis-Sendungsverfolgung bestätigen.
 4. Originalproduktfotos sowie Darstellung und Versandtexte freigeben. Die derzeit sichtbaren Vorbereitungshinweise vor Veröffentlichung an den genehmigten Verkaufsstatus anpassen.
 5. Stripe-Preis-IDs konfigurieren, D1-Migration/Bestandsinitialisierung und produktive Veröffentlichung jeweils gesondert genehmigen.
-6. Erst anschließend `ACCESSORIES_ENABLED`, `ACCESSORIES_PRICES_APPROVED` und `ACCESSORIES_STOCK_CONFIRMED` serverseitig auf `true` setzen. Ohne diese Freigabeschalter bleibt der Zubehörcheckout gesperrt. `.dev.vars.example` dokumentiert die abgeschalteten Standardwerte.
+6. Die Preisentscheidung ist dokumentiert; `ACCESSORIES_PRICES_APPROVED` bleibt in der vorbereiteten Laufzeitkonfiguration absichtlich `false`. Erst nach gesonderter Aktivierungsfreigabe `ACCESSORIES_ENABLED`, `ACCESSORIES_PRICES_APPROVED` und `ACCESSORIES_STOCK_CONFIRMED` serverseitig auf `true` setzen. Ohne diese Freigabeschalter bleibt der Zubehörcheckout gesperrt. `.dev.vars.example` dokumentiert die abgeschalteten Standardwerte.
 
 Keine produktiven Stripe-Aktionen, D1-Migrationen, Deployments, echten Zahlungen oder Kundenmails wurden durchgeführt. Kein Push oder Merge.
+
+## Bestätigte Produktangaben und Preisabnahme
+
+Maße je Sticker: 5 × 1 cm. Besonders dünn, trägt kaum auf; keine Materialstärke in Millimetern angegeben. Beschreibung, Eigenschaften, SEO-Produktdaten und generierter Frontendkatalog übernehmen diese Angaben. Der Hinweis auf Oberflächen- und Umgebungsabhängigkeit bleibt sichtbar. Variantenwahl und Warenkorb nennen den Preis ausdrücklich pro Paket; die physischen Stückzahlen dienen ausschließlich der Lagerberechnung. Zwei 25er-Pakete kosten 23,98 EUR und reservieren 50 Sticker. Alle drei Aktivierungsschalter bleiben unverändert gesperrt; Stripe-IDs bleiben leer. Die Screenshots und Browserergebnisse wurden mit den bestätigten Produktangaben und expliziten Paketpreisen neu erstellt.

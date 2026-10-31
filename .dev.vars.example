@@ -4,7 +4,9 @@ STRIPE_WEBHOOK_SECRET=""
 STRIPE_PRICE_ID=""
 SITE_URL="http://127.0.0.1:8788"
 
-# Accessories stay disabled until separately approved. Test prices only for local development.
+# Approved EUR package amounts: VOID_1=99, VOID_5=349, VOID_10=599, VOID_25=1199 cents.
+# Price approval does not activate sales. Keep all runtime flags disabled until release approval.
+# Price IDs remain empty; no production Stripe configuration is authorized.
 ACCESSORIES_ENABLED="false"
 ACCESSORIES_PRICES_APPROVED="false"
 ACCESSORIES_STOCK_CONFIRMED="false"
