@@ -74,3 +74,54 @@ test('signed paid webhook queues and sends one contract per recipient; retries a
   assert.equal(sql.prepare('SELECT COUNT(*) AS n FROM order_confirmations').get().n,1);assert.equal(sql.prepare("SELECT COUNT(*) AS n FROM mail_outbox WHERE state='sent'").get().n,2);
  });}finally{Stripe.createFetchHttpClient=original;sql.close();}
 });
+
+
+test('invoice carries exemption and complete issuer without changing payment settings',()=>{
+ const p=parameters({SITE_URL:'https://example.test',STRIPE_PRICE_ID:'price_fixture'},1,'fixture');
+ assert.equal(p.invoice_creation.enabled,true);
+ assert.equal(p.invoice_creation.invoice_data.footer,'Für diese Lieferung gilt die Steuerbefreiung für Kleinunternehmer gemäß § 19 UStG. Es wird keine Umsatzsteuer berechnet.');
+ assert.deepEqual(p.invoice_creation.invoice_data.custom_fields,[{name:'Rechnungsaussteller',value:'HODLWARE – Steffen Reizner'}]);
+ assert.equal(p.invoice_creation.invoice_data.issuer,undefined);
+ assert.equal(p.invoice_creation.invoice_data.days_until_due,undefined);
+ assert.equal(p.payment_method_types,undefined);assert.equal(p.automatic_tax.enabled,false);
+ assert.equal(p.line_items[0].quantity,1);assert.equal(p.shipping_options.length,1);assert.equal(p.shipping_options[0].shipping_rate_data.fixed_amount.amount,619);
+});
+const mailOrder=email=>({id:'cs_test_mail_roles',metadata:{quantity:'1',contractVersion:'2026-10-11'},customer_details:{email},shipping_details:{name:'Testperson',address:{line1:'Teststraße 1',postal_code:'00000',city:'Teststadt',country:'DE'}},amount_subtotal:7900,amount_total:8519,total_details:{amount_discount:0,amount_shipping:619}});
+test('operator has distinct subject, customer confirmation and immutable snapshot stay intact',async()=>{
+ const {env,sql}=setup();const number=await queueOrder(env,mailOrder('customer@example.test'),'card');
+ const customer=JSON.parse(sql.prepare("SELECT payload FROM mail_outbox WHERE id LIKE '%-customer'").get().payload);
+ const operator=JSON.parse(sql.prepare("SELECT payload FROM mail_outbox WHERE id LIKE '%-operator'").get().payload);
+ const snapshot=JSON.parse(sql.prepare('SELECT snapshot FROM order_confirmations').get().snapshot);
+ assert.equal(customer.subject,'HODLWARE: Bestellbestätigung '+number);assert.deepEqual(customer.to,['customer@example.test']);
+ assert.equal(customer.text,snapshot.text);assert.ok(customer.text.startsWith('Bestell- und Vertragsbestätigung\nBestellnummer: '+number));
+ assert.ok(customer.text.includes('Muster-Widerrufsformular'));assert.ok(customer.text.includes('Gemäß § 19 UStG ohne Ausweis der Umsatzsteuer.'));
+ assert.equal(operator.subject,'HODLWARE – Neue bezahlte Bestellung');assert.equal(operator.text,customer.text);sql.close();
+});
+test('identical recipient ignoring case queues and sends only one complete confirmation',async()=>{
+ const {env,sql}=setup(),s=mailOrder('STEFFENREIZNER@WEB.DE');
+ await Promise.all([queueOrder(env,s,'card'),queueOrder(env,s,'card')]);await queueOrder(env,s,'card');
+ assert.equal(sql.prepare('SELECT COUNT(*) AS n FROM order_confirmations').get().n,1);assert.equal(sql.prepare('SELECT COUNT(*) AS n FROM mail_outbox').get().n,1);
+ const calls=[];const send=async(url,options)=>{calls.push({key:options.headers['Idempotency-Key'],payload:JSON.parse(options.body)});return Response.json({id:'simulated-only'});};
+ await Promise.all([deliver(env,'order-'+s.id+'-customer',send),deliver(env,'order-'+s.id+'-customer',send)]);
+ assert.equal(await deliver(env,'order-'+s.id+'-operator',send),false);
+ assert.equal(calls.length,1);assert.equal(calls[0].key,'order-'+s.id+'-customer');
+ assert.ok(calls[0].payload.text.includes('Allgemeine Geschäftsbedingungen'));assert.ok(calls[0].payload.text.includes('Muster-Widerrufsformular'));assert.ok(calls[0].payload.text.includes('Gesamt: 85,19 EUR'));
+ assert.equal(sql.prepare("SELECT COUNT(*) AS n FROM mail_outbox WHERE state='sent'").get().n,1);sql.close();
+});
+
+test('signed webhook with shared customer/operator address preserves retry and paid idempotency',async()=>{
+ const {env,sql}=setup();Object.assign(env,{STRIPE_SECRET_KEY:'sk_test_unit_test_only',STRIPE_WEBHOOK_SECRET:'whsec_unit_test_only',STRIPE_PRICE_ID:'price_fixture'});
+ const session={id:'cs_test_fixture123',livemode:false,status:'complete',payment_status:'paid',currency:'eur',metadata:{app:APP,quantity:'1',contractVersion:'2026-10-11'},customer_details:{email:'steffenreizner@web.de'},shipping_details:{name:'Testperson',address:{line1:'Teststraße 1',postal_code:'00000',city:'Teststadt',country:'DE'}},amount_subtotal:7900,amount_total:8519,total_details:{amount_discount:0,amount_shipping:619,amount_tax:0},payment_intent:'pi_fixture'};
+ let intentMode=true,mailCalls=0,intentCalls=0;
+ const original=Stripe.createFetchHttpClient;
+ Stripe.createFetchHttpClient=()=>original(async url=>Response.json(url.includes('/payment_intents/')?(intentCalls++,{livemode:intentMode,status:'succeeded',amount_received:8519,currency:'eur',payment_method:{type:'card'}}):session));
+ const call=async(type='checkout.session.completed')=>{const payload=JSON.stringify({id:'evt_fixture_'+type,livemode:false,type,data:{object:session}});return webhook({env,request:new Request(env.SITE_URL+'/api/stripe-webhook',{method:'POST',headers:{'stripe-signature':Stripe.webhooks.generateTestHeaderString({payload,secret:env.STRIPE_WEBHOOK_SECRET})},body:payload})});};
+ try{await withMail(async()=>{mailCalls++;return Response.json({id:'simulated-mail'});},async()=>{
+  assert.equal((await call()).status,503);assert.equal(mailCalls,0);assert.equal(sql.prepare('SELECT COUNT(*) AS n FROM order_confirmations').get().n,0);
+  intentMode=false;env.MAIL_WORKER_READY='false';assert.equal((await call()).status,503);assert.equal(mailCalls,0);env.MAIL_WORKER_READY='true';
+  assert.equal((await call()).status,200);assert.equal(mailCalls,1);assert.equal(intentCalls,2);
+  assert.equal((await call()).status,200);assert.equal((await call('checkout.session.async_payment_failed')).status,200);assert.equal(mailCalls,1);assert.equal(intentCalls,2);
+  assert.equal(sql.prepare('SELECT COUNT(*) AS n FROM checkout_orders').get().n,1);assert.equal(sql.prepare('SELECT state FROM checkout_orders').get().state,'paid');
+  assert.equal(sql.prepare('SELECT COUNT(*) AS n FROM order_confirmations').get().n,1);assert.equal(sql.prepare("SELECT COUNT(*) AS n FROM mail_outbox WHERE state='sent'").get().n,1);
+ });}finally{Stripe.createFetchHttpClient=original;sql.close();}
+});

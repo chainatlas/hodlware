@@ -14,10 +14,13 @@ export async function queueOrder(env,s,paymentMethod){
  const lines=items.map(item=>`${item.name}\n${CATALOG[item.id].description}\nArtikel: ${item.id}\nMenge: ${item.quantity}\nEinzelpreis: ${euro(item.unitPrice)}`).join('\n\n');
  const text=`Bestell- und Vertragsbestätigung\nBestellnummer: ${number}\nHODLWARE – Steffen Reizner, Einzelunternehmen\nBreite Str. 4, 91166 Georgensgmünd, Deutschland\n${OPERATOR}\n\n${lines}\nZwischensumme: ${euro(s.amount_subtotal)}\nRabatt: ${euro(s.total_details.amount_discount)}\nDHL Versand: ${euro(s.total_details.amount_shipping)}\nGesamt: ${euro(s.amount_total)}\nGemäß § 19 UStG ohne Ausweis der Umsatzsteuer.\nZahlungsart: ${paymentMethod}\nLieferzeit: 2–4 Werktage nach erfolgreicher Zahlung.\nLieferanschrift:\n${address}\n\nDeine Zahlung wurde erfolgreich bestätigt.\n\nAllgemeine Geschäftsbedingungen und Widerrufsunterlagen (${s.metadata.contractVersion}):\n${legal}`;
  const now=new Date().toISOString();
- // Both recipients and the immutable contract snapshot enter D1 in the same transaction.
+ // Keep the customer confirmation; an identical operator address needs no second copy.
+ const recipients=[{suffix:'customer',to:email}];
+ if(email.trim().toLowerCase()!==OPERATOR.trim().toLowerCase())recipients.push({suffix:'operator',to:OPERATOR});
+ // Recipients and the immutable contract snapshot enter D1 in the same transaction.
  await env.ORDERS.batch([
   env.ORDERS.prepare('INSERT OR IGNORE INTO order_confirmations(session_id,order_number,snapshot,created_at) VALUES(?,?,?,?)').bind(s.id,number,JSON.stringify({email,text,items}),now),
-  ...[{suffix:'customer',to:email},{suffix:'operator',to:OPERATOR}].map(({suffix,to})=>env.ORDERS.prepare('INSERT OR IGNORE INTO mail_outbox(id,payload,created_at) SELECT ?,?,? FROM order_confirmations WHERE session_id=? AND order_number=?').bind('order-'+s.id+'-'+suffix,JSON.stringify({from:env.MAIL_FROM,to:[to],reply_to:OPERATOR,subject:'HODLWARE: Bestellbestätigung '+number,text}),Date.now(),s.id,number))
+  ...recipients.map(({suffix,to})=>env.ORDERS.prepare('INSERT OR IGNORE INTO mail_outbox(id,payload,created_at) SELECT ?,?,? FROM order_confirmations WHERE session_id=? AND order_number=?').bind('order-'+s.id+'-'+suffix,JSON.stringify({from:env.MAIL_FROM,to:[to],reply_to:OPERATOR,subject:suffix==='customer'?'HODLWARE: Bestellbestätigung '+number:'HODLWARE – Neue bezahlte Bestellung',text}),Date.now(),s.id,number))
  ]);
  return (await env.ORDERS.prepare('SELECT order_number FROM order_confirmations WHERE session_id=?').bind(s.id).first()).order_number;
 }
