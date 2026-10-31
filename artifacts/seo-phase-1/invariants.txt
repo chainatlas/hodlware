@@ -1,0 +1,2 @@
+Non-image product data, including all prices, unchanged.
+48 derivatives: proportional, no upscaling, within one pixel of source aspect ratio.

@@ -1,0 +1,418 @@
+[
+  {
+    "source": "assets/images/steel-recovery-8-digits-01.png",
+    "bytes": 1686788,
+    "width": 1394,
+    "height": 1128,
+    "outputs": {
+      "-optimized": {
+        "file": "assets/images/steel-recovery-8-digits-01-optimized.webp",
+        "width": 1280,
+        "height": 1036,
+        "bytes": 125086
+      },
+      "-640": {
+        "file": "assets/images/steel-recovery-8-digits-01-640.webp",
+        "width": 640,
+        "height": 518,
+        "bytes": 37228
+      },
+      "-thumb": {
+        "file": "assets/images/steel-recovery-8-digits-01-thumb.webp",
+        "width": 160,
+        "height": 129,
+        "bytes": 4040
+      }
+    }
+  },
+  {
+    "source": "assets/images/steel-recovery-8-digits-02.png",
+    "bytes": 1419758,
+    "width": 1619,
+    "height": 972,
+    "outputs": {
+      "-optimized": {
+        "file": "assets/images/steel-recovery-8-digits-02-optimized.webp",
+        "width": 1280,
+        "height": 768,
+        "bytes": 63128
+      },
+      "-640": {
+        "file": "assets/images/steel-recovery-8-digits-02-640.webp",
+        "width": 640,
+        "height": 384,
+        "bytes": 20310
+      },
+      "-thumb": {
+        "file": "assets/images/steel-recovery-8-digits-02-thumb.webp",
+        "width": 160,
+        "height": 96,
+        "bytes": 2892
+      }
+    }
+  },
+  {
+    "source": "assets/images/steel-recovery-8-digits-03.png",
+    "bytes": 1320736,
+    "width": 1674,
+    "height": 940,
+    "outputs": {
+      "-optimized": {
+        "file": "assets/images/steel-recovery-8-digits-03-optimized.webp",
+        "width": 1280,
+        "height": 719,
+        "bytes": 53012
+      },
+      "-640": {
+        "file": "assets/images/steel-recovery-8-digits-03-640.webp",
+        "width": 640,
+        "height": 359,
+        "bytes": 14462
+      },
+      "-thumb": {
+        "file": "assets/images/steel-recovery-8-digits-03-thumb.webp",
+        "width": 160,
+        "height": 90,
+        "bytes": 1776
+      }
+    }
+  },
+  {
+    "source": "assets/images/steel-recovery-8-digits-04.png",
+    "bytes": 1484230,
+    "width": 1708,
+    "height": 920,
+    "outputs": {
+      "-optimized": {
+        "file": "assets/images/steel-recovery-8-digits-04-optimized.webp",
+        "width": 1280,
+        "height": 689,
+        "bytes": 59980
+      },
+      "-640": {
+        "file": "assets/images/steel-recovery-8-digits-04-640.webp",
+        "width": 640,
+        "height": 345,
+        "bytes": 15856
+      },
+      "-thumb": {
+        "file": "assets/images/steel-recovery-8-digits-04-thumb.webp",
+        "width": 160,
+        "height": 86,
+        "bytes": 1920
+      }
+    }
+  },
+  {
+    "source": "assets/images/steel-recovery-8-digits-05.png",
+    "bytes": 1242403,
+    "width": 1617,
+    "height": 973,
+    "outputs": {
+      "-optimized": {
+        "file": "assets/images/steel-recovery-8-digits-05-optimized.webp",
+        "width": 1280,
+        "height": 770,
+        "bytes": 56018
+      },
+      "-640": {
+        "file": "assets/images/steel-recovery-8-digits-05-640.webp",
+        "width": 640,
+        "height": 385,
+        "bytes": 13478
+      },
+      "-thumb": {
+        "file": "assets/images/steel-recovery-8-digits-05-thumb.webp",
+        "width": 160,
+        "height": 96,
+        "bytes": 1242
+      }
+    }
+  },
+  {
+    "source": "assets/images/steel-recovery-8-digits-06.png",
+    "bytes": 1708928,
+    "width": 1378,
+    "height": 1142,
+    "outputs": {
+      "-optimized": {
+        "file": "assets/images/steel-recovery-8-digits-06-optimized.webp",
+        "width": 1280,
+        "height": 1061,
+        "bytes": 131540
+      },
+      "-640": {
+        "file": "assets/images/steel-recovery-8-digits-06-640.webp",
+        "width": 640,
+        "height": 530,
+        "bytes": 39182
+      },
+      "-thumb": {
+        "file": "assets/images/steel-recovery-8-digits-06-thumb.webp",
+        "width": 160,
+        "height": 133,
+        "bytes": 3408
+      }
+    }
+  },
+  {
+    "source": "assets/images/steel-recovery-8-digits-07.png",
+    "bytes": 2783532,
+    "width": 1061,
+    "height": 1483,
+    "outputs": {
+      "-optimized": {
+        "file": "assets/images/steel-recovery-8-digits-07-optimized.webp",
+        "width": 1061,
+        "height": 1483,
+        "bytes": 387578
+      },
+      "-640": {
+        "file": "assets/images/steel-recovery-8-digits-07-640.webp",
+        "width": 640,
+        "height": 895,
+        "bytes": 149536
+      },
+      "-thumb": {
+        "file": "assets/images/steel-recovery-8-digits-07-thumb.webp",
+        "width": 160,
+        "height": 224,
+        "bytes": 7052
+      }
+    }
+  },
+  {
+    "source": "assets/images/steel-recovery-8-digits-08.png",
+    "bytes": 2124468,
+    "width": 1465,
+    "height": 1073,
+    "outputs": {
+      "-optimized": {
+        "file": "assets/images/steel-recovery-8-digits-08-optimized.webp",
+        "width": 1280,
+        "height": 938,
+        "bytes": 262612
+      },
+      "-640": {
+        "file": "assets/images/steel-recovery-8-digits-08-640.webp",
+        "width": 640,
+        "height": 469,
+        "bytes": 61630
+      },
+      "-thumb": {
+        "file": "assets/images/steel-recovery-8-digits-08-thumb.webp",
+        "width": 160,
+        "height": 117,
+        "bytes": 2622
+      }
+    }
+  },
+  {
+    "source": "assets/images/steel-recovery-8-digits-silver-01.webp",
+    "bytes": 657346,
+    "width": 1536,
+    "height": 1024,
+    "outputs": {
+      "-optimized": {
+        "file": "assets/images/steel-recovery-8-digits-silver-01-optimized.webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 70078
+      },
+      "-640": {
+        "file": "assets/images/steel-recovery-8-digits-silver-01-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 22160
+      },
+      "-thumb": {
+        "file": "assets/images/steel-recovery-8-digits-silver-01-thumb.webp",
+        "width": 160,
+        "height": 107,
+        "bytes": 2368
+      }
+    }
+  },
+  {
+    "source": "assets/images/steel-recovery-8-digits-silver-02.webp",
+    "bytes": 631100,
+    "width": 1536,
+    "height": 1024,
+    "outputs": {
+      "-optimized": {
+        "file": "assets/images/steel-recovery-8-digits-silver-02-optimized.webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 50290
+      },
+      "-640": {
+        "file": "assets/images/steel-recovery-8-digits-silver-02-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 17890
+      },
+      "-thumb": {
+        "file": "assets/images/steel-recovery-8-digits-silver-02-thumb.webp",
+        "width": 160,
+        "height": 107,
+        "bytes": 2428
+      }
+    }
+  },
+  {
+    "source": "assets/images/steel-recovery-8-digits-silver-03.webp",
+    "bytes": 534146,
+    "width": 1536,
+    "height": 1024,
+    "outputs": {
+      "-optimized": {
+        "file": "assets/images/steel-recovery-8-digits-silver-03-optimized.webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 39718
+      },
+      "-640": {
+        "file": "assets/images/steel-recovery-8-digits-silver-03-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 12324
+      },
+      "-thumb": {
+        "file": "assets/images/steel-recovery-8-digits-silver-03-thumb.webp",
+        "width": 160,
+        "height": 107,
+        "bytes": 1474
+      }
+    }
+  },
+  {
+    "source": "assets/images/steel-recovery-8-digits-silver-04.webp",
+    "bytes": 548370,
+    "width": 1536,
+    "height": 1024,
+    "outputs": {
+      "-optimized": {
+        "file": "assets/images/steel-recovery-8-digits-silver-04-optimized.webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 42508
+      },
+      "-640": {
+        "file": "assets/images/steel-recovery-8-digits-silver-04-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 12688
+      },
+      "-thumb": {
+        "file": "assets/images/steel-recovery-8-digits-silver-04-thumb.webp",
+        "width": 160,
+        "height": 107,
+        "bytes": 1430
+      }
+    }
+  },
+  {
+    "source": "assets/images/steel-recovery-8-digits-silver-05.webp",
+    "bytes": 569086,
+    "width": 1536,
+    "height": 1024,
+    "outputs": {
+      "-optimized": {
+        "file": "assets/images/steel-recovery-8-digits-silver-05-optimized.webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 43066
+      },
+      "-640": {
+        "file": "assets/images/steel-recovery-8-digits-silver-05-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 12416
+      },
+      "-thumb": {
+        "file": "assets/images/steel-recovery-8-digits-silver-05-thumb.webp",
+        "width": 160,
+        "height": 107,
+        "bytes": 1032
+      }
+    }
+  },
+  {
+    "source": "assets/images/steel-recovery-8-digits-silver-06.webp",
+    "bytes": 588250,
+    "width": 1536,
+    "height": 1024,
+    "outputs": {
+      "-optimized": {
+        "file": "assets/images/steel-recovery-8-digits-silver-06-optimized.webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 68802
+      },
+      "-640": {
+        "file": "assets/images/steel-recovery-8-digits-silver-06-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 20830
+      },
+      "-thumb": {
+        "file": "assets/images/steel-recovery-8-digits-silver-06-thumb.webp",
+        "width": 160,
+        "height": 107,
+        "bytes": 1868
+      }
+    }
+  },
+  {
+    "source": "assets/images/steel-recovery-8-digits-silver-07.webp",
+    "bytes": 686504,
+    "width": 1536,
+    "height": 1024,
+    "outputs": {
+      "-optimized": {
+        "file": "assets/images/steel-recovery-8-digits-silver-07-optimized.webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 95112
+      },
+      "-640": {
+        "file": "assets/images/steel-recovery-8-digits-silver-07-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 24482
+      },
+      "-thumb": {
+        "file": "assets/images/steel-recovery-8-digits-silver-07-thumb.webp",
+        "width": 160,
+        "height": 107,
+        "bytes": 1908
+      }
+    }
+  },
+  {
+    "source": "assets/images/steel-recovery-8-digits-silver-08.webp",
+    "bytes": 994244,
+    "width": 1536,
+    "height": 1024,
+    "outputs": {
+      "-optimized": {
+        "file": "assets/images/steel-recovery-8-digits-silver-08-optimized.webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 172062
+      },
+      "-640": {
+        "file": "assets/images/steel-recovery-8-digits-silver-08-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 39178
+      },
+      "-thumb": {
+        "file": "assets/images/steel-recovery-8-digits-silver-08-thumb.webp",
+        "width": 160,
+        "height": 107,
+        "bytes": 2236
+      }
+    }
+  }
+]

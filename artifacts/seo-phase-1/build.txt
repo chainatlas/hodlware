@@ -1,0 +1,8 @@
+
+> build
+> node scripts/build.mjs && wrangler pages functions build --outdir dist/_worker.js
+
+
+ ⛅️ wrangler 4.145.0 (update available 4.156.0)
+───────────────────────────────────────────────
+✨ Compiled Worker successfully
