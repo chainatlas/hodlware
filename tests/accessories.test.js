@@ -114,10 +114,10 @@ test('competing variant packages cannot reserve beyond the confirmed 1800 physic
 test('three original photos have optimized responsive files, factual alt text and unchanged proportions',()=>{
  const manifest=JSON.parse(readFileSync(new URL('../artifacts/accessories-review/photo-manifest.json',import.meta.url),'utf8'));
  assert.deepEqual(manifest.photos.map(p=>p.source),['void only white.png','void white with hand.png','void2.png']);
- const photos=CATALOG['void-1'].images;assert.equal(photos.length,3);
+ const photos=CATALOG['void-1'].images;assert.equal(photos.length,3);for(const photo of manifest.photos){assert.equal(photo.outputs[0].width,1440);assert.equal(photo.outputs[0].height,960);}
  for(const [index,photo] of photos.entries()){
   assert.ok(photo.alt.length>30);assert.ok(!photo.alt.includes('Platzhalter'));assert.match(manifest.photos[index].sourceSha256,/^[a-f0-9]{64}$/);
-  for(const output of manifest.photos[index].outputs){const bytes=readFileSync(new URL('../'+output.file,import.meta.url));assert.equal(bytes.length,output.bytes);assert.equal(bytes.toString('ascii',0,4),'RIFF');assert.equal(bytes.toString('ascii',8,12),'WEBP');assert.ok(Math.abs(output.width/output.height-manifest.photos[index].sourceWidth/manifest.photos[index].sourceHeight)<0.02);assert.ok(output.bytes<manifest.photos[index].sourceBytes/5);}
+  for(const output of manifest.photos[index].outputs){const bytes=readFileSync(new URL('../'+output.file,import.meta.url));assert.equal(bytes.length,output.bytes);assert.equal(bytes.toString('ascii',0,4),'RIFF');assert.equal(bytes.toString('ascii',8,12),'WEBP');assert.ok(Math.abs(output.width/output.height-(manifest.photos[index].effectiveWidth||manifest.photos[index].sourceWidth)/(manifest.photos[index].effectiveHeight||manifest.photos[index].sourceHeight))<0.02);assert.ok(output.bytes<manifest.photos[index].sourceBytes/5);}
   for(const file of [photo.src,photo.small,photo.thumb])assert.ok(readFileSync(new URL('../'+file,import.meta.url)).length>0);
  }
  const source=readFileSync(new URL('../assets/accessories.js',import.meta.url),'utf8');assert.ok(!source.includes('photo-placeholder'));assert.ok(!source.includes('PRODUKTFOTO FOLGT'));

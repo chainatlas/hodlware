@@ -1,5 +1,5 @@
 {
-  "method": "Proportional resize only; WebP quality 90. No cropping, retouching, color or product alterations.",
+  "method": "WebP quality 90 with proportional resizing. First photo: approved background-only extension to 3:2; original product band preserved exactly. Other photos unchanged.",
   "photos": [
     {
       "source": "void only white.png",
@@ -7,24 +7,29 @@
       "sourceBytes": 2670936,
       "sourceWidth": 1891,
       "sourceHeight": 831,
+      "editedSource": "assets/source/void-sticker-original-extended.png",
+      "editedSourceSha256": "d8d12b47a7a11b00d71ec531dec18d7d5a10104ff6db322bae95026ce80b24f9",
+      "effectiveWidth": 1536,
+      "effectiveHeight": 1024,
+      "edit": "Background extended to 3:2. Protected original product band preserved exactly; see background-extension.json.",
       "outputs": [
         {
-          "file": "assets/images/void/void-sticker-original.webp",
+          "file": "assets/images/void/void-sticker-original-extended.webp",
           "width": 1440,
-          "height": 633,
-          "bytes": 203354
+          "height": 960,
+          "bytes": 243530
         },
         {
-          "file": "assets/images/void/void-sticker-original-720.webp",
+          "file": "assets/images/void/void-sticker-original-extended-720.webp",
           "width": 720,
-          "height": 316,
-          "bytes": 53166
+          "height": 480,
+          "bytes": 64196
         },
         {
-          "file": "assets/images/void/void-sticker-original-160.webp",
+          "file": "assets/images/void/void-sticker-original-extended-160.webp",
           "width": 160,
-          "height": 70,
-          "bytes": 3004
+          "height": 107,
+          "bytes": 3294
         }
       ]
     },

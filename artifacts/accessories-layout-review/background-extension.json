@@ -1,0 +1,22 @@
+{
+  "original": "void only white.png",
+  "originalSha256": "0cf2e4a5bd2c6a07c43d9aaba542fe950bdee57854319c0cfd1360eabf9fc568",
+  "tool": "built-in image_gen",
+  "generationFile": "exec-feebbb45-17f1-4b59-84a0-1a4ce8deff33.png",
+  "generationSha256": "6726712f1ec5ead1fb47f48c35562a7c07574b397804a0400ba90627e51fde17",
+  "output": "assets/source/void-sticker-original-extended.png",
+  "outputSha256": "d8d12b47a7a11b00d71ec531dec18d7d5a10104ff6db322bae95026ce80b24f9",
+  "width": 1536,
+  "height": 1024,
+  "originalBand": {
+    "top": 174,
+    "height": 675
+  },
+  "backgroundEdgeFadePixels": 72,
+  "protectedOriginalBand": {
+    "top": 246,
+    "height": 531
+  },
+  "protectedBandExactMatch": true,
+  "prompt": "Extend only the silver tabletop background above and below the original photo to 3:2; preserve the sticker, lettering, hologram, proportions, reflections and shadows; no white bars, borders or new objects."
+}

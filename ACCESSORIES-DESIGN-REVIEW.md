@@ -50,3 +50,11 @@ Wiederholung: `npm test`, `npm run build`, danach `node scripts/qa-accessories.m
 ## Nachkorrektur: durchgehender Bildhintergrund
 
 Der zusätzliche weiße Rahmen und die feste 3:2-Bildfläche wurden entfernt. Hauptbilder und Vorschaubilder erscheinen im natürlichen Seitenverhältnis, sodass ausschließlich der originale silberne Fotohintergrund sichtbar bleibt. Kein Retuschieren oder Generieren von Bildinhalten. Die Playwright-Prüfung vergleicht für jedes der drei Fotos zusätzlich das gerenderte mit dem natürlichen Seitenverhältnis und prüft, dass die Bildfläche keine zusätzlichen vertikalen Balken erzeugt. Weiterhin nur lokal, ohne Veröffentlichung.
+
+## Nachkorrektur: erstes Foto auf identische Bildgröße erweitert
+
+Auf ausdrücklichen Wunsch wurde ausschließlich beim ersten Foto der silberne Hintergrund oben und unten mit dem eingebauten ImageGen-Werkzeug erweitert. Neue Masterdatei: `assets/source/void-sticker-original-extended.png` (1536 × 1024), Webausgaben `assets/images/void/void-sticker-original-extended.webp` (1440 × 960), `-720.webp` und `-160.webp`. Damit sind jetzt alle drei Galerieansichten gleich groß und im Format 3:2, ohne weiße Füllbalken oder Beschnitt. Die Originaldatei bleibt erhalten.
+
+Der Originalfotobereich mit dem vollständigen Sticker wurde nach proportionaler Skalierung wieder in den erweiterten Hintergrund eingesetzt. Nur die reinen Hintergrundkanten außerhalb des Stickers wurden weich angeglichen. Ein bytegenauer Vergleich des geschützten Originalbildbands im verlustfreien Master bestätigt, dass der echte Sticker einschließlich Schrift und Hologrammmuster nicht neu erzeugt wurde. Nachweis: `artifacts/accessories-layout-review/background-extension.json`. Reproduzierbare Zusammensetzung: `scripts/extend-void-background.mjs`; Weboptimierung berücksichtigt den neuen Master.
+
+Verwendeter Prompt: „Extend only the silver tabletop background above and below the original photo to 3:2; preserve the sticker, lettering, hologram, proportions, reflections and shadows; no white bars, borders or new objects.“ Werkzeug: eingebautes `image_gen`. Die lokal eingebundene endgültige Datei verwendet den nachweislich erhaltenen Originalstickerbereich, nicht eine generierte Nachbildung. Keine Veröffentlichung.
