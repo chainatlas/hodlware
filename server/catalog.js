@@ -1,10 +1,11 @@
 // Server-owned catalog. Prices and identities never come from the browser.
 export const CATALOG=Object.freeze({
+ ...Object.fromEntries([1,5,10,25].map((units,i)=>[`void-${units}`,Object.freeze({name:`HODLWARE VOID-Manipulationssticker · ${units} Stück`,price:[99,349,599,1199][i],priceEnv:`STRIPE_PRICE_ID_VOID_${units}`,category:"accessories",productId:"void-stickers",productName:"HODLWARE VOID-Manipulationssticker",image:null,seo:{title:"HODLWARE VOID-Manipulationssticker",description:"Manipulationsindikator mit sichtbarem VOID-Muster beim Ablösen."},stockId:"void-stickers",units,shippingClass:"letter",description:"Beim Ablösen wird ein sichtbares VOID-Muster erkennbar. Kann Hinweise auf Ablöseversuche geben; kein garantierter Manipulationsschutz."})])),
  seedplate:Object.freeze({name:'Steel Seed Phrase Recovery Plate (8 Digits per Word)',price:7900,priceEnv:'STRIPE_PRICE_ID',description:'8 Zeichen pro Wort; 12/18/24 Seed-Wörter; Edelstahl. Set mit Plate, Metallbuchstaben, Schraubenzieher, Befestigungsteilen, Tasche und Void-Sticker.'}),
  recoveryplate4:Object.freeze({name:'Steel Seed Phrase Recovery Plate (4 Digit - BIP39)',price:7900,priceEnv:'STRIPE_PRICE_ID_PLATE4',description:'Erste 4 Buchstaben pro Wort; 12 oder 24 Wörter der englischen BIP39-Wortliste; Edelstahl 304 / V2A; 10,5 × 6 × 0,6 cm; 217 g. Mit Metallbuchstaben, Schraubendreher, 3 VOID-Sicherheitsstickern und BIP39-Anleitung.'})
 });
 export function cartItems(data){
- if(!data || Object.keys(data).join()!=='items' || !Array.isArray(data.items) || !data.items.length || data.items.length>2)throw Error('cart');
+ if(!data || Object.keys(data).join()!=='items' || !Array.isArray(data.items) || !data.items.length || data.items.length>Object.keys(CATALOG).length)throw Error('cart');
  const seen=new Set();
  return data.items.map(item=>{
   if(!item || Object.keys(item).sort().join()!=='id,quantity' || !Object.hasOwn(CATALOG,item.id) || seen.has(item.id) || !Number.isInteger(item.quantity) || item.quantity<1 || item.quantity>99)throw Error('cart');
@@ -16,3 +17,7 @@ export function sessionItems(s){
  return items.map(item=>({...item,name:CATALOG[item.id].name,unitPrice:CATALOG[item.id].price}));
 }
 export const subtotal=items=>items.reduce((sum,item)=>sum+CATALOG[item.id].price*item.quantity,0);
+
+export const SHIPPING_CLASSES=Object.freeze({letter:{amount:110,priority:1},parcel:{amount:619,priority:2}});
+export const shipping=items=>items.length?items.map(i=>SHIPPING_CLASSES[CATALOG[i.id].shippingClass||'parcel']).reduce((a,b)=>a.priority>=b.priority?a:b).amount:0;
+export const physicalItems=items=>Object.entries(items.reduce((out,i)=>{const p=CATALOG[i.id];if(p.stockId)out[p.stockId]=(out[p.stockId]||0)+p.units*i.quantity;return out;},{})).map(([id,quantity])=>({id,quantity}));

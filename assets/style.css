@@ -239,3 +239,6 @@ footer.compact-footer{padding:22px max(24px,calc((100vw - 1152px)/2));line-heigh
 .variant-table thead th:not(:first-child),.variant-table a{color:#ff6500}.variant-table tbody th{font-weight:500;color:#b7babc}
 .plate-faq details{border-bottom:1px solid #343a3c;padding:20px 0}.plate-faq summary{font-weight:600;cursor:pointer;line-height:1.5}.plate-faq details p{margin-bottom:0}
 @media(max-width:600px){.variant-comparison{padding:18px 12px;margin:32px 0}#shop>.variant-comparison{margin:0 24px 40px}.variant-table table{font-size:13px}.variant-table th,.variant-table td{padding:12px 6px}.plate-specs>div{gap:16px}.plate-specs dd{max-width:58%}}
+
+/* Keep the shared shop navigation reachable on phones and tablets. */
+@media(max-width:800px){header{height:auto;min-height:76px;flex-wrap:wrap;gap:8px;padding-block:12px}header nav{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;width:100%;order:3}header nav a{display:inline-flex;align-items:center;min-height:36px}header .cart{min-height:40px}}

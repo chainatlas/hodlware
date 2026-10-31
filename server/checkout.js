@@ -1,9 +1,10 @@
-import {CATALOG,cartItems,sessionItems,subtotal} from './catalog.js';
+import {CATALOG,cartItems,sessionItems,subtotal,shipping,physicalItems} from './catalog.js';
 import {availability,reserve,bindReservation,inventoryStatement} from './inventory.js';
-import {CONTRACT_VERSION} from './contract-text.js';
+import {CONTRACT_VERSION,ACCESSORY_CONTRACT_VERSION} from './contract-text.js';
 import {queueOrder} from './order-mail.js';
 import {mailConfigured,deliver} from './mail.js';
 import Stripe from 'stripe';
+import {reserveAccessories,bindAccessories,accessoryStatements,accessoryAvailability} from './accessory-inventory.js';
 export const APP='hodlware-sandbox-v1', PRICE=7900, SHIPPING=619;
 export function json(data,status=200,headers={}) { return new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...headers}}); }
 // Internal validation only; configuration details are never returned publicly.
@@ -43,7 +44,7 @@ export function quantity(data) {
  const item=data.items[0]; if(!item || Object.keys(item).sort().join()!=='id,quantity' || item.id!=='seedplate' || !Number.isInteger(item.quantity) || item.quantity<1 || item.quantity>99) throw Error('cart');
  return item.quantity;
 }
-export function parameters(env,n,hash) { const items=Array.isArray(n)?cartItems({items:n}):[{id:'seedplate',quantity:n}]; return {mode:'payment',submit_type:'pay',customer_creation:'always',billing_address_collection:'required',shipping_address_collection:{allowed_countries:['DE']},line_items:items.map(item=>({price:env[CATALOG[item.id].priceEnv],quantity:item.quantity})),shipping_options:[{shipping_rate_data:{type:'fixed_amount',fixed_amount:{amount:SHIPPING,currency:'eur'},display_name:'DHL Standardversand Deutschland'}}],allow_promotion_codes:true,invoice_creation:{enabled:true,invoice_data:{footer:'Für diese Lieferung gilt die Steuerbefreiung für Kleinunternehmer gemäß § 19 UStG. Es wird keine Umsatzsteuer berechnet.',custom_fields:[{name:'Rechnungsaussteller',value:'HODLWARE – Steffen Reizner'}]}},automatic_tax:{enabled:false},custom_text:{submit:{message:'Lieferzeit: 2–4 Werktage nach erfolgreicher Zahlung. Gemäß § 19 UStG ohne Ausweis der Umsatzsteuer.'}},metadata:{app:APP,owner:hash,quantity:String(items.reduce((n,item)=>n+item.quantity,0)),...(Array.isArray(n)?{items:JSON.stringify(items)}:{}),contractVersion:CONTRACT_VERSION},success_url:`${env.SITE_URL.replace(/\/$/,'')}/checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,cancel_url:`${env.SITE_URL.replace(/\/$/,'')}/checkout-cancel.html`}; }
+export function parameters(env,n,hash) { const items=Array.isArray(n)?cartItems({items:n}):[{id:'seedplate',quantity:n}]; return {mode:'payment',submit_type:'pay',customer_creation:'always',billing_address_collection:'required',shipping_address_collection:{allowed_countries:['DE']},line_items:items.map(item=>({price:env[CATALOG[item.id].priceEnv],quantity:item.quantity})),shipping_options:[{shipping_rate_data:{type:'fixed_amount',fixed_amount:{amount:shipping(items),currency:'eur'},display_name:shipping(items)===110?'Briefversand Deutschland':'DHL Standardversand Deutschland'}}],allow_promotion_codes:true,invoice_creation:{enabled:true,invoice_data:{footer:'Für diese Lieferung gilt die Steuerbefreiung für Kleinunternehmer gemäß § 19 UStG. Es wird keine Umsatzsteuer berechnet.',custom_fields:[{name:'Rechnungsaussteller',value:'HODLWARE – Steffen Reizner'}]}},automatic_tax:{enabled:false},custom_text:{submit:{message:'Lieferzeit: 2–4 Werktage nach erfolgreicher Zahlung. Gemäß § 19 UStG ohne Ausweis der Umsatzsteuer.'}},metadata:{app:APP,owner:hash,quantity:String(items.reduce((n,item)=>n+item.quantity,0)),...(Array.isArray(n)?{items:JSON.stringify(items)}:{}),contractVersion:physicalItems(items).length?ACCESSORY_CONTRACT_VERSION:CONTRACT_VERSION},success_url:`${env.SITE_URL.replace(/\/$/,'')}/checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,cancel_url:`${env.SITE_URL.replace(/\/$/,'')}/checkout-cancel.html`}; }
 export function verified(s,livemode=false) {
  const items=sessionItems(s);
  if(s.livemode!==livemode || s.metadata?.app!==APP || s.currency!=='eur' || s.amount_subtotal!==subtotal(items)) throw Error('session');
@@ -54,20 +55,22 @@ export function verified(s,livemode=false) {
  }
  if(s.status==='complete') {
   const country=(s.collected_information?.shipping_details || s.shipping_details)?.address?.country;
-  if(country!=='DE' || s.total_details?.amount_shipping!==SHIPPING || s.total_details?.amount_tax!==0 || !Number.isInteger(s.total_details?.amount_discount) || s.total_details.amount_discount<0 || s.total_details.amount_discount>s.amount_subtotal || s.amount_total!==s.amount_subtotal-s.total_details.amount_discount+SHIPPING) throw Error('session');
+  if(country!=='DE' || s.total_details?.amount_shipping!==shipping(items) || s.total_details?.amount_tax!==0 || !Number.isInteger(s.total_details?.amount_discount) || s.total_details.amount_discount<0 || s.total_details.amount_discount>s.amount_subtotal || s.amount_total!==s.amount_subtotal-s.total_details.amount_discount+shipping(items)) throw Error('session');
  }
  return s.status==='complete' && s.payment_status==='paid' ? 'paid' : s.status==='expired'?'expired':'pending';
 }
 export async function context({request,env}) {
  try {
  const {origin}=config(env); if(new URL(request.url).origin!==origin) return json({error:'Nicht verfügbar.'},403);
- const id=owner(request)||crypto.randomUUID(); const products=env.PLATE4_ENABLED==='true'?{products:{recoveryplate4:{available:(await availability(env)).available}}}:{}; return json({ready:true,...products},200,{'Set-Cookie':`hwcheckout=${id}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000${origin.startsWith('https:')?'; Secure':''}`});
+ const id=owner(request)||crypto.randomUUID(); const products=env.PLATE4_ENABLED==='true'?{products:{recoveryplate4:{available:(await availability(env)).available}}}:{}; if(env.ACCESSORIES_ENABLED==='true'){products.products||={};for(const [id,p] of Object.entries(CATALOG))if(p.stockId)products.products[id]={available:await accessoryAvailability(env,p.stockId,p.units)};} return json({ready:true,...products},200,{'Set-Cookie':`hwcheckout=${id}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000${origin.startsWith('https:')?'; Secure':''}`});
  }catch{return json({error:'Der Checkout ist derzeit nicht verfügbar.'},503);}
 }
 export async function create({request,env}) {
  let c; try{c=config(env);}catch{return json({error:'Der Checkout ist derzeit nicht verfügbar.'},503);}
  let items,id,key; try{items=cartItems(await body(request,c.origin));id=owner(request);key=request.headers.get('x-checkout-request');if(!id || !/^[a-f0-9-]{36}$/.test(key||''))throw Error();}catch{return json({error:'Ungültiger Warenkorb. Bitte erneut öffnen.'},400);}
  try {
+ const accessories=physicalItems(items);
+ if(accessories.length && (env.ACCESSORIES_ENABLED!=='true' || env.ACCESSORIES_PRICES_APPROVED!=='true' || env.ACCESSORIES_STOCK_CONFIRMED!=='true'))throw Error('unavailable');
  const hasNew=items.some(item=>item.id==='recoveryplate4');
  if(hasNew && (env.PLATE4_ENABLED!=='true' || !/^price_/.test(env.STRIPE_PRICE_ID_PLATE4||'') || env.STRIPE_PRICE_ID_PLATE4===env.STRIPE_PRICE_ID))throw Error('unavailable');
  for(const item of items){
@@ -76,9 +79,10 @@ export async function create({request,env}) {
  }
  const hash=await digest(id),reservation=await digest(`${hash}:${key}:${JSON.stringify(items)}`);
  const params=parameters(env,items,hash);
- if(hasNew){const held=await reserve(env,reservation,items.find(item=>item.id==='recoveryplate4').quantity);params.metadata.reservation=reservation;params.expires_at=held.created_at+3600;}
+ if(accessories.length || hasNew){const plate=items.find(item=>item.id==='recoveryplate4')?.quantity||0;const held=accessories.length?await reserveAccessories(env,reservation,accessories,plate):await reserve(env,reservation,plate);params.metadata.reservation=reservation;params.expires_at=held.created_at+3600;}
  const session=await c.stripe.checkout.sessions.create(params,{idempotencyKey:reservation});
  if(session.livemode!==c.livemode || !session.url || new URL(session.url).origin!=='https://checkout.stripe.com')throw Error('session');
+ if(accessories.length)await bindAccessories(env,reservation,session.id);
  if(hasNew)await bindReservation(env,reservation,session.id);
  return json({url:session.url,sessionId:session.id});
  }catch{return json({error:'Checkout konnte nicht gestartet werden. Bitte später erneut versuchen.'},503);}
@@ -105,7 +109,8 @@ export async function record(db,event,s,state) {
  db.prepare(`INSERT INTO checkout_orders(session_id,state,updated_at) VALUES(?,?,?) ON CONFLICT(session_id) DO UPDATE SET state=CASE WHEN checkout_orders.state='paid' THEN 'paid' WHEN excluded.state='paid' THEN 'paid' WHEN checkout_orders.state IN ('failed','expired') THEN checkout_orders.state ELSE excluded.state END,updated_at=excluded.updated_at`).bind(s.id,state,new Date().toISOString()),
  db.prepare('INSERT OR IGNORE INTO checkout_events(event_id,session_id) VALUES(?,?)').bind(event.id,s.id),
  ...items.map(item=>db.prepare('INSERT OR IGNORE INTO checkout_order_items(session_id,product_id,name,unit_price,quantity,currency) VALUES(?,?,?,?,?,?)').bind(s.id,item.id,item.name,item.unitPrice,item.quantity,'eur')),
- ...stock
+ ...stock,
+ ...await accessoryStatements(db,s,state)
  ]);
 }
 export async function webhook({request,env}) {

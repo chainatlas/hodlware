@@ -2,7 +2,7 @@
 const panel=document.getElementById('drawer');
 panel.querySelector('h3').remove();panel.querySelector('.disabled').remove();
 const controls=document.createElement('div');controls.className='checkout-controls';
-controls.innerHTML=`<dl><div><dt>Zwischensumme</dt><dd data-subtotal></dd></div><div><dt>DHL Versand · Deutschland</dt><dd data-shipping></dd></div><div><dt>Gesamt</dt><dd id="total"></dd></div></dl><p>Lieferzeit: 2–4 Werktage nach erfolgreicher Zahlung.</p><p>Preise gemäß § 19 UStG ohne Ausweis der Umsatzsteuer.</p><p><a href="agb.html">AGB</a> · <a href="widerruf.html">Widerruf</a> · <a href="datenschutz.html">Datenschutz</a> · <a href="versand-zahlung.html">Versand &amp; Zahlung</a></p><button type="button" class="checkout-start">Zur Kasse →</button><p class="checkout-message" role="status"></p>`;
+controls.innerHTML=`<dl><div><dt>Zwischensumme</dt><dd data-subtotal></dd></div><div><dt>Versand · Deutschland</dt><dd data-shipping></dd></div><div><dt>Gesamt</dt><dd id="total"></dd></div></dl><p>Lieferzeit: 2–4 Werktage nach erfolgreicher Zahlung.</p><p>Preise gemäß § 19 UStG ohne Ausweis der Umsatzsteuer.</p><p><a href="agb.html">AGB</a> · <a href="widerruf.html">Widerruf</a> · <a href="datenschutz.html">Datenschutz</a> · <a href="versand-zahlung.html">Versand &amp; Zahlung</a></p><button type="button" class="checkout-start">Zur Kasse →</button><p class="checkout-message" role="status"></p>`;
 panel.append(controls);
 const button=controls.querySelector('button'),message=controls.querySelector('.checkout-message');let busy=false;
 function render(){
@@ -17,7 +17,7 @@ function render(){
  }
  if(!n)items.textContent='Dein Warenkorb ist leer.';
  const subtotal=lines.reduce((sum,item)=>sum+Math.round(P.find(p=>p.id===item.id).price*100)*item.quantity,0);
- controls.querySelector('[data-subtotal]').textContent=euro(subtotal/100);controls.querySelector('[data-shipping]').textContent=euro(n?6.19:0);controls.querySelector('#total').textContent=euro((subtotal+(n?619:0))/100);button.disabled=!n||busy||lines.some(item=>P.find(p=>p.id===item.id).managedStock&&!stockState[item.id]?.available);
+ controls.querySelector('[data-subtotal]').textContent=euro(subtotal/100);controls.querySelector('[data-shipping]').textContent=euro(n?(lines.some(i=>P.find(p=>p.id===i.id).shippingClass!=="letter")?6.19:1.10):0);controls.querySelector('#total').textContent=euro((subtotal+(n?(lines.some(i=>P.find(p=>p.id===i.id).shippingClass!=="letter")?619:110):0))/100);button.disabled=!n||busy||lines.some(item=>P.find(p=>p.id===item.id).managedStock&&!stockState[item.id]?.available);
 }
 window.addEventListener('hwcartchange',render);render();
 button.onclick=async()=>{

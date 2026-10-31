@@ -6,7 +6,7 @@ function update(){document.querySelector('[data-cart] b').textContent=cart.lengt
 // Homepage presentation uses optional shop-only photos; detail galleries remain unchanged.
 if(document.getElementById('products')){
  const icon=path=>`<svg class="line-icon" viewBox="0 0 24 26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg>`;
- document.getElementById('products').innerHTML=P.filter(p=>p.visible!==false).map(p=>{
+ document.getElementById('products').innerHTML=P.filter(p=>p.visible!==false&&p.category!=="accessories").map(p=>{
   const images=p.shopImages||p.images||[],hero=images[0];
   const features=[
    [icon('<path d="M12 3 3 6v6c0 5 9 9 9 9s9-4 9-9V6Z"/>'),`${p.characters||8} Buchstaben / Wort`],
