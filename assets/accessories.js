@@ -25,7 +25,7 @@ for(const variants of Object.values(accessoryGroups)){
  }
  const field=article.querySelector('fieldset'),packages=article.querySelector('.accessory-packages');
  for(const [index,variant] of variants.entries()){
-  const label=document.createElement('label'),input=document.createElement('input');input.type='radio';input.name='variant-'+product.productId;input.value=variant.id;input.checked=index===0;
+  const label=document.createElement('label'),input=document.createElement('input');input.type='radio';input.name='variant-'+product.productId;input.value=variant.id;input.checked=(new URLSearchParams(location.search).get('paket')===String(variant.units))||(!variants.some(v=>String(v.units)===new URLSearchParams(location.search).get('paket'))&&index===0);
   const text=document.createElement('span'),count=document.createElement('strong'),price=document.createElement('span');count.textContent=variant.units+' Stück';price.textContent=euro(variant.price)+' pro Paket';text.append(count,price);label.append(input,text);packages.append(label);
  }
  const button=article.querySelector('.accessory-add'),feedback=article.querySelector('.detail-feedback');

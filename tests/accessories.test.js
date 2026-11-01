@@ -123,9 +123,9 @@ test('three original photos have optimized responsive files, factual alt text an
  const source=readFileSync(new URL('../assets/accessories.js',import.meta.url),'utf8');assert.ok(!source.includes('photo-placeholder'));assert.ok(!source.includes('PRODUKTFOTO FOLGT'));
  const ctx={window:{HODL_PRODUCTS:[]}};vm.runInNewContext(readFileSync(new URL('../assets/accessory-products.js',import.meta.url),'utf8'),ctx);for(const variant of ctx.window.HODL_PRODUCTS){assert.equal(variant.images.length,3);assert.equal(variant.image,photos[0].src);assert.equal(variant.imageAlt,photos[0].alt);}
 });
-test('accessory SEO and sitemap identify the original photos without claiming active offers',()=>{
+test('accessory SEO and sitemap identify package offers without claiming unverified stock',()=>{
  const html=readFileSync(new URL('../zubehoer.html',import.meta.url),'utf8');assert.ok(html.includes('https://hodlware.de/zubehoer'));assert.ok(readFileSync(new URL('../sitemap.xml',import.meta.url),'utf8').includes('<loc>https://hodlware.de/zubehoer</loc>'));
- const data=JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)[1]);assert.equal(data['@type'],'CollectionPage');const product=data.mainEntity.itemListElement[0].item;assert.equal(product.image.length,3);assert.equal(product.offers,undefined);assert.ok(!html.includes('InStock'));
+ const data=JSON.parse(html.match(/<script type="application\/ld\+json"[^>]*>(.*?)<\/script>/s)[1]);assert.equal(data['@type'],'CollectionPage');assert.equal(data.mainEntity['@type'],'ProductGroup');assert.equal(data.mainEntity.hasVariant.length,4);const product=data.mainEntity.hasVariant[0];assert.equal(product.image.length,3);assert.equal(product.offers.price,'0.99');assert.equal(product.offers.availability,undefined);assert.ok(!html.includes('InStock'));
 });
 test('sticker-only order mail has package price, confirmed shipping and legal notice once per recipient',async()=>{
  const {env,sql}=setup(),s=session([{id:'void-25',quantity:2}]);await queueOrder(env,s,'card');await queueOrder(env,s,'card');

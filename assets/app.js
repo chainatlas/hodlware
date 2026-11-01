@@ -15,9 +15,9 @@ if(document.getElementById('products')){
   ];
   return `<article class="product product-gallery ${p.managedStock?'plate-four':''}">
    <div class="visual"><span class="variant-badge">${p.characters||8}-DIGIT</span><img class="gallery-main" id="product-image-${p.id}" src="${hero?.src||p.image}" ${hero?.small?`srcset="${hero.small} 640w, ${hero.src} ${hero.width||1536}w" sizes="(max-width:900px) calc(100vw - 64px), 650px"`:''} alt="${hero?.alt||p.imageAlt||p.name}" width="1500" height="1000" loading="lazy" draggable="false"><button type="button" class="gallery-prev" aria-label="Vorheriges Produktbild">‹</button><button type="button" class="gallery-next" aria-label="Nächstes Produktbild">›</button><div class="gallery-dots" aria-label="Produktansichten">${images.map((img,i)=>`<button type="button" class="gallery-thumb" data-image="${img.src}" data-alt="${img.alt}" data-small="${img.small||''}" data-width="${img.width||1536}" aria-controls="product-image-${p.id}" aria-pressed="${i===0}" aria-label="${img.label}"></button>`).join('')}</div></div>
-   <div class="copy"><h3><a href="${p.url}">Steel Seed Phrase Recovery Plate</a></h3><p class="product-variant-subtitle">${p.characters===8?'(8 Digits pro Wort)':'(4 Digits pro Wort – BIP39 Standard)'}</p><p class="product-description">${p.shopDesc||p.desc}</p>
+   <div class="copy"><h3><a href="/${p.url.replace(/\.html$/,'')}">Recovery Plate – ${p.characters||8}-Digit</a></h3><p class="product-variant-subtitle">${p.characters===8?'(8 Digits pro Wort)':'(4 Digits pro Wort – BIP39 Standard)'}</p><p class="product-description">${p.shopDesc||p.desc}</p>
     <ul class="product-features">${features.map(([icon,label])=>`<li>${icon}<span>${label}</span></li>`).join('')}</ul>
-    <a class="product-details-link" href="${p.url}">Produktbeschreibung <span aria-hidden="true">↗</span></a>
+    <a class="product-details-link" href="/${p.url.replace(/\.html$/,'')}">Produktbeschreibung <span aria-hidden="true">↗</span></a>
     <div class="buy"><b>${euro(p.price)}</b><button class="add" data-id="${p.id}" ${p.price==null||p.managedStock?'disabled':''}>${p.price==null?'Bald verfügbar':p.managedStock?'Verfügbarkeit wird geprüft':'In den Warenkorb'} <span aria-hidden="true">→</span></button></div>
    </div>
 

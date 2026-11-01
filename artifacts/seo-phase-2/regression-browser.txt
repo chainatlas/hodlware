@@ -1,0 +1,1 @@
+Playwright: 323 checks passed; 6 viewport sizes; no external requests or runtime errors.
