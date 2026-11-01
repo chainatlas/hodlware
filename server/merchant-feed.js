@@ -30,7 +30,7 @@ export async function merchantAvailability(env){
 export async function merchantFeed({request,env}){
  const headers={'Content-Type':'application/xml; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
  if(!['GET','HEAD'].includes(request.method))return new Response(null,{status:405,headers:{...headers,Allow:'GET, HEAD'}});
- try{if(env.MERCHANT_FEED_ENABLED!=='true'||env.MERCHANT_SHIPPING_REVIEWED!=='true')throw Error('feed disabled or shipping unreviewed');const body=renderMerchantFeed(await merchantAvailability(env));return new Response(request.method==='HEAD'?null:body,{status:200,headers});}
+ try{if(env.MERCHANT_SETUP_FEED_ENABLED==='true'||env.MERCHANT_FEED_ENABLED!=='true'||env.MERCHANT_SHIPPING_REVIEWED!=='true')throw Error('feed disabled or shipping unreviewed');const body=renderMerchantFeed(await merchantAvailability(env));return new Response(request.method==='HEAD'?null:body,{status:200,headers});}
  catch{return new Response(request.method==='HEAD'?null:'<?xml version="1.0" encoding="UTF-8"?><error>Produktfeed derzeit nicht verfügbar.</error>',{status:503,headers:{...headers,'Retry-After':'3600'}});}
 }
 

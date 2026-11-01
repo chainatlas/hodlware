@@ -1,0 +1,21 @@
+{
+  "targetCountries": [
+    "DE"
+  ],
+  "contentLanguage": "de",
+  "feedLabel": "DE",
+  "path": "/google-merchant-setup-feed.xml",
+  "excludedDestinations": [
+    "Shopping_ads",
+    "Display_ads",
+    "Local_inventory_ads",
+    "Free_listings",
+    "Free_local_listings",
+    "Cloud_retail",
+    "Local_cloud_retail",
+    "Youtube_affiliate",
+    "Youtube_merchandise"
+  ],
+  "scope": "Operator configuration contract, NOT a Merchant API request and NOT proof of saved account settings.",
+  "fixturesNotForImport": true
+}

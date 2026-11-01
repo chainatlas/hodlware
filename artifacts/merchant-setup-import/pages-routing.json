@@ -1,0 +1,55 @@
+{
+  "checks": [
+    {
+      "path": "/google-merchant-feed.xml",
+      "method": "GET",
+      "status": 503
+    },
+    {
+      "path": "/google-merchant-feed.xml",
+      "method": "HEAD",
+      "status": 503
+    },
+    {
+      "path": "/google-merchant-feed.xml",
+      "method": "POST",
+      "status": 405
+    },
+    {
+      "path": "/google-merchant-setup-feed.xml",
+      "method": "GET",
+      "status": 503
+    },
+    {
+      "path": "/google-merchant-setup-feed.xml",
+      "method": "HEAD",
+      "status": 503
+    },
+    {
+      "path": "/google-merchant-setup-feed.xml",
+      "method": "POST",
+      "status": 405
+    },
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/steel-seed-phrase-recovery",
+      "status": 200
+    },
+    {
+      "path": "/steel-seed-phrase-recovery-plate",
+      "status": 200
+    },
+    {
+      "path": "/zubehoer",
+      "status": 200
+    },
+    {
+      "path": "/merchant-setup-does-not-exist",
+      "status": 404
+    }
+  ],
+  "scope": "Fresh local Pages runtime, disabled feeds; no production requests."
+}

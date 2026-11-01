@@ -21,3 +21,8 @@ MERCHANT_FEED_ENABLED="false"
 # managed requires migration 0005, reconciliation of legacy sessions and confirmed initialization.
 SEEDPLATE_STOCK_MODE="legacy"
 MERCHANT_SHIPPING_REVIEWED="false"
+
+# Separate setup-only feed. Leave disabled until explicit deployment/import approval.
+# DE attests that the Merchant Center data source targets ONLY Germany (not enforced by XML).
+MERCHANT_SETUP_FEED_ENABLED="false"
+MERCHANT_SETUP_COUNTRY_CONFIRMED=""
