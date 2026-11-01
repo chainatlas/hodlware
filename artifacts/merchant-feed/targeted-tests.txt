@@ -1,0 +1,17 @@
+✔ merchant feed exports all six catalog offers and authoritative package prices (26.92ms)
+✔ merchant stock uses shared physical units minus held and paid; released is excluded (6.4127ms)
+✔ merchant reads plate holds and stock without modifying any row (5.0075ms)
+✔ unavailable or stale authoritative eight-digit source never becomes static stock (3.8911ms)
+✔ feed endpoint is public XML, uncached, read-only and fails safely (6.5813ms)
+✔ merchant validation rejects missing products, identifiers, bad prices, images and state (0.6414ms)
+✔ merchant XML escapes special characters and rejects XML control characters (0.3002ms)
+✔ shipping costs differ by offer, mixed checkout charges maximum class once (0.3414ms)
+✔ all package thresholds and future or malformed source timestamps are checked (30.5294ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 166.3425

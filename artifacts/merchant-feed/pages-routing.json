@@ -1,0 +1,42 @@
+[
+  {
+    "url": "http://127.0.0.1:8799/google-merchant-feed.xml",
+    "status": 503,
+    "contentType": "application/xml; charset=utf-8",
+    "expected": "disabled feed; XML, not static 404"
+  },
+  {
+    "url": "http://127.0.0.1:8799/",
+    "status": 200
+  },
+  {
+    "url": "http://127.0.0.1:8799/steel-seed-phrase-recovery",
+    "status": 200
+  },
+  {
+    "url": "http://127.0.0.1:8799/steel-seed-phrase-recovery-plate",
+    "status": 200
+  },
+  {
+    "url": "http://127.0.0.1:8799/zubehoer",
+    "status": 200
+  },
+  {
+    "url": "http://127.0.0.1:8799/ratgeber/bip39-vier-buchstaben",
+    "status": 200
+  },
+  {
+    "url": "http://127.0.0.1:8799/merchant-missing-page",
+    "status": 404
+  },
+  {
+    "url": "http://127.0.0.1:8799/api/checkout-context",
+    "status": 503,
+    "expected": "local checkout not configured, own JSON response"
+  },
+  {
+    "url": "http://127.0.0.1:8799/google-merchant-feed.xml",
+    "method": "POST",
+    "status": 405
+  }
+]

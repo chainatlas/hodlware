@@ -14,3 +14,8 @@ STRIPE_PRICE_ID_VOID_1=""
 STRIPE_PRICE_ID_VOID_5=""
 STRIPE_PRICE_ID_VOID_10=""
 STRIPE_PRICE_ID_VOID_25=""
+
+# Merchant feed remains disabled until reviewed and explicitly published.
+MERCHANT_FEED_ENABLED="false"
+# MERCHANT_SEEDPLATE_AVAILABILITY requires an authoritative, fresh read-only service binding.
+MERCHANT_SHIPPING_REVIEWED="false"

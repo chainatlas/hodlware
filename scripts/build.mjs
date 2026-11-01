@@ -23,7 +23,7 @@ for(const series of ['steel-recovery-8-digits','steel-recovery-8-digits-silver']
 for(const photo of new Map(Object.values(CATALOG).flatMap(p=>p.images||[]).map(p=>[p.src,p])).values()){
  for(const file of [photo.src,photo.small,photo.thumb].filter(Boolean)){await mkdir('dist/'+file.slice(0,file.lastIndexOf('/')),{recursive:true});await copyFile(file,'dist/'+file);}
 }
-await writeFile('dist/_routes.json',JSON.stringify({version:1,include:['/api/*'],exclude:[]}));
+await writeFile('dist/_routes.json',JSON.stringify({version:1,include:['/api/*','/google-merchant-feed.xml'],exclude:[]}));
 await writeFile('dist/_headers','/67c781f634734bc78b734802d795d817.txt\n  Content-Type: text/plain; charset=utf-8\n/indexnow-manifest.json\n  Content-Type: application/json; charset=utf-8\n  Cache-Control: no-store\n/sitemap.xml\n  Content-Type: application/xml; charset=utf-8\n/robots.txt\n  Content-Type: text/plain; charset=utf-8\n/checkout-*\n  Cache-Control: no-store\n  Referrer-Policy: no-referrer\n/*\n  Cache-Control: no-cache\n  X-Content-Type-Options: nosniff\n');
 
 // Content-version scripts, including the dynamically loaded checkout, per build.

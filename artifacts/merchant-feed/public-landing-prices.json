@@ -1,0 +1,37 @@
+[
+  {
+    "url": "https://hodlware.de/steel-seed-phrase-recovery",
+    "status": 200,
+    "displayPrice": "79,00 €"
+  },
+  {
+    "url": "https://hodlware.de/steel-seed-phrase-recovery-plate",
+    "status": 200,
+    "displayPrice": "79,00 €"
+  },
+  {
+    "url": "https://hodlware.de/zubehoer?paket=1",
+    "status": 200,
+    "displayPrice": "0,99 €"
+  },
+  {
+    "url": "https://hodlware.de/zubehoer?paket=5",
+    "status": 200,
+    "displayPrice": "3,49 €"
+  },
+  {
+    "url": "https://hodlware.de/zubehoer?paket=10",
+    "status": 200,
+    "displayPrice": "5,99 €"
+  },
+  {
+    "url": "https://hodlware.de/zubehoer?paket=25",
+    "status": 200,
+    "displayPrice": "11,99 €"
+  },
+  {
+    "url": "https://hodlware.de/google-merchant-feed.xml",
+    "status": 404,
+    "note": "Not published in this task"
+  }
+]
