@@ -1,39 +1,37 @@
 {
   "version": 1,
-  "commit": "b3c3d689b1b4b8f65124017f335a628e8dd52673",
+  "commit": "a46fa06df8eacedb80a590afd5ef1b9d0167a77b",
   "pages": {
-    "https://hodlware.de/": "2a39460b5b0fe10e7ac41967efa387e388d8b7d6541df0135d16885e58ee4568",
+    "https://hodlware.de/": "092963a2b893b08b467a81e5002961e8a0118df795050960405d515cfb8d566f",
     "https://hodlware.de/agb": "47484d59b30a818eea20ba1bb42b0f2e52da8d94978d67d2d562098822c6b7e2",
     "https://hodlware.de/datenschutz": "677aae16a728dd0e0b2b22e7511d62727c478aa18815b4aa7af92150852df247",
     "https://hodlware.de/impressum": "8a7e2cfedfc13378dc7efa35bb4e0c4197ec8a96ce3ace65def85424c4722d57",
     "https://hodlware.de/kontakt": "ec546b06da273436e548f35b1987bae386981fc6448ad3b498c7e7c070e0aa2b",
-    "https://hodlware.de/ratgeber/seed-phrase-auf-metall-sichern": "8c1d09398ec2fa2d3473af03cd78ccabb7c60fd81e4ad8c3d647869d47683627",
-    "https://hodlware.de/ratgeber/seed-phrase-papier-oder-metall": "50868e520f48bad1e7e561aac4c9c0072ac365dda947e1fc0a9631e9548fd477",
-    "https://hodlware.de/ratgeber/seed-phrase-sicher-aufbewahren": "4878468ceec862308066497be5f733d4f52ed8e69de8867d79ca488f2d4faf9a",
-    "https://hodlware.de/steel-seed-phrase-recovery": "58c4658fd2bdc4f3fe50ffe7be3d94b982bce1c2efcd706d2963b9ad4233241a",
-    "https://hodlware.de/steel-seed-phrase-recovery-plate": "2afef205c521e008e3ce1bc73f5f475c786626edaa18a6e49ba5115889fbb659",
+    "https://hodlware.de/ratgeber/bip39-vier-buchstaben": "781fed1226bd12188c0a131eef9c4a9c1c9325ecb40980cbaf4dc592206aa0e3",
+    "https://hodlware.de/ratgeber/seed-phrase-auf-metall-sichern": "13f76b5995f5f1d51c7eacaad46b99d88f64b2d2cb9df37ee4b90c704bac3690",
+    "https://hodlware.de/ratgeber/seed-phrase-papier-oder-metall": "0146e3a91b7f0c6166b855e40fac9cbd17d384a4ed77ed928b98313355c12ce9",
+    "https://hodlware.de/ratgeber/seed-phrase-sicher-aufbewahren": "80be48b1efed209eda2d6308f03ade96d693f518190537c7bee2e1288dd403e7",
+    "https://hodlware.de/ratgeber/was-ist-eine-seed-phrase": "6994a962f194548290306e6785f1a31739c18f8e3d7a3d776f9e9359c24f7937",
+    "https://hodlware.de/steel-seed-phrase-recovery": "cb0e1456e26f41db24a4e423690b002e9cc85a24c1b0f749623a6c1849e90ec9",
+    "https://hodlware.de/steel-seed-phrase-recovery-plate": "191614909d56233fecc86dc29eb8fac71a69fe144ffc85a906008fc4e3d1f2d9",
     "https://hodlware.de/versand-zahlung": "ac8f1249e017d59858b2bcc9c08d944608bbf0413adcb5d7ed46c3ccd9bd7d8e",
     "https://hodlware.de/widerruf": "2f5c1dd5e58236bcb60789bb6470f67740e3e9c94b916cfcd9faf5f48788d422",
-    "https://hodlware.de/zubehoer": "13e42724c6fc83be5174157c4bc75c8f04e3a73424aa00e55697b59675421732"
+    "https://hodlware.de/zubehoer": "fa5ba10fc29c77a681f311953a4ed26f106209fa9c7120ac678fe1f723a48319"
   },
   "lastSubmission": {
-    "commit": "b3c3d689b1b4b8f65124017f335a628e8dd52673",
+    "commit": "a46fa06df8eacedb80a590afd5ef1b9d0167a77b",
     "httpStatus": 200,
     "urls": [
       "https://hodlware.de/",
-      "https://hodlware.de/agb",
-      "https://hodlware.de/datenschutz",
-      "https://hodlware.de/impressum",
-      "https://hodlware.de/kontakt",
+      "https://hodlware.de/ratgeber/bip39-vier-buchstaben",
       "https://hodlware.de/ratgeber/seed-phrase-auf-metall-sichern",
       "https://hodlware.de/ratgeber/seed-phrase-papier-oder-metall",
       "https://hodlware.de/ratgeber/seed-phrase-sicher-aufbewahren",
+      "https://hodlware.de/ratgeber/was-ist-eine-seed-phrase",
       "https://hodlware.de/steel-seed-phrase-recovery",
       "https://hodlware.de/steel-seed-phrase-recovery-plate",
-      "https://hodlware.de/versand-zahlung",
-      "https://hodlware.de/widerruf",
       "https://hodlware.de/zubehoer"
     ],
-    "checkedAt": "2026-11-01T07:30:31.314Z"
+    "checkedAt": "2026-11-01T08:01:20.921Z"
   }
 }
