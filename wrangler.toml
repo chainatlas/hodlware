@@ -5,6 +5,9 @@ compatibility_date = "2026-10-01"
 
 # Preview deployments cannot send mail or offer the new product.
 [vars]
+SEEDPLATE_STOCK_MODE = "paused"
+MERCHANT_FEED_ENABLED = "false"
+MERCHANT_SHIPPING_REVIEWED = "false"
 COMMUNICATIONS_ENABLED = "false"
 MAIL_WORKER_READY = "false"
 FORMS_ENABLED = "false"
@@ -15,6 +18,9 @@ ACCESSORIES_PRICES_APPROVED = "false"
 ACCESSORIES_STOCK_CONFIRMED = "false"
 
 [env.production.vars]
+SEEDPLATE_STOCK_MODE = "paused"
+MERCHANT_FEED_ENABLED = "false"
+MERCHANT_SHIPPING_REVIEWED = "false"
 COMMUNICATIONS_ENABLED = "true"
 FORMS_ENABLED = "true"
 MAIL_FROM = "bestellungen@hodlware.de"
