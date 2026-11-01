@@ -1,0 +1,10 @@
+{
+  "country": "DE",
+  "currency": "EUR",
+  "rates": {
+    "sticker_letter": 110,
+    "plate_parcel": 619
+  },
+  "checkoutComposition": "maximum_class_once",
+  "productPriceOverrides": false
+}

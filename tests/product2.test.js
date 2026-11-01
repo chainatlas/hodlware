@@ -109,8 +109,8 @@ test('order item storage and stock change are rolled back together on database f
 test('public availability reveals no inventory counts, including sold-out and disabled cases',async()=>{
  const {env,sql}=setup();
  const get=async e=>{const response=await context({env:e,request:new Request(env.SITE_URL+'/api/checkout-context')});assert.equal(response.status,200);return response.json();};
- assert.deepEqual(await get(env),{ready:true,products:{recoveryplate4:{available:true}}});
+ assert.deepEqual(await get(env),{ready:true,products:{recoveryplate4:{available:true},seedplate:{available:true}}});
  await reserve(env,'c'.repeat(64),24);
- assert.deepEqual(await get(env),{ready:true,products:{recoveryplate4:{available:false}}});
- assert.deepEqual(await get({...env,PLATE4_ENABLED:'false'}),{ready:true});sql.close();
+ assert.deepEqual(await get(env),{ready:true,products:{recoveryplate4:{available:false},seedplate:{available:true}}});
+ assert.deepEqual(await get({...env,PLATE4_ENABLED:'false'}),{ready:true,products:{seedplate:{available:true}}});sql.close();
 });

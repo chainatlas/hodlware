@@ -7,7 +7,7 @@ http.createServer(async(req,res)=>{
  const pathname=new URL(req.url,'http://127.0.0.1').pathname;
  if(pathname.startsWith('/api/')){
   res.setHeader('Content-Type','application/json');
-  if(pathname==='/api/checkout-context'){res.end(JSON.stringify({ready:true,products:Object.fromEntries(['recoveryplate4','void-1','void-5','void-10','void-25'].map(id=>[id,{available:true}]))}));return;}
+  if(pathname==='/api/checkout-context'){res.end(JSON.stringify({ready:true,products:Object.fromEntries(['seedplate','recoveryplate4','void-1','void-5','void-10','void-25'].map(id=>[id,{available:true}]))}));return;}
   res.statusCode=503;res.end(JSON.stringify({error:'Lokale Demo: Keine Zahlung wird gestartet. Checkout wird ausschließlich mit simulierten Stripe-Antworten getestet.'}));return;
  }
  let file=pathname==='/'?'index.html':decodeURIComponent(pathname.slice(1));if(!path.extname(file))file+='.html';

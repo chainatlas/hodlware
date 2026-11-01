@@ -23,8 +23,7 @@
     "void-1 original image",
     "void-1 condition and brand",
     "void-1 no invented identifiers",
-    "void-1 DE shipping",
-    "void-1 correct single-offer rate",
+    "void-1 shipping label",
     "void-5 title",
     "void-5 description",
     "void-5 link",
@@ -41,8 +40,7 @@
     "void-5 original image",
     "void-5 condition and brand",
     "void-5 no invented identifiers",
-    "void-5 DE shipping",
-    "void-5 correct single-offer rate",
+    "void-5 shipping label",
     "void-10 title",
     "void-10 description",
     "void-10 link",
@@ -59,8 +57,7 @@
     "void-10 original image",
     "void-10 condition and brand",
     "void-10 no invented identifiers",
-    "void-10 DE shipping",
-    "void-10 correct single-offer rate",
+    "void-10 shipping label",
     "void-25 title",
     "void-25 description",
     "void-25 link",
@@ -77,8 +74,7 @@
     "void-25 original image",
     "void-25 condition and brand",
     "void-25 no invented identifiers",
-    "void-25 DE shipping",
-    "void-25 correct single-offer rate",
+    "void-25 shipping label",
     "seedplate title",
     "seedplate description",
     "seedplate link",
@@ -95,8 +91,7 @@
     "seedplate original image",
     "seedplate condition and brand",
     "seedplate no invented identifiers",
-    "seedplate DE shipping",
-    "seedplate correct single-offer rate",
+    "seedplate shipping label",
     "recoveryplate4 title",
     "recoveryplate4 description",
     "recoveryplate4 link",
@@ -113,8 +108,9 @@
     "recoveryplate4 original image",
     "recoveryplate4 condition and brand",
     "recoveryplate4 no invented identifiers",
-    "recoveryplate4 DE shipping",
-    "recoveryplate4 correct single-offer rate",
+    "recoveryplate4 shipping label",
+    "no product shipping overrides",
+    "central shipping rates",
     "special XML roundtrip",
     "all sold out rendered"
   ],
@@ -207,38 +203,6 @@
         "product_type": "Sicherheit & Aufbewahrung > Physische Wallet-Backups",
         "identifier_exists": "no",
         "shipping_label": "plate_parcel"
-      }
-    ],
-    "shipping": [
-      {
-        "id": "void-1",
-        "country": "DE",
-        "price": "1.10 EUR"
-      },
-      {
-        "id": "void-5",
-        "country": "DE",
-        "price": "1.10 EUR"
-      },
-      {
-        "id": "void-10",
-        "country": "DE",
-        "price": "1.10 EUR"
-      },
-      {
-        "id": "void-25",
-        "country": "DE",
-        "price": "1.10 EUR"
-      },
-      {
-        "id": "seedplate",
-        "country": "DE",
-        "price": "6.19 EUR"
-      },
-      {
-        "id": "recoveryplate4",
-        "country": "DE",
-        "price": "6.19 EUR"
       }
     ]
   },

@@ -1,3 +1,4 @@
+import {reservationItems} from './seedplate-inventory.js';
 import {physicalItems} from './catalog.js';
 export async function accessoryAvailability(env,id,units){
  if(env.ACCESSORIES_PRICES_APPROVED!=='true'||env.ACCESSORIES_STOCK_CONFIRMED!=='true')return false;
@@ -14,7 +15,7 @@ export async function reserveAccessories(env,key,items,plate=0){
 }
 export async function bindAccessories(env,key,id){await env.ORDERS.prepare('UPDATE accessory_reservations SET session_id=? WHERE reservation_id=? AND (session_id IS NULL OR session_id=?)').bind(id,key,id).run();}
 export async function accessoryStatements(db,s,state){
- const items=physicalItems(JSON.parse(s.metadata?.items||'[]'));if(!items.length)return [];
+ const items=reservationItems(JSON.parse(s.metadata?.items||'[]'),s.metadata?.stockVersion);if(!items.length)return [];
  const key=s.metadata.reservation;if(!/^[a-f0-9]{64}$/.test(key||''))throw Error('reservation');
  const statements=[];
  for(const item of items){const row=await db.prepare('SELECT * FROM accessory_reservations WHERE reservation_id=? AND product_id=?').bind(key,item.id).first();if(!row||row.quantity!==item.quantity||(row.session_id&&row.session_id!==s.id)||(state==='paid'&&row.state==='released'))throw Error('reservation');

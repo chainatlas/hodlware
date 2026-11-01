@@ -1,3 +1,5 @@
+> Aktueller Folgebericht: [Bestandsintegration und Versandstrategie](../merchant-feed-blockers/BERICHT.md). Dieser Bericht beschreibt den vorherigen Stand.
+
 # HODLWARE – Google-Merchant-Center-Feed: vollständiger Vorbereitungsbericht
 
 Stand: 01.11.2026. Branch **feature/google-merchant-feed**. Ausgangspunkt: **a46fa06df8eacedb80a590afd5ef1b9d0167a77b**. Der neue lokale Commit wird in der Abschlussantwort angegeben; dieser Bericht ist Bestandteil des Commits.

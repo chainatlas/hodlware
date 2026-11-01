@@ -1,3 +1,4 @@
+import {SEED_STOCK_VERSION,seedMode,seedplateAvailability,reservationItems,legacySeedReview} from './seedplate-inventory.js';
 import {CATALOG,cartItems,sessionItems,subtotal,shipping,physicalItems} from './catalog.js';
 import {availability,reserve,bindReservation,inventoryStatement} from './inventory.js';
 import {CONTRACT_VERSION,ACCESSORY_CONTRACT_VERSION} from './contract-text.js';
@@ -62,7 +63,7 @@ export function verified(s,livemode=false) {
 export async function context({request,env}) {
  try {
  const {origin}=config(env); if(new URL(request.url).origin!==origin) return json({error:'Nicht verfügbar.'},403);
- const id=owner(request)||crypto.randomUUID(); const products=env.PLATE4_ENABLED==='true'?{products:{recoveryplate4:{available:(await availability(env)).available}}}:{}; if(env.ACCESSORIES_ENABLED==='true'){products.products||={};for(const [id,p] of Object.entries(CATALOG))if(p.stockId)products.products[id]={available:await accessoryAvailability(env,p.stockId,p.units)};} return json({ready:true,...products},200,{'Set-Cookie':`hwcheckout=${id}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000${origin.startsWith('https:')?'; Secure':''}`});
+ const id=owner(request)||crypto.randomUUID(); const products=env.PLATE4_ENABLED==='true'?{products:{recoveryplate4:{available:(await availability(env)).available}}}:{}; if(env.ACCESSORIES_ENABLED==='true'){products.products||={};for(const [id,p] of Object.entries(CATALOG))if(p.stockId)products.products[id]={available:await accessoryAvailability(env,p.stockId,p.units)};} products.products||={};products.products.seedplate={available:await seedplateAvailability(env)}; return json({ready:true,...products},200,{'Set-Cookie':`hwcheckout=${id}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000${origin.startsWith('https:')?'; Secure':''}`});
  }catch{return json({error:'Der Checkout ist derzeit nicht verfügbar.'},503);}
 }
 export async function create({request,env}) {
@@ -70,6 +71,8 @@ export async function create({request,env}) {
  let items,id,key; try{items=cartItems(await body(request,c.origin));id=owner(request);key=request.headers.get('x-checkout-request');if(!id || !/^[a-f0-9-]{36}$/.test(key||''))throw Error();}catch{return json({error:'Ungültiger Warenkorb. Bitte erneut öffnen.'},400);}
  try {
  const accessories=physicalItems(items);
+ const hasSeed=items.some(item=>item.id==='seedplate');const mode=seedMode(env);if(hasSeed&&!['legacy','managed'].includes(mode))throw Error('unavailable');
+ const version=hasSeed&&mode==='managed'?SEED_STOCK_VERSION:undefined;const stockItems=reservationItems(items,version);
  if(accessories.length && (env.ACCESSORIES_ENABLED!=='true' || env.ACCESSORIES_PRICES_APPROVED!=='true' || env.ACCESSORIES_STOCK_CONFIRMED!=='true'))throw Error('unavailable');
  const hasNew=items.some(item=>item.id==='recoveryplate4');
  if(hasNew && (env.PLATE4_ENABLED!=='true' || !/^price_/.test(env.STRIPE_PRICE_ID_PLATE4||'') || env.STRIPE_PRICE_ID_PLATE4===env.STRIPE_PRICE_ID))throw Error('unavailable');
@@ -77,12 +80,13 @@ export async function create({request,env}) {
   const product=CATALOG[item.id];const price=await c.stripe.prices.retrieve(env[product.priceEnv]);
   if(price.livemode!==c.livemode || !price.active || price.currency!=='eur' || price.unit_amount!==product.price || price.recurring || price.type!=='one_time')throw Error('price');
  }
- const hash=await digest(id),reservation=await digest(`${hash}:${key}:${JSON.stringify(items)}`);
+ const hash=await digest(id),reservation=await digest(`${hash}:${key}:${JSON.stringify(items)}${version?":"+version:""}`);
  const params=parameters(env,items,hash);
- if(accessories.length || hasNew){const plate=items.find(item=>item.id==='recoveryplate4')?.quantity||0;const held=accessories.length?await reserveAccessories(env,reservation,accessories,plate):await reserve(env,reservation,plate);params.metadata.reservation=reservation;params.expires_at=held.created_at+3600;}
+ if(stockItems.length || hasNew){const plate=items.find(item=>item.id==='recoveryplate4')?.quantity||0;const held=stockItems.length?await reserveAccessories(env,reservation,stockItems,plate):await reserve(env,reservation,plate);params.metadata.reservation=reservation;params.expires_at=held.created_at+3600;}
+ if(version)params.metadata.stockVersion=version;
  const session=await c.stripe.checkout.sessions.create(params,{idempotencyKey:reservation});
  if(session.livemode!==c.livemode || !session.url || new URL(session.url).origin!=='https://checkout.stripe.com')throw Error('session');
- if(accessories.length)await bindAccessories(env,reservation,session.id);
+ if(stockItems.length)await bindAccessories(env,reservation,session.id);
  if(hasNew)await bindReservation(env,reservation,session.id);
  return json({url:session.url,sessionId:session.id});
  }catch{return json({error:'Checkout konnte nicht gestartet werden. Bitte später erneut versuchen.'},503);}
@@ -106,6 +110,7 @@ export async function record(db,event,s,state) {
  const items=s.metadata?.items!==undefined?sessionItems(s):[];
  const stock=items.some(item=>item.id==='recoveryplate4')?[await inventoryStatement(db,s,state)]:[];
  await db.batch([
+ ...await legacyReviewStatements(db,s,state),
  db.prepare(`INSERT INTO checkout_orders(session_id,state,updated_at) VALUES(?,?,?) ON CONFLICT(session_id) DO UPDATE SET state=CASE WHEN checkout_orders.state='paid' THEN 'paid' WHEN excluded.state='paid' THEN 'paid' WHEN checkout_orders.state IN ('failed','expired') THEN checkout_orders.state ELSE excluded.state END,updated_at=excluded.updated_at`).bind(s.id,state,new Date().toISOString()),
  db.prepare('INSERT OR IGNORE INTO checkout_events(event_id,session_id) VALUES(?,?)').bind(event.id,s.id),
  ...items.map(item=>db.prepare('INSERT OR IGNORE INTO checkout_order_items(session_id,product_id,name,unit_price,quantity,currency) VALUES(?,?,?,?,?,?)').bind(s.id,item.id,item.name,item.unitPrice,item.quantity,'eur')),
@@ -132,3 +137,5 @@ export async function webhook({request,env}) {
  }
  return json({received:true});}catch{return json({error:'Retry required'},503);}
 }
+
+async function legacyReviewStatements(db,s,state){const row=await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='inventory_controls'").first();return row?legacySeedReview(db,s,state):[];}
