@@ -5,6 +5,8 @@ compatibility_date = "2026-10-01"
 
 # Preview deployments cannot send mail or offer the new product.
 [vars]
+MERCHANT_SETUP_FEED_ENABLED = "false"
+MERCHANT_SETUP_COUNTRY_CONFIRMED = ""
 SEEDPLATE_STOCK_MODE = "paused"
 MERCHANT_FEED_ENABLED = "false"
 MERCHANT_SHIPPING_REVIEWED = "false"
@@ -18,6 +20,8 @@ ACCESSORIES_PRICES_APPROVED = "false"
 ACCESSORIES_STOCK_CONFIRMED = "false"
 
 [env.production.vars]
+MERCHANT_SETUP_FEED_ENABLED = "false"
+MERCHANT_SETUP_COUNTRY_CONFIRMED = ""
 SEEDPLATE_STOCK_MODE = "managed"
 MERCHANT_FEED_ENABLED = "false"
 MERCHANT_SHIPPING_REVIEWED = "false"
