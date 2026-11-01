@@ -1,3 +1,12 @@
 /* Scoped editorial styling; existing shop and checkout rules stay unchanged. */
 .guide{max-width:1000px}.guide h1{font-size:clamp(32px,4.4vw,52px);overflow-wrap:break-word}.guide .detail-body{max-width:820px}.guide-links{padding-left:22px;line-height:1.8}.guide-links li{margin:10px 0}.guide-links a,.guide a:not(.back-shop){text-decoration:underline;text-underline-offset:4px}.guide-links a:hover,.guide a:hover{color:#ff8a00}.guide-table{overflow-x:auto;margin:22px 0}.guide table{border-collapse:collapse;width:100%;font-size:16px;line-height:1.55;color:#b7babc}.guide th,.guide td{padding:14px 12px;border-bottom:1px solid #303537;text-align:left;vertical-align:top}.guide th{color:#f4f3ef}.guide caption{text-align:left;padding-bottom:12px;color:#f4f3ef}.guide .guide-source{font-size:14px}.hero h1{font-size:clamp(38px,4.1vw,60px);line-height:1.08;letter-spacing:-1.8px}
 @media(max-width:600px){.guide th,.guide td{padding:10px 7px;font-size:14px}}
+
+/* Editorial navigation stays scoped to guides; shop composition is unchanged. */
+.guide .guide-toc,.guide .guide-next{border:1px solid #384144;border-radius:12px;padding:18px 22px;margin:24px 0;background:#111617}
+.guide .guide-toc ul,.guide .guide-next ul{padding-left:20px;margin:12px 0 0;line-height:1.6}
+.guide .guide-toc li,.guide .guide-next li{margin:8px 0}
+.guide h2[id],.guide section[id]{scroll-margin-top:100px}
+.guide details{margin:12px 0}.guide summary{cursor:pointer;line-height:1.5;padding:10px 0;font-weight:700}
+.guide :focus-visible{outline:2px solid #ff6500;outline-offset:4px}
+@media(max-width:600px){.guide .guide-toc,.guide .guide-next{padding:14px}.guide .detail-body{min-width:0}.guide a{overflow-wrap:anywhere}}

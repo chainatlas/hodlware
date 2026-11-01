@@ -1,0 +1,13 @@
+✔ all shop and guide pages use the required navigation order exactly once and valid targets (11.8381ms)
+✔ website, runtime templates and build scripts are valid UTF-8 without mojibake (32.7011ms)
+✔ product variants and authoritative mail names agree; prices are 79 EUR (1.3811ms)
+✔ both detail pages identify variants, keep distinct word counts and contextual variant links (2.7408ms)
+✔ frontend availability never exposes exact stock or derives quantity limits from it (1.9315ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 118.4362

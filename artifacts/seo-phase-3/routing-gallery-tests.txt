@@ -1,0 +1,30 @@
+{
+  "passed": 144,
+  "sizes": [
+    {
+      "width": 1440,
+      "mode": "before",
+      "resourceBytes": 14313628,
+      "imageBytes": 14240793
+    },
+    {
+      "width": 1440,
+      "mode": "after",
+      "resourceBytes": 611859,
+      "imageBytes": 532130
+    },
+    {
+      "width": 390,
+      "mode": "before",
+      "resourceBytes": 14313628,
+      "imageBytes": 14240793
+    },
+    {
+      "width": 390,
+      "mode": "after",
+      "resourceBytes": 611859,
+      "imageBytes": 532130
+    }
+  ],
+  "errors": []
+}

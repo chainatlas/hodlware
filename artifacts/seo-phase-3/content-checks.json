@@ -1,0 +1,27 @@
+[
+  {
+    "file": "ratgeber/seed-phrase-sicher-aufbewahren.html",
+    "words": 757,
+    "sha256": "50c7f784543ab5cda4a735cf53be0b3c9c8056193bc845aa3afd8516654de8cb"
+  },
+  {
+    "file": "ratgeber/seed-phrase-papier-oder-metall.html",
+    "words": 621,
+    "sha256": "b5f2ae26a298a672f8d86abae3576f9b900f3928ddbcb2780371b9ab70afcc66"
+  },
+  {
+    "file": "ratgeber/seed-phrase-auf-metall-sichern.html",
+    "words": 730,
+    "sha256": "551148aae19d3018da84a5b4251de22d05766191f830e4eaa2b3ff08d8727226"
+  },
+  {
+    "file": "ratgeber/was-ist-eine-seed-phrase.html",
+    "words": 691,
+    "sha256": "860e120bd16757630cd42fbb915541a107e365c8e112d7a342dc878d83cd175b"
+  },
+  {
+    "file": "ratgeber/bip39-vier-buchstaben.html",
+    "words": 570,
+    "sha256": "26c0455f76ab63149c5b02d4ceda49edf9ebe6f988ac0b3dd73f5027651901a0"
+  }
+]

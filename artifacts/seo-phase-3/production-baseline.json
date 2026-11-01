@@ -1,0 +1,94 @@
+{
+  "checkedAt": "2026-11-01T07:45:02.053Z",
+  "note": "Read-only production baseline, new Phase-3 URLs expected 404 until approved publication.",
+  "pages": [
+    {
+      "url": "https://hodlware.de/",
+      "status": 200,
+      "title": "Seed Phrase Backup aus Metall kaufen | HODLWARE",
+      "canonical": "https://hodlware.de/"
+    },
+    {
+      "url": "https://hodlware.de/steel-seed-phrase-recovery",
+      "status": 200,
+      "title": "Seed Phrase Backup: 8 Buchstaben pro Wort | HODLWARE",
+      "canonical": "https://hodlware.de/steel-seed-phrase-recovery"
+    },
+    {
+      "url": "https://hodlware.de/kontakt",
+      "status": 200,
+      "title": "Kontakt — HODLWARE",
+      "canonical": "https://hodlware.de/kontakt"
+    },
+    {
+      "url": "https://hodlware.de/impressum",
+      "status": 200,
+      "title": "Impressum — HODLWARE",
+      "canonical": "https://hodlware.de/impressum"
+    },
+    {
+      "url": "https://hodlware.de/datenschutz",
+      "status": 200,
+      "title": "Datenschutzerklärung — HODLWARE",
+      "canonical": "https://hodlware.de/datenschutz"
+    },
+    {
+      "url": "https://hodlware.de/agb",
+      "status": 200,
+      "title": "Allgemeine Geschäftsbedingungen (AGB) — HODLWARE",
+      "canonical": "https://hodlware.de/agb"
+    },
+    {
+      "url": "https://hodlware.de/widerruf",
+      "status": 200,
+      "title": "Widerrufsbelehrung — HODLWARE",
+      "canonical": "https://hodlware.de/widerruf"
+    },
+    {
+      "url": "https://hodlware.de/versand-zahlung",
+      "status": 200,
+      "title": "Versand &amp; Zahlung — HODLWARE",
+      "canonical": "https://hodlware.de/versand-zahlung"
+    },
+    {
+      "url": "https://hodlware.de/ratgeber/seed-phrase-sicher-aufbewahren",
+      "status": 200,
+      "title": "Seed Phrase sicher aufbewahren: Orte &amp; Risiken | HODLWARE",
+      "canonical": "https://hodlware.de/ratgeber/seed-phrase-sicher-aufbewahren"
+    },
+    {
+      "url": "https://hodlware.de/ratgeber/seed-phrase-papier-oder-metall",
+      "status": 200,
+      "title": "Seed Phrase: Papier oder Metall? Vergleich | HODLWARE",
+      "canonical": "https://hodlware.de/ratgeber/seed-phrase-papier-oder-metall"
+    },
+    {
+      "url": "https://hodlware.de/ratgeber/seed-phrase-auf-metall-sichern",
+      "status": 200,
+      "title": "Seed Phrase auf Metall sichern: Anleitung | HODLWARE",
+      "canonical": "https://hodlware.de/ratgeber/seed-phrase-auf-metall-sichern"
+    },
+    {
+      "url": "https://hodlware.de/steel-seed-phrase-recovery-plate",
+      "status": 200,
+      "title": "BIP39 Backup: Recovery Plate mit 4 Buchstaben | HODLWARE",
+      "canonical": "https://hodlware.de/steel-seed-phrase-recovery-plate"
+    },
+    {
+      "url": "https://hodlware.de/zubehoer",
+      "status": 200,
+      "title": "VOID-Manipulationssticker 5 × 1 cm | HODLWARE Zubehör",
+      "canonical": "https://hodlware.de/zubehoer"
+    },
+    {
+      "url": "https://hodlware.de/ratgeber/was-ist-eine-seed-phrase",
+      "status": 404,
+      "title": "Seite nicht gefunden | HODLWARE"
+    },
+    {
+      "url": "https://hodlware.de/ratgeber/bip39-vier-buchstaben",
+      "status": 404,
+      "title": "Seite nicht gefunden | HODLWARE"
+    }
+  ]
+}

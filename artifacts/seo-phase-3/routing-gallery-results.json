@@ -1,0 +1,511 @@
+{
+  "checks": [
+    "valid URL /",
+    "valid URL /steel-seed-phrase-recovery",
+    "html redirect /steel-seed-phrase-recovery",
+    "valid URL /kontakt",
+    "html redirect /kontakt",
+    "valid URL /impressum",
+    "html redirect /impressum",
+    "valid URL /datenschutz",
+    "html redirect /datenschutz",
+    "valid URL /agb",
+    "html redirect /agb",
+    "valid URL /widerruf",
+    "html redirect /widerruf",
+    "valid URL /versand-zahlung",
+    "html redirect /versand-zahlung",
+    "valid URL /ratgeber/seed-phrase-sicher-aufbewahren",
+    "html redirect /ratgeber/seed-phrase-sicher-aufbewahren",
+    "valid URL /ratgeber/seed-phrase-papier-oder-metall",
+    "html redirect /ratgeber/seed-phrase-papier-oder-metall",
+    "valid URL /ratgeber/seed-phrase-auf-metall-sichern",
+    "html redirect /ratgeber/seed-phrase-auf-metall-sichern",
+    "valid URL /steel-seed-phrase-recovery-plate",
+    "html redirect /steel-seed-phrase-recovery-plate",
+    "valid URL /zubehoer",
+    "html redirect /zubehoer",
+    "valid URL /ratgeber/was-ist-eine-seed-phrase",
+    "html redirect /ratgeber/was-ist-eine-seed-phrase",
+    "valid URL /ratgeber/bip39-vier-buchstaben",
+    "html redirect /ratgeber/bip39-vier-buchstaben",
+    "index.html redirect",
+    "trailing slash redirect",
+    "original image URL preserved",
+    "API keeps its own response, no static fallback",
+    "true 404 /does-not-exist",
+    "no homepage fallback /does-not-exist",
+    "true 404 /ratgeber/does-not-exist",
+    "no homepage fallback /ratgeber/does-not-exist",
+    "true 404 /assets/missing.png",
+    "no homepage fallback /assets/missing.png",
+    "legacy redirect /ratgeber/seed-phrase-auf-metall-stanzen",
+    "legacy redirect /ratgeber/seed-phrase-auf-metall-stanzen.html",
+    "1440 / gallery count",
+    "1440 / photos",
+    "1440 / 0:0 image intact",
+    "1440 / 0:1 image intact",
+    "1440 / 0:2 image intact",
+    "1440 / 0:3 image intact",
+    "1440 / 0:4 image intact",
+    "1440 / 0:5 image intact",
+    "1440 / 0:6 image intact",
+    "1440 / 0:7 image intact",
+    "1440 / lightbox",
+    "1440 / photos",
+    "1440 / 1:0 image intact",
+    "1440 / 1:1 image intact",
+    "1440 / 1:2 image intact",
+    "1440 / 1:3 image intact",
+    "1440 / lightbox",
+    "1440 / no overflow",
+    "1440 / navigation",
+    "1440 /steel-seed-phrase-recovery gallery count",
+    "1440 /steel-seed-phrase-recovery photos",
+    "1440 /steel-seed-phrase-recovery 0:0 image intact",
+    "1440 /steel-seed-phrase-recovery 0:1 image intact",
+    "1440 /steel-seed-phrase-recovery 0:2 image intact",
+    "1440 /steel-seed-phrase-recovery 0:3 image intact",
+    "1440 /steel-seed-phrase-recovery 0:4 image intact",
+    "1440 /steel-seed-phrase-recovery 0:5 image intact",
+    "1440 /steel-seed-phrase-recovery 0:6 image intact",
+    "1440 /steel-seed-phrase-recovery 0:7 image intact",
+    "1440 /steel-seed-phrase-recovery lightbox",
+    "1440 /steel-seed-phrase-recovery no overflow",
+    "1440 /steel-seed-phrase-recovery navigation",
+    "1440 /steel-seed-phrase-recovery-plate gallery count",
+    "1440 /steel-seed-phrase-recovery-plate photos",
+    "1440 /steel-seed-phrase-recovery-plate 0:0 image intact",
+    "1440 /steel-seed-phrase-recovery-plate 0:1 image intact",
+    "1440 /steel-seed-phrase-recovery-plate 0:2 image intact",
+    "1440 /steel-seed-phrase-recovery-plate 0:3 image intact",
+    "1440 /steel-seed-phrase-recovery-plate lightbox",
+    "1440 /steel-seed-phrase-recovery-plate no overflow",
+    "1440 /steel-seed-phrase-recovery-plate navigation",
+    "1440 /zubehoer gallery count",
+    "1440 /zubehoer photos",
+    "1440 /zubehoer 0:0 image intact",
+    "1440 /zubehoer 0:1 image intact",
+    "1440 /zubehoer 0:2 image intact",
+    "1440 /zubehoer lightbox",
+    "1440 /zubehoer no overflow",
+    "1440 /zubehoer navigation",
+    "1440 plate cart",
+    "390 / gallery count",
+    "390 / photos",
+    "390 / 0:0 image intact",
+    "390 / 0:1 image intact",
+    "390 / 0:2 image intact",
+    "390 / 0:3 image intact",
+    "390 / 0:4 image intact",
+    "390 / 0:5 image intact",
+    "390 / 0:6 image intact",
+    "390 / 0:7 image intact",
+    "390 / lightbox",
+    "390 / photos",
+    "390 / 1:0 image intact",
+    "390 / 1:1 image intact",
+    "390 / 1:2 image intact",
+    "390 / 1:3 image intact",
+    "390 / lightbox",
+    "390 / no overflow",
+    "390 / navigation",
+    "390 /steel-seed-phrase-recovery gallery count",
+    "390 /steel-seed-phrase-recovery photos",
+    "390 /steel-seed-phrase-recovery 0:0 image intact",
+    "390 /steel-seed-phrase-recovery 0:1 image intact",
+    "390 /steel-seed-phrase-recovery 0:2 image intact",
+    "390 /steel-seed-phrase-recovery 0:3 image intact",
+    "390 /steel-seed-phrase-recovery 0:4 image intact",
+    "390 /steel-seed-phrase-recovery 0:5 image intact",
+    "390 /steel-seed-phrase-recovery 0:6 image intact",
+    "390 /steel-seed-phrase-recovery 0:7 image intact",
+    "390 /steel-seed-phrase-recovery lightbox",
+    "390 /steel-seed-phrase-recovery no overflow",
+    "390 /steel-seed-phrase-recovery navigation",
+    "390 /steel-seed-phrase-recovery-plate gallery count",
+    "390 /steel-seed-phrase-recovery-plate photos",
+    "390 /steel-seed-phrase-recovery-plate 0:0 image intact",
+    "390 /steel-seed-phrase-recovery-plate 0:1 image intact",
+    "390 /steel-seed-phrase-recovery-plate 0:2 image intact",
+    "390 /steel-seed-phrase-recovery-plate 0:3 image intact",
+    "390 /steel-seed-phrase-recovery-plate lightbox",
+    "390 /steel-seed-phrase-recovery-plate no overflow",
+    "390 /steel-seed-phrase-recovery-plate navigation",
+    "390 /zubehoer gallery count",
+    "390 /zubehoer photos",
+    "390 /zubehoer 0:0 image intact",
+    "390 /zubehoer 0:1 image intact",
+    "390 /zubehoer 0:2 image intact",
+    "390 /zubehoer lightbox",
+    "390 /zubehoer no overflow",
+    "390 /zubehoer navigation",
+    "390 plate cart",
+    "no browser runtime errors",
+    "1440 substantial image saving",
+    "390 substantial image saving"
+  ],
+  "sizes": [
+    {
+      "width": 1440,
+      "mode": "before",
+      "resourceBytes": 14313628,
+      "imageBytes": 14240793,
+      "resources": [
+        {
+          "url": "http://127.0.0.1:8793/assets/style.css",
+          "bytes": 25097
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/products.js",
+          "bytes": 11058
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/accessory-products.js",
+          "bytes": 11235
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/seo-content.css",
+          "bytes": 1700
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/app.js",
+          "bytes": 5331
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/gallery.js",
+          "bytes": 3945
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/shop-products.css",
+          "bytes": 9992
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-01.png",
+          "bytes": 1686788
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/hodlware-icon.png",
+          "bytes": 469950
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-02.png",
+          "bytes": 1419758
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-03.png",
+          "bytes": 1320736
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-05.png",
+          "bytes": 1242403
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-04.png",
+          "bytes": 1484230
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-06.png",
+          "bytes": 1708928
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-07.png",
+          "bytes": 2783532
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-08.png",
+          "bytes": 2124468
+        },
+        {
+          "url": "http://127.0.0.1:8793/api/checkout-context",
+          "bytes": 2
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/checkout.js?v=a9525307b5b92993",
+          "bytes": 4475
+        },
+        {
+          "url": "http://127.0.0.1:8793/favicon.ico",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "mode": "after",
+      "resourceBytes": 611859,
+      "imageBytes": 532130,
+      "resources": [
+        {
+          "url": "http://127.0.0.1:8793/assets/style.css",
+          "bytes": 25097
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/products.js?v=a9525307b5b92993",
+          "bytes": 11058
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/accessory-products.js?v=a9525307b5b92993",
+          "bytes": 11235
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/gallery.js?v=a9525307b5b92993",
+          "bytes": 3945
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/app.js?v=a9525307b5b92993",
+          "bytes": 5331
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/seo-content.css",
+          "bytes": 1700
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/shop-products.css?v=a9525307b5b92993",
+          "bytes": 9992
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/seo-availability.js",
+          "bytes": 986
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/hodlware-icon.png",
+          "bytes": 469950
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-01-640.webp",
+          "bytes": 37228
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-01-thumb.webp",
+          "bytes": 4040
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-02-thumb.webp",
+          "bytes": 2892
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-03-thumb.webp",
+          "bytes": 1776
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-04-thumb.webp",
+          "bytes": 1920
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-05-thumb.webp",
+          "bytes": 1242
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-07-thumb.webp",
+          "bytes": 7052
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-06-thumb.webp",
+          "bytes": 3408
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-08-thumb.webp",
+          "bytes": 2622
+        },
+        {
+          "url": "http://127.0.0.1:8793/api/checkout-context",
+          "bytes": 2
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/checkout.js?v=a9525307b5b92993",
+          "bytes": 4475
+        },
+        {
+          "url": "http://127.0.0.1:8793/favicon.ico",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/favicon-96.png",
+          "bytes": 5908
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "mode": "before",
+      "resourceBytes": 14313628,
+      "imageBytes": 14240793,
+      "resources": [
+        {
+          "url": "http://127.0.0.1:8793/assets/style.css",
+          "bytes": 25097
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/products.js",
+          "bytes": 11058
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/accessory-products.js",
+          "bytes": 11235
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/gallery.js",
+          "bytes": 3945
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/app.js",
+          "bytes": 5331
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/shop-products.css",
+          "bytes": 9992
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/seo-content.css",
+          "bytes": 1700
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/hodlware-icon.png",
+          "bytes": 469950
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-01.png",
+          "bytes": 1686788
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-03.png",
+          "bytes": 1320736
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-02.png",
+          "bytes": 1419758
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-05.png",
+          "bytes": 1242403
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-04.png",
+          "bytes": 1484230
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-06.png",
+          "bytes": 1708928
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-08.png",
+          "bytes": 2124468
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-07.png",
+          "bytes": 2783532
+        },
+        {
+          "url": "http://127.0.0.1:8793/api/checkout-context",
+          "bytes": 2
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/checkout.js?v=a9525307b5b92993",
+          "bytes": 4475
+        },
+        {
+          "url": "http://127.0.0.1:8793/favicon.ico",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "mode": "after",
+      "resourceBytes": 611859,
+      "imageBytes": 532130,
+      "resources": [
+        {
+          "url": "http://127.0.0.1:8793/assets/style.css",
+          "bytes": 25097
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/products.js?v=a9525307b5b92993",
+          "bytes": 11058
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/accessory-products.js?v=a9525307b5b92993",
+          "bytes": 11235
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/gallery.js?v=a9525307b5b92993",
+          "bytes": 3945
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/seo-content.css",
+          "bytes": 1700
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/shop-products.css?v=a9525307b5b92993",
+          "bytes": 9992
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/app.js?v=a9525307b5b92993",
+          "bytes": 5331
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/hodlware-icon.png",
+          "bytes": 469950
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/seo-availability.js",
+          "bytes": 986
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-01-640.webp",
+          "bytes": 37228
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-02-thumb.webp",
+          "bytes": 2892
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-01-thumb.webp",
+          "bytes": 4040
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-04-thumb.webp",
+          "bytes": 1920
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-03-thumb.webp",
+          "bytes": 1776
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-07-thumb.webp",
+          "bytes": 7052
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-06-thumb.webp",
+          "bytes": 3408
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-05-thumb.webp",
+          "bytes": 1242
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/steel-recovery-8-digits-08-thumb.webp",
+          "bytes": 2622
+        },
+        {
+          "url": "http://127.0.0.1:8793/api/checkout-context",
+          "bytes": 2
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/checkout.js?v=a9525307b5b92993",
+          "bytes": 4475
+        },
+        {
+          "url": "http://127.0.0.1:8793/favicon.ico",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:8793/assets/images/favicon-96.png",
+          "bytes": 5908
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

@@ -12,7 +12,7 @@ await rm(new URL('../dist/',import.meta.url),{recursive:true,force:true});
 await mkdir('dist',{recursive:true});
 for(const f of ['404.html','zubehoer.html','kontakt.html','index.html','impressum.html','datenschutz.html','widerruf.html','agb.html','versand.html','versand-zahlung.html','steel-seed-phrase-recovery.html','steel-seed-phrase-recovery-plate.html','checkout-success.html','checkout-cancel.html']) await copyFile(f,`dist/${f}`);
 for(const f of ['sitemap.xml','robots.txt','_redirects','67c781f634734bc78b734802d795d817.txt','favicon.ico']) await copyFile(f,`dist/${f}`);
-const guides=["ratgeber/seed-phrase-sicher-aufbewahren.html", "ratgeber/seed-phrase-papier-oder-metall.html", "ratgeber/seed-phrase-auf-metall-sichern.html"];
+const guides=["ratgeber/seed-phrase-sicher-aufbewahren.html", "ratgeber/seed-phrase-papier-oder-metall.html", "ratgeber/seed-phrase-auf-metall-sichern.html", "ratgeber/was-ist-eine-seed-phrase.html", "ratgeber/bip39-vier-buchstaben.html"];
 await mkdir('dist/ratgeber',{recursive:true});
 for(const f of guides) await copyFile(f,`dist/${f}`);
 await mkdir('dist/assets/images',{recursive:true});
