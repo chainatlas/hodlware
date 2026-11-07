@@ -43,13 +43,16 @@ function renderPlatePrice(container, product, state, strong='b'){
    const previous=document.createElement('del');
    previous.className='launch-comparison';
    previous.textContent=euro(state.comparisonPrice/100);
-   previous.setAttribute('aria-label','Vorheriger Preis: '+previous.textContent);
-   amounts.append(previous);
+   previous.setAttribute('aria-label','Niedrigster Preis vor Aktionsbeginn: '+previous.textContent);
+   const discount=document.createElement('span');
+   discount.className='launch-discount';
+   discount.textContent='−'+Math.floor((state.comparisonPrice-state.price)*100/state.comparisonPrice)+' %';
+   amounts.append(previous,discount);
    const label=document.createElement('span');
    label.className='launch-badge';
    label.textContent='Launch-Angebot';
    const end=document.createElement('small');
-   end.textContent='Einführungspreis bis 30.11.2026';
+   end.append('Niedrigster Preis vor Aktionsbeginn: '+previous.textContent,document.createElement('br'),'Aktionspreis bis 30.11.2026');
    container.prepend(label);
    container.append(end);
   }

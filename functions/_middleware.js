@@ -17,13 +17,14 @@ export async function onRequestGet({request,env,next}) {
   const price=(LAUNCH_PRICE/100).toFixed(2).replace('.',',')+' €';
   const regular=(CATALOG.recoveryplate4.price/100).toFixed(2).replace('.',',')+' €';
   const comparison=launchComparisonApproved(env);
+  const percent=Math.floor((CATALOG.recoveryplate4.price-LAUNCH_PRICE)*100/CATALOG.recoveryplate4.price);
   const previous=comparison
-   ? '<del class="launch-comparison" aria-label="Vorheriger Preis: '+regular+'">'+regular+'</del>' : '';
+   ? '<del class="launch-comparison" aria-label="Niedrigster Preis vor Aktionsbeginn: '+regular+'">'+regular+'</del><span class="launch-discount">−'+percent+' %</span>' : '';
   html=html.replace(/<div data-detail-price="recoveryplate4"><strong>[^<]*<\/strong><\/div>/,
    '<div data-detail-price="recoveryplate4" class="launch-price">'+
    (comparison?'<span class="launch-badge">Launch-Angebot</span>':'')+
    '<span class="launch-amounts"><strong>'+price+'</strong>'+previous+'</span>'+
-   (comparison?'<small>Einführungspreis bis 30.11.2026</small>':'')+'</div>');
+   (comparison?'<small>Niedrigster Preis vor Aktionsbeginn: '+regular+'<br>Aktionspreis bis 30.11.2026</small>':'')+'</div>');
  }
  if(paused&&path===eight){
   html=html.replace(/(<button class="add" data-id="seedplate" disabled>)[^<]*/, '$1Ausverkauft');
