@@ -8,6 +8,7 @@
    if(value['@type']==='Product'&&value.offers){
     const p=HODL_PRODUCTS.find(p=>p.id===value.sku);
     const available=p?.managedStock?(typeof stockState==='object'?stockState[p.id]?.available:undefined):p?.visible!==false&&p?.price!=null;
+    if(Number.isSafeInteger(typeof stockState==='object'?stockState[p?.id]?.price:undefined))value.offers.price=(stockState[p.id].price/100).toFixed(2);
     if(typeof available==='boolean')value.offers.availability='https://schema.org/'+(available?'InStock':'OutOfStock');
     else delete value.offers.availability;
    }

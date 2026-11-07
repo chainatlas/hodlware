@@ -114,3 +114,76 @@ test('public availability reveals no inventory counts, including sold-out and di
  assert.deepEqual(await get(env),{ready:true,products:{recoveryplate4:{available:false},seedplate:{available:true}}});
  assert.deepEqual(await get({...env,PLATE4_ENABLED:'false'}),{ready:true,products:{seedplate:{available:true}}});sql.close();
 });
+
+test('Berlin launch boundaries, server quote and historic order amounts',async t=>{
+ const {LAUNCH_START,LAUNCH_END,LAUNCH_VERSION,launchPrice}=await import('../server/launch.js');
+ const {renderMerchantFeed}=await import('../server/merchant-feed.js');
+ const {CATALOG}=await import('../server/catalog.js');
+ const {onRequestGet}=await import('../functions/_middleware.js');
+ const {env,sql}=setup();
+ t.after(()=>sql.close());
+ env.PLATE4_LAUNCH_APPROVED='true';
+ env.STRIPE_PRICE_ID_PLATE4_LAUNCH='price_launch_fixture';
+ env.SEEDPLATE_SALES_PAUSED='true';
+ assert.equal(new Date(LAUNCH_START).toISOString(),'2026-11-15T23:00:00.000Z');
+ assert.equal(new Date(LAUNCH_END).toISOString(),'2026-11-30T23:00:00.000Z');
+ for(const [time,active] of [[LAUNCH_START-1,false],[LAUNCH_START,true],[LAUNCH_END-1,true],[LAUNCH_END,false]]){
+  assert.equal(launchPrice(env,time),active);
+  assert.equal(launchPrice({},time),false);
+ }
+ const clock=t.mock.method(Date,'now',()=>LAUNCH_START);
+ const items=[{id:'recoveryplate4',quantity:1}];
+ const req=(price,data={items})=>{const original=request(env,data);const headers=new Headers(original.headers);headers.set('x-plate4-price',price);return new Request(original,{headers});};
+ let stripeCalls=0;
+ await mockStripe((url,init)=>{
+  stripeCalls++;
+  if(url.includes('/prices/')){assert.ok(url.endsWith('price_launch_fixture'));return {livemode:false,active:true,currency:'eur',unit_amount:5990,type:'one_time'};}
+  const payload=new URLSearchParams(init.body);
+  assert.equal(payload.get('line_items[0][price]'),'price_launch_fixture');
+  assert.equal(payload.get('shipping_options[0][shipping_rate_data][fixed_amount][amount]'),'619');
+  assert.equal(payload.get('allow_promotion_codes'),'false');
+  assert.equal(payload.get('invoice_creation[enabled]'),'true');
+  assert.equal(payload.get('metadata[pricingVersion]'),LAUNCH_VERSION);
+  return {id:'cs_test_launch123',livemode:false,url:'https://checkout.stripe.com/c/pay/fixture'};
+ },async()=>{
+  assert.equal((await create({env,request:req('5990',{items:[{id:'seedplate',quantity:1},...items]})})).status,503);
+  assert.equal((await create({env,request:req('1',{items:[{...items[0],price:1}]})})).status,400);
+  assert.equal((await create({env,request:req('7900')})).status,409);
+  assert.equal(stripeCalls,0);
+  assert.equal((await create({env,request:req('5990')})).status,200);
+  assert.equal(stripeCalls,2);
+ });
+ const state=await (await context({env,request:new Request(env.SITE_URL+'/api/checkout-context')})).json();
+ assert.deepEqual(state.products.recoveryplate4,{available:true,price:5990,launch:true});
+ assert.deepEqual(state.products.seedplate,{available:false,paused:true});
+ const states=Object.fromEntries(Object.keys(CATALOG).map(id=>[id,id!=='seedplate']));
+ const feed=renderMerchantFeed(states,{launch:true});
+ assert.match(feed,/<g:price>59\.90 EUR<\/g:price>/);
+ assert.doesNotMatch(feed,/79\.90|<g:sale_price/);
+ assert.equal(parameters(env,[...items,{id:'void-1',quantity:1}],'owner',true).shipping_options[0].shipping_rate_data.fixed_amount.amount,619);
+ assert.equal(parameters(env,[{id:'void-1',quantity:1}],'owner').shipping_options[0].shipping_rate_data.fixed_amount.amount,110);
+ const html=readFileSync(new URL('../steel-seed-phrase-recovery-plate.html',import.meta.url),'utf8');
+ const page=await onRequestGet({env,request:new Request(env.SITE_URL+'/steel-seed-phrase-recovery-plate'),next:()=>new Response(html,{headers:{'Content-Type':'text/html'}})});
+ assert.equal(page.headers.get('cache-control'),'no-store');
+ assert.match(await page.text(),/Launch-Angebot<\/span><strong>59,90 €/);
+ const s=session(items);
+ s.metadata.pricingVersion=LAUNCH_VERSION;
+ s.amount_subtotal=5990;s.amount_total=6609;
+ s.line_items.data[0].price.unit_amount=5990;
+ s.line_items.data[0].amount_subtotal=5990;
+ clock.mock.mockImplementation(()=>LAUNCH_END);
+ assert.equal(verified(s),'paid');
+ assert.throws(()=>verified({...s,amount_total:6509,total_details:{...s.total_details,amount_discount:100}}));
+ assert.equal((await create({env,request:req('5990')})).status,409);
+ const regular=await (await context({env,request:new Request(env.SITE_URL+'/api/checkout-context')})).json();
+ assert.deepEqual(regular.products.recoveryplate4,{available:true,price:7900,launch:false});
+ const reservation=sql.prepare('SELECT reservation_id FROM stock_reservations').get();
+ s.metadata.reservation=reservation.reservation_id;s.id='cs_test_launch123';
+ await record(env.ORDERS,{id:'evt_launch'},s,'paid');
+ assert.equal(sql.prepare('SELECT unit_price FROM checkout_order_items').get().unit_price,5990);
+ const {queueOrder}=await import('../server/order-mail.js');
+ await queueOrder(env,s,'card');
+ const snapshot=JSON.parse(sql.prepare('SELECT snapshot FROM order_confirmations').get().snapshot);
+ assert.match(snapshot.text,/Einzelpreis: 59,90 EUR/);
+ assert.match(snapshot.text,/Gesamt: 66,09 EUR/);
+});

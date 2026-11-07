@@ -1,3 +1,5 @@
+import {LAUNCH_PRICE,LAUNCH_VERSION} from './launch.js';
+
 // Server-owned catalog. Prices and identities never come from the browser.
 const VOID_IMAGES=Object.freeze([{"src":"assets/images/void/void-sticker-original-extended.webp","small":"assets/images/void/void-sticker-original-extended-720.webp","thumb":"assets/images/void/void-sticker-original-extended-160.webp","width":1440,"height":960,"alt":"Holografischer HODLWARE VOID-Manipulationssticker auf heller glatter Oberfläche","label":"Sticker auf heller Oberfläche"},{"src":"assets/images/void/void-sticker-hand.webp","small":"assets/images/void/void-sticker-hand-720.webp","thumb":"assets/images/void/void-sticker-hand-160.webp","width":1440,"height":960,"alt":"Dünner holografischer VOID-Sticker zwischen zwei Fingern gehalten","label":"Sticker in der Hand"},{"src":"assets/images/void/void-sticker-peeled.webp","small":"assets/images/void/void-sticker-peeled-720.webp","thumb":"assets/images/void/void-sticker-peeled-160.webp","width":1440,"height":960,"alt":"Teilweise abgelöster VOID-Sticker mit sichtbarem VOID-Muster auf der Oberfläche","label":"VOID-Muster nach dem Ablösen"}].map(Object.freeze));
 export const CATALOG=Object.freeze({
@@ -5,6 +7,10 @@ export const CATALOG=Object.freeze({
  seedplate:Object.freeze({name:'Steel Seed Phrase Recovery Plate (8 Digits per Word)',price:7900,priceEnv:'STRIPE_PRICE_ID',description:'8 Zeichen pro Wort; 12/18/24 Seed-Wörter; Edelstahl. Set mit Plate, Metallbuchstaben, Schraubenzieher, Befestigungsteilen, Tasche und Void-Sticker.'}),
  recoveryplate4:Object.freeze({name:'Steel Seed Phrase Recovery Plate (4 Digit - BIP39)',price:7900,priceEnv:'STRIPE_PRICE_ID_PLATE4',description:'Erste 4 Buchstaben pro Wort; 12 oder 24 Wörter der englischen BIP39-Wortliste; Edelstahl 304 / V2A; 10,5 × 6 × 0,6 cm; 217 g. Mit Metallbuchstaben, Schraubendreher, 3 VOID-Sicherheitsstickern und BIP39-Anleitung.'})
 });
+export function launchPriceConfigured(env){
+ const id=env.STRIPE_PRICE_ID_PLATE4_LAUNCH;
+ return /^price_/.test(id||'')&&!Object.values(CATALOG).some(product=>env[product.priceEnv]===id);
+}
 export function cartItems(data){
  if(!data || Object.keys(data).join()!=='items' || !Array.isArray(data.items) || !data.items.length || data.items.length>Object.keys(CATALOG).length)throw Error('cart');
  const seen=new Set();
@@ -15,7 +21,9 @@ export function cartItems(data){
 }
 export function sessionItems(s){
  const items=s.metadata?.items!==undefined?cartItems({items:JSON.parse(s.metadata.items)}):cartItems({items:[{id:'seedplate',quantity:Number(s.metadata?.quantity)}]});
- return items.map(item=>({...item,name:CATALOG[item.id].name,unitPrice:CATALOG[item.id].price}));
+ const launch=s.metadata?.pricingVersion;
+ if(launch!==undefined&&(launch!==LAUNCH_VERSION||!items.some(item=>item.id==='recoveryplate4')))throw Error('pricing version');
+ return items.map(item=>({...item,name:CATALOG[item.id].name,unitPrice:launch&&item.id==='recoveryplate4'?LAUNCH_PRICE:CATALOG[item.id].price}));
 }
 export const subtotal=items=>items.reduce((sum,item)=>sum+CATALOG[item.id].price*item.quantity,0);
 

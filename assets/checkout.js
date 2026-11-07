@@ -11,6 +11,8 @@ function render(){
   const product=P.find(p=>p.id===item.id),line=document.createElement('div');line.className='cartline';
   const name=document.createElement('p');name.textContent=product.name;line.append(name);
   const price=document.createElement('p');price.textContent=`${euro(product.price)} ${product.category==='accessories'?'pro Paket':'pro Stück'}`;line.append(price);
+  if(stockState[item.id]?.launch){const launch=document.createElement('small');launch.className='launch-badge';launch.textContent='Launch-Angebot';line.append(launch);}
+  if(stockState[item.id]?.paused){const unavailable=document.createElement('p');unavailable.textContent='Ausverkauft';line.append(unavailable);}
   const label=document.createElement('label');label.textContent='Menge ';const input=document.createElement('input');input.type='number';input.min='1';input.max=String(99-(n-item.quantity));input.step='1';input.value=String(item.quantity);input.setAttribute('aria-label','Menge: '+product.name);input.disabled=busy;
   input.addEventListener('change',()=>{const count=Number(input.value);if(Number.isInteger(count)&&count>=1&&count<=Number(input.max)){cart=cart.filter(id=>id!==item.id).concat(Array(count).fill(item.id));save();}else input.value=String(item.quantity);});label.append(input);line.append(label);
   const remove=document.createElement('button');remove.type='button';remove.textContent='Entfernen';remove.disabled=busy;remove.onclick=()=>{cart=cart.filter(id=>id!==item.id);save();};line.append(remove);items.append(line);
@@ -23,12 +25,18 @@ window.addEventListener('hwcartchange',render);render();
 button.onclick=async()=>{
  if(busy||!cart.length)return;busy=true;render();message.textContent='Sicherer Checkout wird geöffnet …';
  try{
+  const platePrice=P.find(p=>p.id==='recoveryplate4').price;
   const context=await fetch('/api/checkout-context',{cache:'no-store'});if(!context.ok)throw Error('Der Checkout ist derzeit nicht verfügbar.');
-  const items=cartItems(),fingerprint=JSON.stringify(items);let previous;try{previous=JSON.parse(sessionStorage.getItem('hwcheckout-attempt'));}catch{}
+  const fresh=await context.json();
+  const items=cartItems(),hasPlate=items.some(item=>item.id==='recoveryplate4');
+  applyShopContext(fresh);
+  if(items.some(item=>P.find(p=>p.id===item.id).managedStock&&!stockState[item.id]?.available))throw Error('Bitte prüfe die Verfügbarkeit im Warenkorb.');
+  if(hasPlate&&platePrice!==P.find(p=>p.id==='recoveryplate4').price)throw Error('Der Preis hat sich geändert. Bitte prüfe den aktualisierten Warenkorb.');
+  const fingerprint=JSON.stringify({items,platePrice:hasPlate?platePrice:null});let previous;try{previous=JSON.parse(sessionStorage.getItem('hwcheckout-attempt'));}catch{}
   const attempt=previous?.fingerprint===fingerprint && Date.now()-previous.createdAt<1800000?previous:{fingerprint,items,key:crypto.randomUUID(),createdAt:Date.now()};
   sessionStorage.setItem('hwcheckout-attempt',JSON.stringify(attempt));
-  const response=await fetch('/api/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json','X-Checkout-Request':attempt.key},body:JSON.stringify({items})});
-  const data=await response.json();if(!response.ok)throw Error(data.error||'Checkout derzeit nicht verfügbar.');
+  const response=await fetch('/api/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json','X-Checkout-Request':attempt.key,...(hasPlate?{'X-Plate4-Price':String(Math.round(platePrice*100))}:{})},body:JSON.stringify({items})});
+  const data=await response.json();if(response.status===409)await refreshStock();if(!response.ok)throw Error(data.error||'Checkout derzeit nicht verfügbar.');
   if(new URL(data.url).origin!=='https://checkout.stripe.com')throw Error('Ungültige Checkout-Adresse.');
   sessionStorage.setItem('hwcheckout-attempt',JSON.stringify({...attempt,sessionId:data.sessionId}));
   location.assign(data.url);

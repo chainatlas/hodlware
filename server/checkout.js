@@ -1,10 +1,11 @@
 import {SEED_STOCK_VERSION,seedMode,seedplateAvailability,reservationItems,legacySeedReview} from './seedplate-inventory.js';
-import {CATALOG,cartItems,sessionItems,subtotal,shipping,physicalItems} from './catalog.js';
+import {CATALOG,cartItems,sessionItems,shipping,physicalItems,launchPriceConfigured} from './catalog.js';
 import {availability,reserve,bindReservation,inventoryStatement} from './inventory.js';
 import {CONTRACT_VERSION,ACCESSORY_CONTRACT_VERSION} from './contract-text.js';
 import {queueOrder} from './order-mail.js';
 import {mailConfigured,deliver} from './mail.js';
 import Stripe from 'stripe';
+import {launchPrice,launchTransition,seedplatePaused,LAUNCH_PRICE,LAUNCH_VERSION} from './launch.js';
 import {reserveAccessories,bindAccessories,accessoryStatements,accessoryAvailability} from './accessory-inventory.js';
 export const APP='hodlware-sandbox-v1', PRICE=7900, SHIPPING=619;
 export function json(data,status=200,headers={}) { return new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...headers}}); }
@@ -45,10 +46,10 @@ export function quantity(data) {
  const item=data.items[0]; if(!item || Object.keys(item).sort().join()!=='id,quantity' || item.id!=='seedplate' || !Number.isInteger(item.quantity) || item.quantity<1 || item.quantity>99) throw Error('cart');
  return item.quantity;
 }
-export function parameters(env,n,hash) { const items=Array.isArray(n)?cartItems({items:n}):[{id:'seedplate',quantity:n}]; return {mode:'payment',submit_type:'pay',customer_creation:'always',billing_address_collection:'required',shipping_address_collection:{allowed_countries:['DE']},line_items:items.map(item=>({price:env[CATALOG[item.id].priceEnv],quantity:item.quantity})),shipping_options:[{shipping_rate_data:{type:'fixed_amount',fixed_amount:{amount:shipping(items),currency:'eur'},display_name:shipping(items)===110?'Briefversand Deutschland · Basis-Sendungsverfolgung':'DHL Standardversand Deutschland'}}],allow_promotion_codes:true,invoice_creation:{enabled:true,invoice_data:{footer:'Für diese Lieferung gilt die Steuerbefreiung für Kleinunternehmer gemäß § 19 UStG. Es wird keine Umsatzsteuer berechnet.',custom_fields:[{name:'Rechnungsaussteller',value:'HODLWARE – Steffen Reizner'}]}},automatic_tax:{enabled:false},custom_text:{submit:{message:'Lieferzeit: 2–4 Werktage nach erfolgreicher Zahlung. Gemäß § 19 UStG ohne Ausweis der Umsatzsteuer.'}},metadata:{app:APP,owner:hash,quantity:String(items.reduce((n,item)=>n+item.quantity,0)),...(Array.isArray(n)?{items:JSON.stringify(items)}:{}),contractVersion:physicalItems(items).length?ACCESSORY_CONTRACT_VERSION:CONTRACT_VERSION},success_url:`${env.SITE_URL.replace(/\/$/,'')}/checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,cancel_url:`${env.SITE_URL.replace(/\/$/,'')}/checkout-cancel.html`}; }
+export function parameters(env,n,hash,launch=false) { const items=Array.isArray(n)?cartItems({items:n}):[{id:'seedplate',quantity:n}]; return {mode:'payment',submit_type:'pay',customer_creation:'always',billing_address_collection:'required',shipping_address_collection:{allowed_countries:['DE']},line_items:items.map(item=>({price:env[launch&&item.id==='recoveryplate4'?'STRIPE_PRICE_ID_PLATE4_LAUNCH':CATALOG[item.id].priceEnv],quantity:item.quantity})),shipping_options:[{shipping_rate_data:{type:'fixed_amount',fixed_amount:{amount:shipping(items),currency:'eur'},display_name:shipping(items)===110?'Briefversand Deutschland · Basis-Sendungsverfolgung':'DHL Standardversand Deutschland'}}],allow_promotion_codes:!launch,invoice_creation:{enabled:true,invoice_data:{footer:'Für diese Lieferung gilt die Steuerbefreiung für Kleinunternehmer gemäß § 19 UStG. Es wird keine Umsatzsteuer berechnet.',custom_fields:[{name:'Rechnungsaussteller',value:'HODLWARE – Steffen Reizner'}]}},automatic_tax:{enabled:false},custom_text:{submit:{message:'Lieferzeit: 2–4 Werktage nach erfolgreicher Zahlung. Gemäß § 19 UStG ohne Ausweis der Umsatzsteuer.'}},metadata:{...(launch?{pricingVersion:LAUNCH_VERSION}:{}),app:APP,owner:hash,quantity:String(items.reduce((n,item)=>n+item.quantity,0)),...(Array.isArray(n)?{items:JSON.stringify(items)}:{}),contractVersion:physicalItems(items).length?ACCESSORY_CONTRACT_VERSION:CONTRACT_VERSION},success_url:`${env.SITE_URL.replace(/\/$/,'')}/checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,cancel_url:`${env.SITE_URL.replace(/\/$/,'')}/checkout-cancel.html`}; }
 export function verified(s,livemode=false) {
  const items=sessionItems(s);
- if(s.livemode!==livemode || s.metadata?.app!==APP || s.currency!=='eur' || s.amount_subtotal!==subtotal(items)) throw Error('session');
+ if(s.livemode!==livemode || s.metadata?.app!==APP || s.currency!=='eur' || s.amount_subtotal!==items.reduce((sum,item)=>sum+item.unitPrice*item.quantity,0)) throw Error('session');
  if(s.metadata?.items!==undefined){
   const lines=s.line_items?.data;
   if(s.mode!=='payment'||!Array.isArray(lines)||s.line_items.has_more||lines.length!==items.length)throw Error('items');
@@ -56,14 +57,27 @@ export function verified(s,livemode=false) {
  }
  if(s.status==='complete') {
   const country=(s.collected_information?.shipping_details || s.shipping_details)?.address?.country;
-  if(country!=='DE' || s.total_details?.amount_shipping!==shipping(items) || s.total_details?.amount_tax!==0 || !Number.isInteger(s.total_details?.amount_discount) || s.total_details.amount_discount<0 || s.total_details.amount_discount>s.amount_subtotal || s.amount_total!==s.amount_subtotal-s.total_details.amount_discount+shipping(items)) throw Error('session');
+  if(country!=='DE' || s.total_details?.amount_shipping!==shipping(items) || s.total_details?.amount_tax!==0 || !Number.isInteger(s.total_details?.amount_discount) || (s.metadata?.pricingVersion===LAUNCH_VERSION&&s.total_details.amount_discount!==0) || s.total_details.amount_discount<0 || s.total_details.amount_discount>s.amount_subtotal || s.amount_total!==s.amount_subtotal-s.total_details.amount_discount+shipping(items)) throw Error('session');
  }
  return s.status==='complete' && s.payment_status==='paid' ? 'paid' : s.status==='expired'?'expired':'pending';
 }
 export async function context({request,env}) {
  try {
  const {origin}=config(env); if(new URL(request.url).origin!==origin) return json({error:'Nicht verfügbar.'},403);
- const id=owner(request)||crypto.randomUUID(); const products=env.PLATE4_ENABLED==='true'?{products:{recoveryplate4:{available:(await availability(env)).available}}}:{}; if(env.ACCESSORIES_ENABLED==='true'){products.products||={};for(const [id,p] of Object.entries(CATALOG))if(p.stockId)products.products[id]={available:await accessoryAvailability(env,p.stockId,p.units)};} products.products||={};products.products.seedplate={available:await seedplateAvailability(env)}; return json({ready:true,...products},200,{'Set-Cookie':`hwcheckout=${id}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000${origin.startsWith('https:')?'; Secure':''}`});
+ const now=Date.now(),launch=launchPrice(env,now);
+ const id=owner(request)||crypto.randomUUID();
+ const scheduled=env.PLATE4_LAUNCH_APPROVED==='true';
+ const products={seedplate:{available:await seedplateAvailability(env),...(seedplatePaused(env)?{paused:true}:{})}};
+ if(env.PLATE4_ENABLED==='true'){
+  products.recoveryplate4={
+   available:(!launch||launchPriceConfigured(env))&&(await availability(env)).available,
+   ...(scheduled?{price:launch?LAUNCH_PRICE:CATALOG.recoveryplate4.price,launch}:{})
+  };
+ }
+ if(env.ACCESSORIES_ENABLED==='true'){
+  for(const [id,p] of Object.entries(CATALOG))if(p.stockId)products[id]={available:await accessoryAvailability(env,p.stockId,p.units)};
+ }
+ return json({ready:true,products,...(scheduled?{nextPriceChange:launchTransition(env,now)}:{})},200,{'Set-Cookie':`hwcheckout=${id}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000${origin.startsWith('https:')?'; Secure':''}`});
  }catch{return json({error:'Der Checkout ist derzeit nicht verfügbar.'},503);}
 }
 export async function create({request,env}) {
@@ -71,17 +85,24 @@ export async function create({request,env}) {
  let items,id,key; try{items=cartItems(await body(request,c.origin));id=owner(request);key=request.headers.get('x-checkout-request');if(!id || !/^[a-f0-9-]{36}$/.test(key||''))throw Error();}catch{return json({error:'Ungültiger Warenkorb. Bitte erneut öffnen.'},400);}
  try {
  const accessories=physicalItems(items);
- const hasSeed=items.some(item=>item.id==='seedplate');const mode=seedMode(env);if(hasSeed&&!['legacy','managed'].includes(mode))throw Error('unavailable');
+ const hasSeed=items.some(item=>item.id==='seedplate');const mode=seedMode(env);if(hasSeed&&(seedplatePaused(env)||!['legacy','managed'].includes(mode)))throw Error('unavailable');
  const version=hasSeed&&mode==='managed'?SEED_STOCK_VERSION:undefined;const stockItems=reservationItems(items,version);
  if(accessories.length && (env.ACCESSORIES_ENABLED!=='true' || env.ACCESSORIES_PRICES_APPROVED!=='true' || env.ACCESSORIES_STOCK_CONFIRMED!=='true'))throw Error('unavailable');
  const hasNew=items.some(item=>item.id==='recoveryplate4');
  if(hasNew && (env.PLATE4_ENABLED!=='true' || !/^price_/.test(env.STRIPE_PRICE_ID_PLATE4||'') || env.STRIPE_PRICE_ID_PLATE4===env.STRIPE_PRICE_ID))throw Error('unavailable');
- for(const item of items){
-  const product=CATALOG[item.id];const price=await c.stripe.prices.retrieve(env[product.priceEnv]);
-  if(price.livemode!==c.livemode || !price.active || price.currency!=='eur' || price.unit_amount!==product.price || price.recurring || price.type!=='one_time')throw Error('price');
+ const launch=hasNew&&launchPrice(env);
+ if(launch&&!launchPriceConfigured(env))throw Error('launch price configuration');
+ const platePrice=launch?LAUNCH_PRICE:CATALOG.recoveryplate4.price;
+ const displayedPrice=request.headers.get('x-plate4-price');
+ if(hasNew&&(displayedPrice!==null||env.PLATE4_LAUNCH_APPROVED==='true')&&displayedPrice!==String(platePrice))return json({error:'Der Preis hat sich geändert. Bitte prüfe den aktualisierten Warenkorb.'},409);
+ const hash=await digest(id),params=parameters(env,items,hash,launch);
+ for(const [index,item] of items.entries()){
+  const expected=item.id==='recoveryplate4'?platePrice:CATALOG[item.id].price;
+  const price=await c.stripe.prices.retrieve(params.line_items[index].price);
+  if(price.livemode!==c.livemode || !price.active || price.currency!=='eur' || price.unit_amount!==expected || price.recurring || price.type!=='one_time')throw Error('price');
  }
- const hash=await digest(id),reservation=await digest(`${hash}:${key}:${JSON.stringify(items)}${version?":"+version:""}`);
- const params=parameters(env,items,hash);
+ const reservation=await digest(`${hash}:${key}:${JSON.stringify(items)}${version?":"+version:""}`);
+ if(hasNew&&launch!==launchPrice(env))return json({error:'Der Preis hat sich geändert. Bitte prüfe den aktualisierten Warenkorb.'},409);
  if(stockItems.length || hasNew){const plate=items.find(item=>item.id==='recoveryplate4')?.quantity||0;const held=stockItems.length?await reserveAccessories(env,reservation,stockItems,plate):await reserve(env,reservation,plate);params.metadata.reservation=reservation;params.expires_at=held.created_at+3600;}
  if(version)params.metadata.stockVersion=version;
  const session=await c.stripe.checkout.sessions.create(params,{idempotencyKey:reservation});

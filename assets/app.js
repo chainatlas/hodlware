@@ -18,7 +18,7 @@ if(document.getElementById('products')){
    <div class="copy"><h3><a href="/${p.url.replace(/\.html$/,'')}">Recovery Plate – ${p.characters||8}-Digit</a></h3><p class="product-variant-subtitle">${p.characters===8?'(8 Digits pro Wort)':'(4 Digits pro Wort – BIP39 Standard)'}</p><p class="product-description">${p.shopDesc||p.desc}</p>
     <ul class="product-features">${features.map(([icon,label])=>`<li>${icon}<span>${label}</span></li>`).join('')}</ul>
     <a class="product-details-link" href="/${p.url.replace(/\.html$/,'')}">Produktbeschreibung <span aria-hidden="true">↗</span></a>
-    <div class="buy"><b>${euro(p.price)}</b><button class="add" data-id="${p.id}" ${p.price==null||p.managedStock?'disabled':''}>${p.price==null?'Bald verfügbar':p.managedStock?'Verfügbarkeit wird geprüft':'In den Warenkorb'} <span aria-hidden="true">→</span></button></div>
+    <div class="buy"><div data-shop-price="${p.id}"><b>${euro(p.price)}</b></div><button class="add" data-id="${p.id}" ${p.price==null||p.managedStock?'disabled':''}>${p.price==null?'Bald verfügbar':p.managedStock?'Verfügbarkeit wird geprüft':'In den Warenkorb'} <span aria-hidden="true">→</span></button></div>
    </div>
 
   </article>`;
@@ -26,24 +26,58 @@ if(document.getElementById('products')){
 }
 function cartItems(){return [...new Set(cart)].sort().map(id=>({id,quantity:cart.filter(value=>value===id).length}));}
 const stockState={};
+const regularPlate4Price=P.find(p=>p.id==='recoveryplate4')?.price;
 function canAdd(id){const p=P.find(p=>p.id===id);return p&&p.visible!==false&&p.price!=null&&cart.length<99&&(!p.managedStock||(stockState[id]?.available));}
 document.querySelectorAll('.add').forEach(button=>button.onclick=()=>{if(canAdd(button.dataset.id)){cart.push(button.dataset.id);save();const feedback=document.querySelector('.detail-feedback');if(feedback)feedback.textContent='Zum Warenkorb hinzugefügt.';}});
+function renderPlatePrice(container, product, state, strong='b'){
+ const price=document.createElement(strong);
+ price.textContent=euro(product.price);
+ container.replaceChildren(price);
+ container.classList.toggle('launch-price',state.launch===true);
+ if(state.launch){
+  const label=document.createElement('span');
+  label.className='launch-badge';
+  label.textContent='Launch-Angebot';
+  const end=document.createElement('small');
+  end.textContent='Einführungspreis bis 30.11.2026.';
+  container.prepend(label);
+  container.append(end);
+ }
+}
 async function refreshStock(){
  const managed=P.filter(p=>p.managedStock);if(!managed.length)return;
  let data={};try{const response=await fetch('/api/checkout-context',{cache:'no-store'});if(response.ok)data=await response.json();}catch{}
+ applyShopContext(data);
+}
+let priceRefresh;
+function applyShopContext(data){
+ if(Number.isSafeInteger(data.nextPriceChange)||data.nextPriceChange===null){
+  clearTimeout(priceRefresh);
+  const delay=data.nextPriceChange-Date.now();
+  if(delay>0)priceRefresh=setTimeout(refreshStock,Math.min(delay+250,2147483647));
+ }
+ const managed=P.filter(p=>p.managedStock);
  for(const p of managed){
   const state=data.products?.[p.id]||{available:false};stockState[p.id]=state;
-  document.querySelectorAll(`[data-stock="${p.id}"]`).forEach(el=>el.textContent=state.available?'Verfügbar':'Derzeit nicht verfügbar');
-  document.querySelectorAll(`.add[data-id="${p.id}"]`).forEach(button=>{button.disabled=!state.available;button.textContent=state.available?'In den Warenkorb →':'Derzeit nicht verfügbar';});
+  if(p.id==='recoveryplate4'&&data.ready){
+   p.price=Number.isSafeInteger(state.price)?state.price/100:regularPlate4Price;
+   document.querySelectorAll(`[data-shop-price="${p.id}"]`).forEach(el=>renderPlatePrice(el,p,state));
+   document.querySelectorAll(`[data-detail-price="${p.id}"]`).forEach(el=>renderPlatePrice(el,p,state,'strong'));
+  }
+  const unavailable=state.paused?'Ausverkauft':'Derzeit nicht verfügbar';
+  document.querySelectorAll(`[data-stock="${p.id}"]`).forEach(el=>el.textContent=state.available?'Verfügbar':unavailable);
+  document.querySelectorAll(`.add[data-id="${p.id}"]`).forEach(button=>{button.disabled=!state.available;button.textContent=state.available?'In den Warenkorb →':unavailable;});
  }
  window.dispatchEvent(new Event('hwcartchange'));
 }
 refreshStock();
-document.querySelector('[data-cart]').onclick=()=>{drawer.classList.add('open');shade.classList.add('open')};
+window.addEventListener('pageshow',event=>{if(event.persisted)refreshStock();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshStock();});
+document.querySelector('[data-cart]').onclick=()=>{refreshStock();drawer.classList.add('open');shade.classList.add('open')};
 document.querySelector('[data-close]').onclick=shade.onclick=()=>{drawer.classList.remove('open');shade.classList.remove('open')};
 update();
 const checkoutScript=document.createElement('script');checkoutScript.src='assets/checkout.js';document.head.append(checkoutScript);
 // One gallery implementation for homepage cards, Plates and accessories.
 initProductGalleries();
 const detailPrice=document.querySelector('[data-detail-price]');
-if(detailPrice)detailPrice.textContent=euro(P.find(product=>product.id===(detailPrice.dataset.detailPrice||'seedplate')).price);
+if(detailPrice&&!detailPrice.matches('[data-detail-price=recoveryplate4]'))detailPrice.textContent=euro(P.find(product=>product.id===(detailPrice.dataset.detailPrice||'seedplate')).price);
