@@ -18,7 +18,7 @@ if(document.getElementById('products')){
    <div class="copy"><h3><a href="/${p.url.replace(/\.html$/,'')}">Recovery Plate – ${p.characters||8}-Digit</a></h3><p class="product-variant-subtitle">${p.characters===8?'(8 Digits pro Wort)':'(4 Digits pro Wort – BIP39 Standard)'}</p><p class="product-description">${p.shopDesc||p.desc}</p>
     <ul class="product-features">${features.map(([icon,label])=>`<li>${icon}<span>${label}</span></li>`).join('')}</ul>
     <a class="product-details-link" href="/${p.url.replace(/\.html$/,'')}">Produktbeschreibung <span aria-hidden="true">↗</span></a>
-    <div class="buy"><div data-shop-price="${p.id}"><b>${euro(p.price)}</b></div>${p.id==='recoveryplate4'?'<p id="plate4-price-reference" class="launch-reference" hidden>Streichpreis: niedrigster Preis vor der Ermäßigung.</p>':''}<button class="add" data-id="${p.id}" ${p.price==null||p.managedStock?'disabled':''}>${p.price==null?'Bald verfügbar':p.managedStock?'Verfügbarkeit wird geprüft':'In den Warenkorb'} <span aria-hidden="true">→</span></button></div>
+    <div class="buy"><div data-shop-price="${p.id}"><b>${euro(p.price)}</b></div><button class="add" data-id="${p.id}" ${p.price==null||p.managedStock?'disabled':''}>${p.price==null?'Bald verfügbar':p.managedStock?'Verfügbarkeit wird geprüft':'In den Warenkorb'} <span aria-hidden="true">→</span></button></div>
    </div>
 
   </article>`;
@@ -34,7 +34,7 @@ function renderPlatePrice(container, product, state, strong='b'){
  price.textContent=euro(product.price);
  container.replaceChildren(price);
  container.classList.toggle('launch-price',state.launch===true);
- const reference=container.parentElement.querySelector('.launch-reference');
+ const reference=document.getElementById('plate4-price-reference');
  if(reference)reference.hidden=true;
  if(state.launch){
   const amounts=document.createElement('span');
@@ -56,7 +56,17 @@ function renderPlatePrice(container, product, state, strong='b'){
    const discount=document.createElement('span');
    discount.className='launch-discount';
    discount.textContent='−'+Math.floor((state.comparisonPrice-state.price)*100/state.comparisonPrice)+' %';
-   amounts.append(separator,previous,separator.cloneNode(true),discount);
+   let comparison=previous;
+   if(container.hasAttribute('data-shop-price')&&reference){
+    comparison=document.createElement('span');
+    const marker=document.createElement('a');
+    marker.href='#'+reference.id;
+    marker.className='launch-reference-marker';
+    marker.setAttribute('aria-label','Hinweis zum Streichpreis');
+    marker.textContent='¹';
+    comparison.append(previous,marker);
+   }
+   amounts.append(separator,comparison,separator.cloneNode(true),discount);
   }
  }
 }

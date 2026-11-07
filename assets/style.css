@@ -251,6 +251,6 @@ footer.compact-footer{padding:22px max(24px,calc((100vw - 1152px)/2));line-heigh
 .launch-discount{color:#35C76A;font-size:.85rem;font-weight:700}
 .launch-comparison{color:#FFFFFF;font-size:clamp(.85rem,2.4vw,1rem);font-weight:500;text-decoration-thickness:.1em}
 .launch-separator{color:#aaa;font-size:.85rem}
-.launch-reference,#shop #products .buy .launch-reference{min-height:0;margin:0;color:#c7c7c7;font-size:.75rem;line-height:1.35}
-#shop #products .buy:has(.launch-price),.detail-buy:has(.launch-price){display:flex;flex-direction:column;align-items:flex-start;gap:.55rem}
-.buy:has(.launch-price) .add,.detail-buy:has(.launch-price) .add{margin-top:.25rem}
+.launch-reference{min-height:0;margin:0;color:#c7c7c7;font-size:.75rem;line-height:1.35}
+.detail-buy:has(.launch-price){display:flex;flex-direction:column;align-items:flex-start;gap:.55rem}
+.detail-buy:has(.launch-price) .add{margin-top:.25rem}

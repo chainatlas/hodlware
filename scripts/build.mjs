@@ -26,7 +26,7 @@ for(const photo of new Map(Object.values(CATALOG).flatMap(p=>p.images||[]).map(p
 await writeFile('dist/_routes.json',JSON.stringify({version:1,include:['/','/steel-seed-phrase-recovery-plate','/steel-seed-phrase-recovery','/api/*','/google-merchant-feed.xml','/google-merchant-setup-feed.xml'],exclude:[]}));
 await writeFile('dist/_headers','/67c781f634734bc78b734802d795d817.txt\n  Content-Type: text/plain; charset=utf-8\n/indexnow-manifest.json\n  Content-Type: application/json; charset=utf-8\n  Cache-Control: no-store\n/sitemap.xml\n  Content-Type: application/xml; charset=utf-8\n/robots.txt\n  Content-Type: text/plain; charset=utf-8\n/checkout-*\n  Cache-Control: no-store\n  Referrer-Policy: no-referrer\n/*\n  Cache-Control: no-cache\n  X-Content-Type-Options: nosniff\n');
 
-// Content-version scripts, including the dynamically loaded checkout, per build.
+// Content-version shop styles and scripts, including the dynamically loaded checkout.
 const scripts=['gallery.js','accessory-products.js','accessories.js','app.js','checkout.js','checkout-result.js','products.js','forms.js'];
 const version=createHash('sha256');
 for(const file of scripts)version.update(await readFile(`assets/${file}`));
@@ -40,6 +40,7 @@ for(const file of [...guides,'zubehoer.html','kontakt.html','index.html','impres
  const path=`dist/${file}`;let source=await readFile(path,'utf8');
  if(file.endsWith('.html'))source=withSeoData(source,file,seoContext.window.HODL_PRODUCTS);
  if(file.endsWith('.html'))source=source.replace('</head>',faviconLinks+'</head>');
+ source=source.replace(/assets\/style\.css(?:\?[^"']*)?/g,'assets/style.css?v='+revision);
  source=source.replaceAll('assets/accessories.css','assets/accessories.css?v='+revision);
  source=source.replaceAll('assets/shop-products.css','assets/shop-products.css?v='+revision);
  for(const script of scripts)source=source.replaceAll(`assets/${script}`,`assets/${script}?v=${revision}`);

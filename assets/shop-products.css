@@ -88,5 +88,13 @@
 #shop .variant-badge{background:#151a1df0;border-color:#ff6500bb}
 @media(max-width:460px){#shop #products .product{padding:7px}#shop #products .copy{padding:13px 8px 9px}}
 
+#shop #products .buy:has(.launch-price){align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.65rem .75rem}
+#shop #products .launch-amounts{gap:clamp(.25rem,.65vw,.65rem)}
+#shop #products .buy:has(.launch-price) .add{flex:none;white-space:nowrap}
+#shop #products:has(.launch-comparison){padding-bottom:1rem}
+#shop .launch-reference:not([hidden]){margin-bottom:.4rem}
+#shop .launch-reference-marker{margin-left:.15em;font-size:.8em;color:#fff}
+#shop .launch-reference-marker:focus-visible{outline:2px solid #ff6500;outline-offset:2px}
+
 /* Keep compact product features readable on narrow phones. */
 @media(max-width:460px){#shop #products .product-features li{white-space:normal}#shop #products .product-features span{min-width:0}}
