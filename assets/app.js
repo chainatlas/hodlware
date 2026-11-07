@@ -18,7 +18,7 @@ if(document.getElementById('products')){
    <div class="copy"><h3><a href="/${p.url.replace(/\.html$/,'')}">Recovery Plate – ${p.characters||8}-Digit</a></h3><p class="product-variant-subtitle">${p.characters===8?'(8 Digits pro Wort)':'(4 Digits pro Wort – BIP39 Standard)'}</p><p class="product-description">${p.shopDesc||p.desc}</p>
     <ul class="product-features">${features.map(([icon,label])=>`<li>${icon}<span>${label}</span></li>`).join('')}</ul>
     <a class="product-details-link" href="/${p.url.replace(/\.html$/,'')}">Produktbeschreibung <span aria-hidden="true">↗</span></a>
-    <div class="buy"><div data-shop-price="${p.id}"><b>${euro(p.price)}</b></div><button class="add" data-id="${p.id}" ${p.price==null||p.managedStock?'disabled':''}>${p.price==null?'Bald verfügbar':p.managedStock?'Verfügbarkeit wird geprüft':'In den Warenkorb'} <span aria-hidden="true">→</span></button></div>
+    <div class="buy"><div data-shop-price="${p.id}"><b>${euro(p.price)}</b></div>${p.id==='recoveryplate4'?'<p id="plate4-price-reference" class="launch-reference" hidden>Streichpreis: niedrigster Preis vor der Ermäßigung.</p>':''}<button class="add" data-id="${p.id}" ${p.price==null||p.managedStock?'disabled':''}>${p.price==null?'Bald verfügbar':p.managedStock?'Verfügbarkeit wird geprüft':'In den Warenkorb'} <span aria-hidden="true">→</span></button></div>
    </div>
 
   </article>`;
@@ -34,6 +34,8 @@ function renderPlatePrice(container, product, state, strong='b'){
  price.textContent=euro(product.price);
  container.replaceChildren(price);
  container.classList.toggle('launch-price',state.launch===true);
+ const reference=container.parentElement.querySelector('.launch-reference');
+ if(reference)reference.hidden=true;
  if(state.launch){
   const amounts=document.createElement('span');
   amounts.className='launch-amounts';
@@ -43,18 +45,18 @@ function renderPlatePrice(container, product, state, strong='b'){
    const previous=document.createElement('del');
    previous.className='launch-comparison';
    previous.textContent=euro(state.comparisonPrice/100);
-   previous.setAttribute('aria-label','Niedrigster Preis vor Aktionsbeginn: '+previous.textContent);
+   if(reference){
+    reference.hidden=false;
+    previous.setAttribute('aria-describedby',reference.id);
+   }
+   const separator=document.createElement('span');
+   separator.className='launch-separator';
+   separator.setAttribute('aria-hidden','true');
+   separator.textContent='·';
    const discount=document.createElement('span');
    discount.className='launch-discount';
    discount.textContent='−'+Math.floor((state.comparisonPrice-state.price)*100/state.comparisonPrice)+' %';
-   amounts.append(previous,discount);
-   const label=document.createElement('span');
-   label.className='launch-badge';
-   label.textContent='Launch-Angebot';
-   const end=document.createElement('small');
-   end.append('Niedrigster Preis vor Aktionsbeginn: '+previous.textContent,document.createElement('br'),'Aktionspreis bis 30.11.2026');
-   container.prepend(label);
-   container.append(end);
+   amounts.append(separator,previous,separator.cloneNode(true),discount);
   }
  }
 }

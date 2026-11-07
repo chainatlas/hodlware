@@ -172,7 +172,9 @@ test('Berlin launch boundaries, server quote and historic order amounts',async t
  const comparisonPage=await onRequestGet({env,request:new Request(env.SITE_URL+'/steel-seed-phrase-recovery-plate'),next:()=>new Response(html,{headers:{'Content-Type':'text/html'}})});
  const comparisonHtml=await comparisonPage.text();
  assert.match(comparisonHtml,/<span class="launch-discount">−24 %<\/span>/);
- assert.match(comparisonHtml,/Niedrigster Preis vor Aktionsbeginn: 79,00 €/);
+ assert.match(comparisonHtml,/<\/div><p id="plate4-price-reference" class="launch-reference">Streichpreis: niedrigster Preis vor der Ermäßigung\.<\/p><button/);
+ assert.equal(comparisonHtml.match(/79,00 €/g).length,1);
+ assert.doesNotMatch(comparisonHtml,/Launch-Angebot|Aktionspreis bis/);
  assert.match(comparisonHtml,/<del class="launch-comparison"[^>]*>79,00 €<\/del>/);
  const comparisonContext=await (await context({env,request:new Request(env.SITE_URL+'/api/checkout-context')})).json();
  assert.equal(comparisonContext.products.recoveryplate4.comparisonPrice,7900);
