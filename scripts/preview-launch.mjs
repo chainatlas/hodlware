@@ -44,4 +44,4 @@ createServer(async(req,res)=>{
   res.writeHead(result.status,{...Object.fromEntries(result.headers),'X-Robots-Tag':'noindex, nofollow'});
   res.end(Buffer.from(await result.arrayBuffer()));
  }catch{res.writeHead(500).end();}
-}).listen(port,'127.0.0.1',()=>console.log('Launch-Vorschau: '+origin+' (16.11.2026, lokale Testdaten)'));
+}).listen(port,'127.0.0.1',()=>console.log('Launch-Vorschau: '+origin+' (07.11.2026, lokale Testdaten)'));

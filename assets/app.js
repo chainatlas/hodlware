@@ -35,23 +35,24 @@ function renderPlatePrice(container, product, state, strong='b'){
  container.replaceChildren(price);
  container.classList.toggle('launch-price',state.launch===true);
  if(state.launch){
-  const label=document.createElement('span');
-  label.className='launch-badge';
-  label.textContent='Launch-Angebot';
-  const end=document.createElement('small');
-  end.textContent='Einführungspreis bis 30.11.2026';
   const amounts=document.createElement('span');
   amounts.className='launch-amounts';
   amounts.append(price);
+  container.replaceChildren(amounts);
   if(Number.isSafeInteger(state.comparisonPrice)&&state.comparisonPrice>state.price){
    const previous=document.createElement('del');
    previous.className='launch-comparison';
    previous.textContent=euro(state.comparisonPrice/100);
    previous.setAttribute('aria-label','Vorheriger Preis: '+previous.textContent);
    amounts.append(previous);
+   const label=document.createElement('span');
+   label.className='launch-badge';
+   label.textContent='Launch-Angebot';
+   const end=document.createElement('small');
+   end.textContent='Einführungspreis bis 30.11.2026';
+   container.prepend(label);
+   container.append(end);
   }
-  container.replaceChildren(label,amounts);
-  container.append(end);
  }
 }
 async function refreshStock(){

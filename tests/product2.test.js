@@ -125,7 +125,7 @@ test('Berlin launch boundaries, server quote and historic order amounts',async t
  env.PLATE4_LAUNCH_APPROVED='true';
  env.STRIPE_PRICE_ID_PLATE4_LAUNCH='price_launch_fixture';
  env.SEEDPLATE_SALES_PAUSED='true';
- assert.equal(new Date(LAUNCH_START).toISOString(),'2026-11-15T23:00:00.000Z');
+ assert.equal(new Date(LAUNCH_START).toISOString(),'2026-11-06T23:00:00.000Z');
  assert.equal(new Date(LAUNCH_END).toISOString(),'2026-11-30T23:00:00.000Z');
  for(const [time,active] of [[LAUNCH_START-1,false],[LAUNCH_START,true],[LAUNCH_END-1,true],[LAUNCH_END,false]]){
   assert.equal(launchPrice(env,time),active);
@@ -166,8 +166,8 @@ test('Berlin launch boundaries, server quote and historic order amounts',async t
  const page=await onRequestGet({env,request:new Request(env.SITE_URL+'/steel-seed-phrase-recovery-plate'),next:()=>new Response(html,{headers:{'Content-Type':'text/html'}})});
  assert.equal(page.headers.get('cache-control'),'no-store');
  const launchHtml=await page.text();
- assert.doesNotMatch(launchHtml,/<del class="launch-comparison"/);
- assert.match(launchHtml,/Launch-Angebot<\/span><span class="launch-amounts"><strong>59,90 €/);
+ assert.doesNotMatch(launchHtml,/<del class="launch-comparison"|Launch-Angebot|Einführungspreis bis/);
+ assert.match(launchHtml,/<span class="launch-amounts"><strong>59,90 €/);
  env.PLATE4_LAUNCH_COMPARISON_APPROVED='true';
  const comparisonPage=await onRequestGet({env,request:new Request(env.SITE_URL+'/steel-seed-phrase-recovery-plate'),next:()=>new Response(html,{headers:{'Content-Type':'text/html'}})});
  assert.match(await comparisonPage.text(),/<del class="launch-comparison"[^>]*>79,00 €<\/del>/);
