@@ -39,8 +39,18 @@ function renderPlatePrice(container, product, state, strong='b'){
   label.className='launch-badge';
   label.textContent='Launch-Angebot';
   const end=document.createElement('small');
-  end.textContent='Einführungspreis bis 30.11.2026.';
-  container.prepend(label);
+  end.textContent='Einführungspreis bis 30.11.2026';
+  const amounts=document.createElement('span');
+  amounts.className='launch-amounts';
+  amounts.append(price);
+  if(Number.isSafeInteger(state.comparisonPrice)&&state.comparisonPrice>state.price){
+   const previous=document.createElement('del');
+   previous.className='launch-comparison';
+   previous.textContent=euro(state.comparisonPrice/100);
+   previous.setAttribute('aria-label','Vorheriger Preis: '+previous.textContent);
+   amounts.append(previous);
+  }
+  container.replaceChildren(label,amounts);
   container.append(end);
  }
 }

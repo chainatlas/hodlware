@@ -11,9 +11,11 @@ Nach `npm run build` startet `node scripts/preview-launch.mjs` die lokale Vorsch
 
 ## Preis und Preiswerbung
 
-Der bisherige Preis ist laut zentralem Shopkatalog und aktiver, einmaliger LIVE-Stripe-Preis-ID `price_1UVdhGIPPGFjbWPMAO5IFnFA` **79,00 €**. Stripe zeigte für das zugehörige Produkt ausschließlich diesen Preis. Die lesende Abfrage der Promotion Codes ergab keine Einträge. Das ist keine vollständige 30-Tage-Preishistorie.
+Die Git-Historie führt die 4-Digit-Platte ab Commit `50126e1` mit 79,00 € im Katalog. Commit `c22aa70` schaltete den Verkauf frei. Cloudflare meldet für dessen produktives Deployment am 29.10.2026 um **22:28:40 Uhr Europe/Berlin** Erfolg. Die Änderungshistorie von Katalog und Stripe-Konfiguration zeigt seitdem keinen anderen regulären Preis. Die vorige lesende Stripe-Prüfung fand für das Produkt einen einmaligen LIVE-Preis von 79,00 € und keine Promotion Codes. Die lesende D1-Abfrage bis 07.11.2026 ergab eine bezahlte 4-Digit-Position am 31.10.2026 mit 79,00 € pro Stück. Die zugehörige Bestellbestätigung weist 0,00 € Rabatt aus.
 
-§ 11 PAngV verlangt bei Bekanntgabe einer Preisermäßigung den niedrigsten Gesamtpreis, der in den 30 Tagen vor der Ermäßigung gegenüber Verbrauchern angewandt wurde. 79,90 €, 20,00 € Ersparnis und 25 % sind daher für diesen Launch nicht belegt. Der Entwurf zeigt ausschließlich **59,90 €** mit dem zeitlichen Hinweis zum Einführungspreis. Vor Veröffentlichung den Wortlaut „Launch-Angebot“ und „Einführungspreis bis 30.11.2026“ und die Preishistorie für den 17.10.–15.11.2026 abschließend rechtlich prüfen. Falls der Wortlaut als Bekanntgabe einer Preisermäßigung gilt, den zutreffenden historischen Preis mit zulässiger Kennzeichnung ergänzen oder eine rechtlich freigegebene neutrale Darstellung verwenden. Quelle: https://www.gesetze-im-internet.de/pangv_2022/__11.html
+§ 11 PAngV bezieht sich auf den niedrigsten tatsächlich gegenüber Verbrauchern angewandten Gesamtpreis in den 30 Tagen vor Beginn. Für diesen Launch ist der Prüfzeitraum **17.10. bis einschließlich 15.11.2026**. Der Vorbereitungsstand vom 07.11. liefert noch keinen Abschlussnachweis. Es fehlen die vollständige Dokumentation etwaiger öffentlich verfügbarer Gutscheine oder anderer Preiswege ab Verkaufsstart und die Historie für die verbleibenden Tage bis einschließlich 15.11. Auch die kurze Angebotsdauer seit 29.10. und der Wortlaut der Werbung sind rechtlich zu prüfen. Ein einzelner Preis bzw. eine einzelne Bestellung ersetzt diese Prüfung nicht. Quelle: https://www.gesetze-im-internet.de/pangv_2022/__11.html
+
+`PLATE4_LAUNCH_COMPARISON_APPROVED=false` ist in Preview- und Produktionskonfiguration der Standard. Erst nach dokumentierter Prüfung und Freigabe blendet `true` innerhalb der Aktion 79,00 € durchgestrichen ein. Die lokale Designvariante mit fiktiver Freigabe läuft über `node scripts/preview-launch.mjs --comparison` unter http://127.0.0.1:8796/.
 
 ## Preisberechnung und Bestellabwicklung
 
@@ -24,7 +26,7 @@ Der bisherige Preis ist laut zentralem Shopkatalog und aktiver, einmaliger LIVE-
 
 ## Merchant Center
 
-Der Entwurf schreibt den aktuellen tatsächlichen Preis in `g:price` und bei gesperrter 8-Digit-Platte `out_of_stock`. Google erlaubt den aktuellen Aktionspreis in `price`, wenn `sale_price` nicht verwendet wird. Für `sale_price` muss `price` den regulären Preis ausweisen und die Landingpage beide Preise zeigen. Solange die Vergleichswerbung unbelegt ist, entfallen `sale_price` und `sale_price_effective_date` gemeinsam. Bei späterer Freigabe eines belegten Vergleichspreises wäre das passende Berliner ISO-Zeitfenster `2026-11-16T00:00+0100/2026-12-01T00:00+0100`; Feed, Seite und Checkout müssten dann zusammen geprüft werden.
+Die gesperrte 8-Digit-Platte wird als `out_of_stock` ausgegeben. Ohne Vergleichspreisfreigabe schreibt der Feed während der Aktion 59,90 € in `g:price`. Mit Vergleichspreisfreigabe liefert er während der Aktion `price=79.00 EUR`, `sale_price=59.90 EUR` und `sale_price_effective_date=2026-11-16T00:00+0100/2026-12-01T00:00+0100`, passend zum sichtbaren Vergleich auf der Landingpage. Außerhalb des Aktionsfensters liefert der Feed regulär 79,00 € ohne Aktionsattribute.
 
 Der Feed selbst wechselt ohne Cache genau an den vorgesehenen Grenzen. Google speichert eingelesene Preise bis zum nächsten Abruf. Abruf und Verarbeitungsstatus an beiden Grenzen kontrollieren. Wenn zeitgleiche Aktualisierung ohne bestätigtes Sale-Markup nicht sichergestellt werden kann, das betroffene 4-Digit-Angebot für die Übergänge ausblenden und erst nach geprüftem Import wieder anzeigen. Quellen: https://support.google.com/merchants/answer/6324471 und https://support.google.com/merchants/answer/6324460
 
@@ -32,7 +34,7 @@ Der Feed selbst wechselt ohne Cache genau an den vorgesehenen Grenzen. Google sp
 
 1. Preiswerbung, Preishistorie und Umgang mit vor dem Stichtag ausgestellten Sessions freigeben. Keine Werbeaussage auf Basis von 79,90 € übernehmen.
 2. 59,90 EUR als separaten einmaligen LIVE-Preis für dasselbe Stripe-Produkt anlegen und als `STRIPE_PRICE_ID_PLATE4_LAUNCH` hinterlegen. Den vorhandenen 79,00-EUR-Preis für die Rückkehr beibehalten.
-3. Im Stripe-Testmodus eine echte Test-Checkout-Session mit Testpreis prüfen. Betrag, Rechnung und E-Mail prüfen. Im Entwurf ist der Stripe-Aufruf lokal simuliert und die Bestellmail gegen eine temporäre SQLite-Datenbank geprüft.
-4. Den freigegebenen Commit veröffentlichen und `PLATE4_LAUNCH_APPROVED=true` sowie `SEEDPLATE_SALES_PAUSED=true` bewusst konfigurieren. Beide Schalter stehen im Branch standardmäßig auf false.
+3. Im Stripe-Testmodus eine echte Test-Checkout-Session mit Testpreis prüfen. Betrag, Rechnung und E-Mail prüfen. Der verbundene Stripe-Zugang zeigt ausschließlich das LIVE-Konto. Ohne vorhandenen Testzugang ist der Stripe-Aufruf lokal simuliert und die Bestellmail gegen eine temporäre SQLite-Datenbank geprüft.
+4. Den freigegebenen Commit veröffentlichen und `PLATE4_LAUNCH_APPROVED=true` sowie `SEEDPLATE_SALES_PAUSED=true` bewusst konfigurieren. Aktionsfreigabe, Vergleichspreisfreigabe und Verkaufspause stehen im Branch standardmäßig auf false.
 5. Vor und an beiden Zeitgrenzen Seite, Warenkorb und Feed prüfen. Google-Abruf und Verarbeitungsstatus kontrollieren.
 6. Bei Problemen den jeweiligen Schalter deaktivieren. Den neuen Webhook-Verifizierer auf der veröffentlichten Version behalten, solange Aktions-Sessions oder deren Webhooks noch verarbeitet werden können. Die 8-Digit-Pause erst nach bewusster Bestands- und Verkaufsfreigabe zurücknehmen.

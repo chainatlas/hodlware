@@ -1,4 +1,4 @@
-import {launchPrice} from './launch.js';
+import {launchPrice,launchComparisonApproved} from './launch.js';
 import {CATALOG} from './catalog.js';
 import {merchantAvailability,renderMerchantFeed} from './merchant-feed.js';
 
@@ -36,7 +36,7 @@ export async function merchantSetupFeed({request,env}){
    env.MERCHANT_FEED_ENABLED!=='false'||env.MERCHANT_SHIPPING_REVIEWED!=='false')throw Error('setup not released');
   if(new URL(request.url).search)throw Error('setup parameters not supported');
   const launch=launchPrice(env);
-  const body=renderMerchantSetupFeed(await merchantAvailability(env,launch),{launch});
+  const body=renderMerchantSetupFeed(await merchantAvailability(env,launch),{launch,comparison:launchComparisonApproved(env)});
   return new Response(request.method==='HEAD'?null:body,{status:200,headers});
  }catch{
   return new Response(request.method==='HEAD'?null:'<?xml version="1.0" encoding="UTF-8"?><error>Einrichtungsfeed derzeit nicht verfügbar.</error>',{status:503,headers:{...headers,'Retry-After':'3600'}});

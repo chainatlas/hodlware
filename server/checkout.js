@@ -5,7 +5,7 @@ import {CONTRACT_VERSION,ACCESSORY_CONTRACT_VERSION} from './contract-text.js';
 import {queueOrder} from './order-mail.js';
 import {mailConfigured,deliver} from './mail.js';
 import Stripe from 'stripe';
-import {launchPrice,launchTransition,seedplatePaused,LAUNCH_PRICE,LAUNCH_VERSION} from './launch.js';
+import {launchPrice,launchComparisonApproved,launchTransition,seedplatePaused,LAUNCH_PRICE,LAUNCH_VERSION} from './launch.js';
 import {reserveAccessories,bindAccessories,accessoryStatements,accessoryAvailability} from './accessory-inventory.js';
 export const APP='hodlware-sandbox-v1', PRICE=7900, SHIPPING=619;
 export function json(data,status=200,headers={}) { return new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...headers}}); }
@@ -71,7 +71,7 @@ export async function context({request,env}) {
  if(env.PLATE4_ENABLED==='true'){
   products.recoveryplate4={
    available:(!launch||launchPriceConfigured(env))&&(await availability(env)).available,
-   ...(scheduled?{price:launch?LAUNCH_PRICE:CATALOG.recoveryplate4.price,launch}:{})
+   ...(scheduled?{price:launch?LAUNCH_PRICE:CATALOG.recoveryplate4.price,launch,...(launch&&launchComparisonApproved(env)?{comparisonPrice:CATALOG.recoveryplate4.price}:{})}:{})
   };
  }
  if(env.ACCESSORIES_ENABLED==='true'){

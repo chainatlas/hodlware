@@ -1,4 +1,4 @@
-import {launchPrice,seedplatePaused,LAUNCH_PRICE} from './launch.js';
+import {launchPrice,launchComparisonApproved,seedplatePaused,LAUNCH_PRICE,LAUNCH_FEED_DATES} from './launch.js';
 import {seedMode} from './seedplate-inventory.js';
 import {CATALOG,SHIPPING_CLASSES,launchPriceConfigured} from './catalog.js';
 import {MERCHANT_PRODUCTS} from './merchant-products.js';
@@ -7,10 +7,14 @@ export function xml(value){const s=String(value);if(/[\u0000-\u0008\u000b\u000c\
 const tag=(key,value)=>'<g:'+key+'>'+xml(value)+'</g:'+key+'>';
 export function validGtin(value){if(!/^(?:\d{8}|\d{12}|\d{13}|\d{14})$/.test(value))return false;const a=[...value].map(Number),last=a.pop();return (10-a.reverse().reduce((s,n,i)=>s+n*(i%2?1:3),0)%10)%10===last;}
 function identifiers(meta){const i=meta.identifiers;if(i?.status==='unassigned'&&!i.gtin&&!i.mpn)return tag('identifier_exists','no');if(i?.status!=='assigned'||(!i.gtin&&!i.mpn))throw Error('identifiers not reviewed');if(i.gtin&&!validGtin(i.gtin))throw Error('invalid GTIN');if(i.mpn&&(typeof i.mpn!=='string'||!i.mpn.trim()||i.mpn.length>70))throw Error('invalid MPN');return tag('identifier_exists','yes')+(i.gtin?tag('gtin',i.gtin):'')+(i.mpn?tag('mpn',i.mpn):'');}
-export function renderMerchantFeed(states,{catalog=CATALOG,metadata=MERCHANT_PRODUCTS,launch=false}={}){
+export function renderMerchantFeed(states,{catalog=CATALOG,metadata=MERCHANT_PRODUCTS,launch=false,comparison=false}={}){
  const ids=Object.keys(catalog);if(!ids.length)throw Error('empty catalog');
  const items=ids.map(id=>{const p=catalog[id],m=metadata[id];if(!m||typeof p.name!=='string'||!p.name.trim()||typeof p.description!=='string'||!p.description.trim()||!Number.isSafeInteger(p.price)||p.price<=0||typeof states[id]!=='boolean'||!m.productType||!m.path?.startsWith('/')||m.path.startsWith('//'))throw Error('incomplete product');const link=new URL(m.path,ORIGIN);if(link.origin!==ORIGIN)throw Error('invalid link');const images=m.images||p.images?.map(i=>i.src);if(!images?.length||images.some(i=>!/^assets\/images\/[a-zA-Z0-9_./-]+\.(webp|png|jpg)$/.test(i)||i.includes('..')))throw Error('invalid images');
- let data=tag('id',id)+tag('title',m.title||p.name)+tag('description',p.description)+tag('link',link.href)+tag('image_link',ORIGIN+'/'+images[0])+images.slice(1,11).map(i=>tag('additional_image_link',ORIGIN+'/'+i)).join('')+tag('price',((launch&&id==='recoveryplate4'?LAUNCH_PRICE:p.price)/100).toFixed(2)+' EUR')+tag('availability',states[id]?'in_stock':'out_of_stock')+tag('condition','new')+tag('brand','HODLWARE')+tag('product_type',m.productType)+identifiers(m);
+ const onSale=launch&&id==='recoveryplate4';
+ const advertisedComparison=onSale&&comparison;
+ const price=onSale&&!advertisedComparison?LAUNCH_PRICE:p.price;
+ let data=tag('id',id)+tag('title',m.title||p.name)+tag('description',p.description)+tag('link',link.href)+tag('image_link',ORIGIN+'/'+images[0])+images.slice(1,11).map(i=>tag('additional_image_link',ORIGIN+'/'+i)).join('')+tag('price',(price/100).toFixed(2)+' EUR')+tag('availability',states[id]?'in_stock':'out_of_stock')+tag('condition','new')+tag('brand','HODLWARE')+tag('product_type',m.productType)+identifiers(m);
+ if(advertisedComparison)data+=tag('sale_price',(LAUNCH_PRICE/100).toFixed(2)+' EUR')+tag('sale_price_effective_date',LAUNCH_FEED_DATES);
  if(m.multipack){if(!Number.isInteger(m.multipack)||m.multipack<=1||m.multipack!==p.units)throw Error('invalid multipack');data+=tag('multipack',m.multipack);}
  // Account policies use these labels; no product-level price overrides.
  const label=p.shippingClass==='letter'?'sticker_letter':'plate_parcel';data+=tag('shipping_label',label);
@@ -31,7 +35,7 @@ export async function merchantAvailability(env,launch=launchPrice(env)){
 export async function merchantFeed({request,env}){
  const headers={'Content-Type':'application/xml; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
  if(!['GET','HEAD'].includes(request.method))return new Response(null,{status:405,headers:{...headers,Allow:'GET, HEAD'}});
- try{if(env.MERCHANT_SETUP_FEED_ENABLED==='true'||env.MERCHANT_FEED_ENABLED!=='true'||env.MERCHANT_SHIPPING_REVIEWED!=='true')throw Error('feed disabled or shipping unreviewed');const launch=launchPrice(env);const body=renderMerchantFeed(await merchantAvailability(env,launch),{launch});return new Response(request.method==='HEAD'?null:body,{status:200,headers});}
+ try{if(env.MERCHANT_SETUP_FEED_ENABLED==='true'||env.MERCHANT_FEED_ENABLED!=='true'||env.MERCHANT_SHIPPING_REVIEWED!=='true')throw Error('feed disabled or shipping unreviewed');const launch=launchPrice(env);const body=renderMerchantFeed(await merchantAvailability(env,launch),{launch,comparison:launchComparisonApproved(env)});return new Response(request.method==='HEAD'?null:body,{status:200,headers});}
  catch{return new Response(request.method==='HEAD'?null:'<?xml version="1.0" encoding="UTF-8"?><error>Produktfeed derzeit nicht verfügbar.</error>',{status:503,headers:{...headers,'Retry-After':'3600'}});}
 }
 

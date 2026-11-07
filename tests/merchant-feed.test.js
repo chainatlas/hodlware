@@ -12,3 +12,38 @@ test('merchant XML escapes special characters and rejects XML control characters
 test('shipping costs differ by offer, mixed checkout charges maximum class once',()=>{const body=renderMerchantFeed(Object.fromEntries(Object.keys(CATALOG).map(id=>[id,true])));assert.equal((body.match(/<g:shipping_label>sticker_letter/g)||[]).length,4);assert.equal((body.match(/<g:shipping_label>plate_parcel/g)||[]).length,2);assert.ok(!body.includes('<g:shipping>'));assert.deepEqual(merchantShippingPolicy().rates,{sticker_letter:110,plate_parcel:619});for(const n of [1,5,10,25]){assert.equal(shipping([{id:'void-'+n,quantity:2}]),110);for(const id of ['seedplate','recoveryplate4'])assert.equal(shipping([{id,quantity:2},{id:'void-'+n,quantity:1}]),619);}});
 
 test('all package thresholds are checked',async()=>{for(const n of [0,1,4,5,9,10,24,25,26]){const {sql,env}=fixture(n);try{const states=await merchantAvailability(env);for(const units of [1,5,10,25])assert.equal(states['void-'+units],n>=units);}finally{sql.close()}}});
+
+test('launch feed keeps comparison approval, Berlin boundaries and other offers aligned',async t=>{
+ const {LAUNCH_START,LAUNCH_END,LAUNCH_FEED_DATES}=await import('../server/launch.js');
+ const {env,sql}=fixture();
+ t.after(()=>sql.close());
+ Object.assign(env,{PLATE4_LAUNCH_APPROVED:'true',STRIPE_PRICE_ID_PLATE4_LAUNCH:'price_launch',SEEDPLATE_SALES_PAUSED:'true'});
+ let now=LAUNCH_START-1;
+ t.mock.method(Date,'now',()=>now);
+ const read=async()=>{
+  const response=await merchantFeed({request:request('GET'),env});
+  assert.equal(response.status,200);
+  return Object.fromEntries((await response.text()).match(/<item>[\s\S]*?<\/item>/g).map(item=>[item.match(/<g:id>(.*?)<\/g:id>/)[1],item]));
+ };
+ const before=await read();
+ assert.match(before.recoveryplate4,/<g:price>79.00 EUR<\/g:price>/);
+ assert.doesNotMatch(before.recoveryplate4,/<g:sale_price/);
+ assert.match(before.seedplate,/<g:availability>out_of_stock<\/g:availability>/);
+ now=LAUNCH_START;
+ const during=await read();
+ assert.match(during.recoveryplate4,/<g:price>59.90 EUR<\/g:price>/);
+ assert.doesNotMatch(during.recoveryplate4,/<g:sale_price/);
+ env.PLATE4_LAUNCH_COMPARISON_APPROVED='true';
+ const approved=await read();
+ assert.match(approved.recoveryplate4,/<g:price>79.00 EUR<\/g:price>/);
+ assert.match(approved.recoveryplate4,/<g:sale_price>59.90 EUR<\/g:sale_price>/);
+ assert.ok(approved.recoveryplate4.includes('<g:sale_price_effective_date>'+LAUNCH_FEED_DATES+'</g:sale_price_effective_date>'));
+ now=LAUNCH_END-1;
+ assert.deepEqual(await read(),approved);
+ now=LAUNCH_END;
+ assert.deepEqual(await read(),before);
+ for(const id of ['seedplate','void-1','void-5','void-10','void-25']){
+  assert.equal(during[id],before[id]);
+  assert.equal(approved[id],before[id]);
+ }
+});

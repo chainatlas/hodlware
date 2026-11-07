@@ -1,4 +1,5 @@
-import {LAUNCH_PRICE,launchPrice,seedplatePaused} from '../server/launch.js';
+import {CATALOG} from '../server/catalog.js';
+import {LAUNCH_PRICE,launchPrice,launchComparisonApproved,seedplatePaused} from '../server/launch.js';
 
 const four = '/steel-seed-phrase-recovery-plate';
 const eight = '/steel-seed-phrase-recovery';
@@ -14,8 +15,11 @@ export async function onRequestGet({request,env,next}) {
  let html=await response.text();
  if(launch&&path===four){
   const price=(LAUNCH_PRICE/100).toFixed(2).replace('.',',')+' €';
+  const regular=(CATALOG.recoveryplate4.price/100).toFixed(2).replace('.',',')+' €';
+  const previous=launchComparisonApproved(env)
+   ? '<del class="launch-comparison" aria-label="Vorheriger Preis: '+regular+'">'+regular+'</del>' : '';
   html=html.replace(/<div data-detail-price="recoveryplate4"><strong>[^<]*<\/strong><\/div>/,
-   '<div data-detail-price="recoveryplate4" class="launch-price"><span class="launch-badge">Launch-Angebot</span><strong>'+price+'</strong><small>Einführungspreis bis 30.11.2026.</small></div>');
+   '<div data-detail-price="recoveryplate4" class="launch-price"><span class="launch-badge">Launch-Angebot</span><span class="launch-amounts"><strong>'+price+'</strong>'+previous+'</span><small>Einführungspreis bis 30.11.2026</small></div>');
  }
  if(paused&&path===eight){
   html=html.replace(/(<button class="add" data-id="seedplate" disabled>)[^<]*/, '$1Ausverkauft');

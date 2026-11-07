@@ -7,13 +7,15 @@ import {onRequestGet} from '../functions/_middleware.js';
 import {LAUNCH_START} from '../server/launch.js';
 
 // Local design preview, using the production renderers with fixed time and read-only fixtures.
-const origin='http://127.0.0.1:8795';
+const showComparison=process.argv.includes('--comparison');
+const port=showComparison?8796:8795;
+const origin='http://127.0.0.1:'+port;
 const root=resolve('dist');
 const env={
  SITE_URL:origin, STRIPE_SECRET_KEY:'sk_test_preview_only', STRIPE_WEBHOOK_SECRET:'whsec_preview_only',
  STRIPE_PRICE_ID:'price_preview_seed', STRIPE_PRICE_ID_PLATE4:'price_preview_regular',
  STRIPE_PRICE_ID_PLATE4_LAUNCH:'price_preview_launch', PLATE4_ENABLED:'true',
- PLATE4_LAUNCH_APPROVED:'true', SEEDPLATE_SALES_PAUSED:'true', SEEDPLATE_STOCK_MODE:'managed',
+ PLATE4_LAUNCH_APPROVED:'true', PLATE4_LAUNCH_COMPARISON_APPROVED:showComparison?'true':'false', SEEDPLATE_SALES_PAUSED:'true', SEEDPLATE_STOCK_MODE:'managed',
  ACCESSORIES_ENABLED:'true', ACCESSORIES_PRICES_APPROVED:'true', ACCESSORIES_STOCK_CONFIRMED:'true',
  MERCHANT_FEED_ENABLED:'true', MERCHANT_SHIPPING_REVIEWED:'true',
  ...Object.fromEntries([1,5,10,25].map(n=>['STRIPE_PRICE_ID_VOID_'+n,'price_preview_void_'+n])),
@@ -42,4 +44,4 @@ createServer(async(req,res)=>{
   res.writeHead(result.status,{...Object.fromEntries(result.headers),'X-Robots-Tag':'noindex, nofollow'});
   res.end(Buffer.from(await result.arrayBuffer()));
  }catch{res.writeHead(500).end();}
-}).listen(8795,'127.0.0.1',()=>console.log('Launch-Vorschau: '+origin+' (16.11.2026, lokale Testdaten)'));
+}).listen(port,'127.0.0.1',()=>console.log('Launch-Vorschau: '+origin+' (16.11.2026, lokale Testdaten)'));

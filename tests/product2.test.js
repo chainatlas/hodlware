@@ -165,7 +165,14 @@ test('Berlin launch boundaries, server quote and historic order amounts',async t
  const html=readFileSync(new URL('../steel-seed-phrase-recovery-plate.html',import.meta.url),'utf8');
  const page=await onRequestGet({env,request:new Request(env.SITE_URL+'/steel-seed-phrase-recovery-plate'),next:()=>new Response(html,{headers:{'Content-Type':'text/html'}})});
  assert.equal(page.headers.get('cache-control'),'no-store');
- assert.match(await page.text(),/Launch-Angebot<\/span><strong>59,90 €/);
+ const launchHtml=await page.text();
+ assert.doesNotMatch(launchHtml,/<del class="launch-comparison"/);
+ assert.match(launchHtml,/Launch-Angebot<\/span><span class="launch-amounts"><strong>59,90 €/);
+ env.PLATE4_LAUNCH_COMPARISON_APPROVED='true';
+ const comparisonPage=await onRequestGet({env,request:new Request(env.SITE_URL+'/steel-seed-phrase-recovery-plate'),next:()=>new Response(html,{headers:{'Content-Type':'text/html'}})});
+ assert.match(await comparisonPage.text(),/<del class="launch-comparison"[^>]*>79,00 €<\/del>/);
+ const comparisonContext=await (await context({env,request:new Request(env.SITE_URL+'/api/checkout-context')})).json();
+ assert.equal(comparisonContext.products.recoveryplate4.comparisonPrice,7900);
  const s=session(items);
  s.metadata.pricingVersion=LAUNCH_VERSION;
  s.amount_subtotal=5990;s.amount_total=6609;

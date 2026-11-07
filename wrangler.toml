@@ -6,6 +6,7 @@ compatibility_date = "2026-10-01"
 # Preview deployments cannot send mail or offer the new product.
 [vars]
 PLATE4_LAUNCH_APPROVED = "false"
+PLATE4_LAUNCH_COMPARISON_APPROVED = "false"
 SEEDPLATE_SALES_PAUSED = "false"
 MERCHANT_SETUP_FEED_ENABLED = "false"
 MERCHANT_SETUP_COUNTRY_CONFIRMED = ""
@@ -23,6 +24,7 @@ ACCESSORIES_STOCK_CONFIRMED = "false"
 
 [env.production.vars]
 PLATE4_LAUNCH_APPROVED = "false"
+PLATE4_LAUNCH_COMPARISON_APPROVED = "false"
 SEEDPLATE_SALES_PAUSED = "false"
 MERCHANT_SETUP_FEED_ENABLED = "false"
 MERCHANT_SETUP_COUNTRY_CONFIRMED = "DE"
